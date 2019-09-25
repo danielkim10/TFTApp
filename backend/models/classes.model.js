@@ -10,6 +10,7 @@ const classSchema = new Schema({
     needed: {type: Number},
     effect: {type: String},
   }],
+  neededMustBeExact: {type: Bool},
 });
 
 const Class = mongoose.model('Class', classSchema);

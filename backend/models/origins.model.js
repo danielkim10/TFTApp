@@ -10,6 +10,7 @@ const originSchema = new Schema({
     needed: {type: Number},
     effect: {type: String},
   }],
+  neededMustBeExact: {type: Bool},
 });
 
 const Origin = mongoose.model('Origin', originSchema);
