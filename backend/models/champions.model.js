@@ -36,7 +36,8 @@ const championSchema = new Schema({
       armor: {type: Number},
       magicResist: {type: Number},
     },
-  }
+  },
+  image: {type: String},
 });
 
 const Champion = mongoose.model('Champion', championSchema);

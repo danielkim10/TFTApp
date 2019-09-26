@@ -1,12 +1,19 @@
 import React, { Component } from 'react';
-import {Row, Col, Form, FormGroup, Card, CardHeader, CardBody, Label, Input} from 'reactstrap';
+import {Button, Row, Col, Collapse, Form, FormGroup, Card, CardHeader,
+        CardBody, Label, Input} from 'reactstrap';
 import Select from 'react-select';
+import Formgroups from '../sub-components/formgroups'
 
-class Create extends React.Component {
+class Create extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      championCollapse: false,
+      classCollapse: false,
+      itemCollapse: false,
+      originCollapse: false,
+
       champion: {
         id: 0,
         key: "",
@@ -40,12 +47,14 @@ class Create extends React.Component {
             magicResist: 0,
           }
         },
+        image: "",
       },
       class: {
         key: "",
         name: "",
         description: "",
-        bonuses: []
+        bonuses: [],
+        image: "",
       },
       item: {
         key: "",
@@ -55,44 +64,84 @@ class Create extends React.Component {
         depth: 0,
         stats: [],
         tier: [],
-        buildsInto: []
+        buildsInto: [],
+        unique: false,
+        image: "",
       },
       origin: {
         key: "",
         name: "",
         description: "",
-        bonuses: []
+        bonuses: [],
+        image: "",
       },
     }
-    this.handleInputs.bind(this);
-    this.handleSubmit.bind(this);
+    this.handleInputs = this.handleInputs.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.championToggle = this.championToggle.bind(this);
+    this.classToggle = this.classToggle.bind(this);
+    this.itemToggle = this.itemToggle.bind(this);
+    this.originToggle = this.originToggle.bind(this);
   }
 
-  handleInputs() {
+  handleInputs(event) {
 
 
   }
 
-  handleSubmit() {
+  handleChampions(event) {
+
+  }
+
+  handleClasses(event) {
+
+  }
+
+  handleItems(event) {
+
+  }
+
+  handleOrigins(event) {
+
+  }
+
+  handleSubmit(e) {
+    e.preventDefault();
 
 
+  }
+
+  championToggle() {
+    this.setState( {championCollapse: !this.state.championCollapse} );
+  }
+
+  classToggle() {
+    this.setState( {classCollapse: !this.state.classCollapse} );
+  }
+
+  itemToggle() {
+    this.setState( {itemCollapse: !this.state.itemCollapse} );
+  }
+
+  originToggle() {
+    this.setState( {originCollapse: !this.state.originCollapse} );
   }
 
   render() {
       return (
         <div>
-            <Card style={{width: "90%"}}>
+            <Card style={{width: "100%"}}>
               <CardHeader>
                 <i class="fa-fa-align-justify"></i><strong>Champions</strong>
+                <Button color="primary" onClick={this.championToggle} style={{marginLeft: '1rem'}}>Toggle</Button>
               </CardHeader>
+              <Collapse isOpen={this.state.championCollapse}>
               <CardBody>
                 <Form onSubmit={this.handleSubmit}>
                   <Row>
                   <Col md={6}>
-                    <FormGroup>
-                      <Label>ID: </Label>
-                      <Input type="number" id="id" name="id" onChange={this.handleInputs} />
-                    </FormGroup>
+
+                    <Formgroups name="ID:" type="number" id="id" onChange={this.handleInputs}/>
                     <FormGroup>
                       <Label>Key: </Label>
                       <Input type="text" id="key" name="key" onChange={this.handleInputs} />
@@ -183,11 +232,14 @@ class Create extends React.Component {
                     </Row>
                 </Form>
                 </CardBody>
+                </Collapse>
               </Card>
               <Card>
               <CardHeader>
                 <i class="fa fa-align-justify"></i><strong>Classes</strong>
+                <Button color="primary" onClick={this.classToggle} style={{marginLeft: '1rem'}}>Toggle</Button>
               </CardHeader>
+              <Collapse isOpen={this.state.classCollapse}>
               <CardBody>
                 <Form onSubmit={this.handleSubmit}>
                   <Row>
@@ -212,11 +264,14 @@ class Create extends React.Component {
                   </Row>
                 </Form>
               </CardBody>
+              </Collapse>
               </Card>
               <Card>
                 <CardHeader>
-                  <i class="fa fa-align-justify"></i><strong>Origin</strong>
+                  <i class="fa fa-align-justify"></i><strong>Origins</strong>
+                  <Button color="primary" onClick={this.originToggle} style={{marginLeft: '1rem'}}>Toggle</Button>
                 </CardHeader>
+                <Collapse isOpen={this.state.originCollapse}>
                 <CardBody>
                 <Form onSubmit={this.handleSubmit}>
                   <Row>
@@ -241,6 +296,59 @@ class Create extends React.Component {
                   </Row>
                 </Form>
                 </CardBody>
+                </Collapse>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <i class="fa fa-align-justify"></i><strong>Items</strong>
+                  <Button color="primary" onClick={this.itemToggle} style={{marginLeft: '1rem'}}>Toggle</Button>
+                </CardHeader>
+                <Collapse isOpen={this.state.itemCollapse}>
+                <CardBody>
+                  <Form onSubmit={this.handleSubmit}>
+                    <Row>
+                      <Col>
+                        <FormGroup>
+                          <Label>Key: </Label>
+                          <Input type="text" id="key" name="key" onChange={this.handleInputs} />
+                        </FormGroup>
+                        <FormGroup>
+                          <Label>Name: </Label>
+                          <Input type="text" id="name" name="name" onChange={this.handleInputs} />
+                        </FormGroup>
+                        <FormGroup>
+                          <Label>Type: </Label>
+                          <Input type="text" id="type" name="type" onChange={this.handleInputs} />
+                        </FormGroup>
+                        <FormGroup>
+                          <Label>Bonus: </Label>
+                          <Input type="text" id="bonus" name="bonus" onChange={this.handleInputs} />
+                        </FormGroup>
+                        <FormGroup>
+                          <Label>Depth: </Label>
+                          <Input type="number" id="depth" name="depth" onChange={this.handleInputs} />
+                        </FormGroup>
+                        <FormGroup>
+                          <Label>Stats: </Label>
+                          <Input type="text" id="stats" name="stats" onChange={this.handleInputs} />
+                        </FormGroup>
+                        <FormGroup>
+                          <Label>Tier: </Label>
+                          <Input type="text" id="tier" name="tier" onChange={this.handleInputs} />
+                        </FormGroup>
+                        <FormGroup>
+                          <Label>Builds Into: </Label>
+                          <Input type="text" id="buildsInto" name="buildsInto" onChange={this.handleInputs} />
+                        </FormGroup>
+                        <FormGroup>
+                          <Label>Unique (one per champion): </Label>
+                          <Input type="checkbox" id="unique" name="unique" />
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                  </Form>
+                </CardBody>
+                </Collapse>
               </Card>
         </div>
       )

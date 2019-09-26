@@ -11,6 +11,7 @@ const classSchema = new Schema({
     effect: {type: String},
   }],
   neededMustBeExact: {type: Bool},
+  image: {type: String},
 });
 
 const Class = mongoose.model('Class', classSchema);

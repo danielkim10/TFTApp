@@ -11,6 +11,7 @@ const originSchema = new Schema({
     effect: {type: String},
   }],
   neededMustBeExact: {type: Bool},
+  image: {type: String},
 });
 
 const Origin = mongoose.model('Origin', originSchema);

@@ -16,6 +16,7 @@ const itemSchema = new Schema({
   tier: [{type: String}],
   buildsInto: [{type: String}],
   unique: {type: Bool},
+  image: {type: String},
 });
 
 const Item = mongoose.model('Item', itemSchema);
