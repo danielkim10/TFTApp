@@ -10,7 +10,7 @@ const classSchema = new Schema({
     needed: {type: Number},
     effect: {type: String},
   }],
-  neededMustBeExact: {type: Bool},
+  neededMustBeExact: {type: Boolean},
   image: {type: String},
 });
 

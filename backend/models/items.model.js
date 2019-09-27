@@ -15,7 +15,7 @@ const itemSchema = new Schema({
   }],
   tier: [{type: String}],
   buildsInto: [{type: String}],
-  unique: {type: Bool},
+  unique: {type: Boolean},
   image: {type: String},
 });
 

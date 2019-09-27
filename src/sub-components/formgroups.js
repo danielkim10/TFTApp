@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import {FormGroup, Input, Label} from 'reactstrap'
 
 class Formgroups extends Component {
@@ -11,10 +11,10 @@ class Formgroups extends Component {
   }
 
   renderFormGroup(name, type, id, handler) {
-    return (<FormGroup>
+    return (<Fragment><FormGroup>
       <Label>{name}</Label>
       <Input type={type} id={id} name={id} onChange={handler} />
-    </FormGroup>);
+    </FormGroup></Fragment>);
   }
 
   render() {

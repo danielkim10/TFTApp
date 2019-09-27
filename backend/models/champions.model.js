@@ -7,7 +7,6 @@ const championSchema = new Schema({
   key: {type: String},
   name: {
     type: String,
-    required: true
   },
   origin: [{type: String}],
   class: [{type: String}],

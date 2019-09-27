@@ -3,14 +3,14 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const originSchema = new Schema({
-  key: {type: String, required: true},
-  name: {type: String, required: true},
+  key: {type: String},
+  name: {type: String},
   description: {type: String},
   bonuses: [{
     needed: {type: Number},
     effect: {type: String},
   }],
-  neededMustBeExact: {type: Bool},
+  neededMustBeExact: {type: Boolean},
   image: {type: String},
 });
 
