@@ -1,5 +1,6 @@
-Use 'nodemon server' in TFTApp/tft-app/backend to start the server and connect to the DB
-Use 'npm start in TFTApp/tft-app to start the frontend
+Use 'nodemon server' in TFTApp/tft-app/backend to start the server and connect to the DB.
+
+Use 'npm start in TFTApp/tft-app to start the frontend.
 
 
 
