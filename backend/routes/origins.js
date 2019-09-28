@@ -8,8 +8,13 @@ router.route('/').get((req, res) => {
 });
 
 router.route('/add').post((req, res) => {
+  const key = req.body.key;
   const name = req.body.name;
-  const newOrigin = new Origin({name});
+  const description = req.body.description;
+  const bonuses = req.body.bonuses;
+  const neededMustBeExact = req.body.neededMustBeExact;
+  const image = req.body.image;
+  const newOrigin = new Origin({key, name, description, bonuses, neededMustBeExact, image});
 
   newOrigin.save()
     .then(() => res.json('Origin added'))
