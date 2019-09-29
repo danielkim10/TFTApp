@@ -8,8 +8,13 @@ router.route('/').get((req, res) => {
 });
 
 router.route('/add').post((req, res) => {
+  const key = req.body.key;
   const name = req.body.name;
-  const newClass = new Class(name);
+  const description = req.body.description;
+  const bonuses = req.body.bonuses;
+  const mustBeExact = req.body.mustBeExact;
+  const image = req.body.image;
+  const newClass = new Class({key, name, description, bonuses, mustBeExact, image});
 
   newClass.save()
     .then(() => res.json('Class added'))

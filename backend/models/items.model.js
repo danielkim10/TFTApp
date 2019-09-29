@@ -13,7 +13,7 @@ const itemSchema = new Schema({
     title: {type: String},
     amount: {type: Number},
   }],
-  tier: [{type: String}],
+  buildsFrom: [{type: String}],
   buildsInto: [{type: String}],
   unique: {type: Boolean},
   image: {type: String},

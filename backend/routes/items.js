@@ -8,8 +8,17 @@ router.route('/').get((req, res) => {
 });
 
 router.route('/add').post((req, res) => {
+  const key = req.body.key;
   const name = req.body.name;
-  const newItem = new Item({name});
+  const type = req.body.type;
+  const bonus = req.body.bonus;
+  const depth = req.body.depth;
+  const stats = req.body.stats;
+  const buildsFrom = req.body.buildsFrom;
+  const buildsInto = req.body.buildsInto;
+  const unique = req.body.unique;
+  const image = req.body.image;
+  const newItem = new Item({key, name, type, bonus, depth, stats, buildsFrom, buildsInto, unique, image});
 
   newItem.save()
     .then(() => res.json('Item added'))

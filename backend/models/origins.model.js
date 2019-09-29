@@ -10,7 +10,7 @@ const originSchema = new Schema({
     needed: {type: Number},
     effect: {type: String},
   }],
-  neededMustBeExact: {type: Boolean},
+  mustBeExact: {type: Boolean},
   image: {type: String},
 });
 

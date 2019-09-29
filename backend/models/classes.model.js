@@ -4,13 +4,13 @@ const Schema = mongoose.Schema;
 
 const classSchema = new Schema({
   key: {type: String},
-  name: {type: String, required: true},
+  name: {type: String},
   description: {type: String},
   bonuses: [{
     needed: {type: Number},
     effect: {type: String},
   }],
-  neededMustBeExact: {type: Boolean},
+  mustBeExact: {type: Boolean},
   image: {type: String},
 });
 

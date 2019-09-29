@@ -58,7 +58,7 @@ class Create extends Component {
         name: "",
         description: "",
         bonuses: [],
-        neededMustBeExact: false,
+        mustBeExact: false,
         image: "",
       },
       item: {
@@ -68,7 +68,7 @@ class Create extends Component {
         bonus: "",
         depth: 0,
         stats: [],
-        tier: [],
+        buildsFrom: [],
         buildsInto: [],
         unique: false,
         image: "",
@@ -78,7 +78,7 @@ class Create extends Component {
         name: "",
         description: "",
         bonuses: [],
-        neededMustBeExact: false,
+        mustBeExact: false,
         image: "",
       },
     }
@@ -95,6 +95,14 @@ class Create extends Component {
     this.classToggle = this.classToggle.bind(this);
     this.itemToggle = this.itemToggle.bind(this);
     this.originToggle = this.originToggle.bind(this);
+  }
+
+  getOrigins() {
+
+  }
+
+  getClasses() {
+
   }
 
   handleInputs(event) {
@@ -145,37 +153,37 @@ class Create extends Component {
   }
 
   handleClassSubmit(e) {
-    // e.preventDefault();
-    // const classe = {
-    //  key: this.state.class.key,
-    //  name: this.state.class.name,
-    //  description: this.state.class.description,
-    //  bonuses: this.state.class.bonuses,
-    //  neededMustBeExact: this.state.class.neededMustBeExact,
-    //  image: this.state.class.image
-    // }
-    //
-    // axios.post('http://localhost:5000/classes/add', classe)
-    //  .then(res => console.log(res.data));
+    e.preventDefault();
+    const classe = {
+     key: this.state.class.key,
+     name: this.state.class.name,
+     description: this.state.class.description,
+     bonuses: this.state.class.bonuses,
+     mustBeExact: this.state.class.mustBeExact,
+     image: this.state.class.image
+    }
+
+    axios.post('http://localhost:5000/classes/add', classe)
+     .then(res => console.log(res.data));
   }
 
   handleItemSubmit(e) {
-    // e.preventDefault();
-    // const item = {
-    //  key: this.state.item.key,
-    //  name: this.state.item.name,
-    //  type: this.state.item.type,
-    //  bonus: this.state.item.bonus,
-    //  depth: this.state.item.depth,
-    //  stats: this.state.item.stats,
-    //  tier: this.state.item.tier,
-    //  buildsInto: this.state.item.buildsInto,
-    //  unique: this.state.item.unique,
-    //  image: this.state.item.image
-    // }
-    //
-    // axios.post('http://localhost:5000/items/add', item)
-    //  .then(res => console.log(res.data));
+    e.preventDefault();
+    const item = {
+     key: this.state.item.key,
+     name: this.state.item.name,
+     type: this.state.item.type,
+     bonus: this.state.item.bonus,
+     depth: this.state.item.depth,
+     stats: this.state.item.stats,
+     buildsFrom: this.state.item.buildsFrom,
+     buildsInto: this.state.item.buildsInto,
+     unique: this.state.item.unique,
+     image: this.state.item.image
+    }
+
+    axios.post('http://localhost:5000/items/add', item)
+     .then(res => console.log(res.data));
   }
 
   handleOriginSubmit(e) {
@@ -185,8 +193,8 @@ class Create extends Component {
       name: this.state.origin.name,
       description: this.state.origin.description,
       bonuses: this.state.origin.bonuses,
-      neededMustBeExact: this.state.origin.neededMustBeExact,
-      image: this.state.origin.image
+      mustBeExact: this.state.origin.mustBeExact,
+      image: this.state.origin.image,
     }
 
     axios.post('http://localhost:5000/origins/add', origin)
@@ -347,6 +355,14 @@ class Create extends Component {
                         <Label>Bonuses (Be very specific): </Label>
                         <Input type="text" id="bonuses" name="bonuses" onChange={this.handleClasses} />
                       </FormGroup>
+                      <FormGroup>
+                        <Label>Must be exact: </Label>
+                        <Input type="checkbox" id="exact" name="exact" />
+                      </FormGroup>
+                      <FormGroup>
+                        <Label>Image: </Label>
+                        <Input type="text" id="image" name="image" onChange={this.handleClasses} />
+                      </FormGroup>
                     </Col>
                   </Row>
                 </Form>
@@ -381,6 +397,14 @@ class Create extends Component {
                       <FormGroup>
                         <Label>Bonuses (Be very specific): </Label>
                         <Input type="text" id="bonuses" name="bonuses" onChange={this.handleOrigins} />
+                      </FormGroup>
+                      <FormGroup>
+                        <Label>Must be exact: </Label>
+                        <Input type="checkbox" id="exact" name="exact" />
+                      </FormGroup>
+                      <FormGroup>
+                        <Label>Image: </Label>
+                        <Input type="text" id="image" name="image" onChange={this.handleOrigins} />
                       </FormGroup>
                     </Col>
                   </Row>
@@ -426,8 +450,8 @@ class Create extends Component {
                           <Input type="text" id="stats" name="stats" onChange={this.handleItems} />
                         </FormGroup>
                         <FormGroup>
-                          <Label>Tier: </Label>
-                          <Input type="text" id="tier" name="tier" onChange={this.handleItems} />
+                          <Label>Builds From: </Label>
+                          <Input type="text" id="buildsFrom" name="buildsFrom" onChange={this.handleItems} />
                         </FormGroup>
                         <FormGroup>
                           <Label>Builds Into: </Label>
