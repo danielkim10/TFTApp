@@ -1,3 +1,9 @@
+Use 'nodemon server' in TFTApp/tft-app/backend to start the server and connect to the DB.
+
+Use 'npm start in TFTApp/tft-app to start the frontend.
+
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
