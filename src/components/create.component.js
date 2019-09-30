@@ -42,13 +42,13 @@ class Create extends Component {
             attackSpeed: 0,
             spellPower: 0,
             critChance: 0,
-            dodgeChance: 0,
             range: 0,
           },
           defense: {
             health: 0,
             armor: 0,
             magicResist: 0,
+            dodgeChance: 0,
           }
         },
         image: "",
@@ -95,14 +95,26 @@ class Create extends Component {
     this.classToggle = this.classToggle.bind(this);
     this.itemToggle = this.itemToggle.bind(this);
     this.originToggle = this.originToggle.bind(this);
+    this.handleSelect = this.handleSelect.bind(this);
   }
 
-  getOrigins() {
-
-  }
-
-  getClasses() {
-
+  componentDidMount() {
+    axios.get('http://localhost:5000/origins/')
+      .then(response => {
+        if (response.data.length > 0) {
+          this.setState({
+            origins: response.data.map(origin => origin)
+          })
+        }
+      });
+    axios.get('http://localhost:5000/classes/')
+        .then(response => {
+          if (response.data.length > 0) {
+            this.setState({
+              classes: response.data.map(classe => classe)
+            })
+          }
+        })
   }
 
   handleInputs(event) {
@@ -112,7 +124,21 @@ class Create extends Component {
 
   handleChampions(event) {
     let champion = Object.assign({}, this.state.champion);
-    champion[event.target.id] = event.target.value;
+    if (event.target.id === "ability") {
+      champion.ability[event.target.name] = event.target.value;
+    }
+    else if (event.target.id === "abilityStats") {
+      champion.ability.abilityStats[event.target.name] = event.target.value;
+    }
+    else if (event.target.id === "offense") {
+      champion.stats.offense[event.target.name] = event.target.value;
+    }
+    else if (event.target.id === "defense") {
+      champion.stats.defense[event.target.name] = event.target.value;
+    }
+    else {
+      champion[event.target.name] = event.target.value;
+    }
     this.setState({ champion: champion });
   }
 
@@ -135,21 +161,21 @@ class Create extends Component {
   }
 
   handleChampionSubmit(e) {
-    // e.preventDefault();
-    // const champion = {
-    //  id: this.state.champion.id,
-    //   key: this.state.champion.key,
-    //   name: this.state.champion.name,
-    //   origin: this.state.champion.origin,
-    //  class: this.state.champion.class,
-    //  cost: this.state.champion.cost,
-    //  ability: this.state.champion.ability,
-    //  stats: this.state.champion.stats,
-    //  image: this.state.champion.image
-    // }
-    //
-    // axios.post('http://localhost:5000/champions/add', champion)
-    //   .then(res => console.log(res.data));
+    e.preventDefault();
+    const champion = {
+     id: this.state.champion.id,
+      key: this.state.champion.key,
+      name: this.state.champion.name,
+      origin: this.state.champion.origin,
+     class: this.state.champion.class,
+     cost: this.state.champion.cost,
+     ability: this.state.champion.ability,
+     stats: this.state.champion.stats,
+     image: this.state.champion.image
+    }
+
+    axios.post('http://localhost:5000/champions/add', champion)
+      .then(res => console.log(res.data));
   }
 
   handleClassSubmit(e) {
@@ -217,7 +243,29 @@ class Create extends Component {
     this.setState( {originCollapse: !this.state.originCollapse} );
   }
 
+  handleSelect(event, choose) {
+    let champion = Object.assign({}, this.state.champion);
+    if (choose === 0) {
+      champion.origin = event;
+    }
+    else if (choose === 1) {
+      champion.class = event;
+    }
+
+    this.setState({champion: champion});
+  }
+
   render() {
+    const origins = [];
+    for (let i = 0; i < this.state.origins.length; i++) {
+      origins.push({value: this.state.origins[i].key, label: this.state.origins[i].name});
+    }
+
+    const classes = [];
+    for (let j = 0; j < this.state.classes.length; j++) {
+      classes.push({value: this.state.classes[j].key, label: this.state.classes[j].name});
+    }
+
       return (
         <div>
             <Card style={{width: "100%"}}>
@@ -244,11 +292,11 @@ class Create extends Component {
                     </FormGroup>
                     <FormGroup>
                       <Label>Origin: </Label>
-                      <Input type="text" id="origin" name="origin" onChange={this.handleChampions} />
+                      <Select options={origins} className="basic-multi-select" classNamePrefix="select" isMulti id="origin" name="origin" onChange={event => this.handleSelect(event, 0)}/>
                     </FormGroup>
                     <FormGroup>
                       <Label>Class: </Label>
-                      <Input type="text" id="class" name="class" onChange={this.handleChampions} />
+                      <Select options={classes} className="basic-multi-select" classNamePrefix="select" isMulti id="class" name="class" onChange={event => this.handleSelect(event, 1)}/>
                     </FormGroup>
                     <FormGroup>
                       <Label>Cost: </Label>
@@ -276,11 +324,11 @@ class Create extends Component {
                     </FormGroup>
                     <FormGroup>
                       <Label>Ability Stat Type: </Label>
-                      <Input type="text" id="ability" name="abilityStatType" onChange={this.handleChampions} />
+                      <Input type="text" id="abilityStats" name="abilityStatType" onChange={this.handleChampions} />
                     </FormGroup>
                     <FormGroup>
                       <Label>Ability Stat Value: </Label>
-                      <Input type="number" id="ability" name="abilityStatValue" onChange={this.handleChampions} />
+                      <Input type="number" id="abilityStats" name="abilityStatValue" onChange={this.handleChampions} />
                     </FormGroup>
                     </Col>
                     <Col md={6}>
@@ -459,7 +507,7 @@ class Create extends Component {
                         </FormGroup>
                         <FormGroup>
                           <Label>Unique (one per champion): </Label>
-                          <Input type="checkbox" id="unique" name="unique" />
+                          <Input type="checkbox" id="unique" name="unique" onChange={this.handleItems} />
                         </FormGroup>
                       </Col>
                     </Row>
