@@ -12,12 +12,13 @@ router.route('/add').post((req, res) => {
   const key = req.body.key;
   const name = req.body.name;
   const origin = req.body.origin;
-  const classe = req.body.class;
+  const classe = req.body.classe;
   const cost = req.body.cost;
   const ability = req.body.ability;
   const stats = req.body.stats;
+  const image = req.body.image;
   const newChampion = new Champion({id, key, name, origin, classe, cost,
-                                    ability, stats});
+                                    ability, stats, image});
 
   newChampion.save()
     .then(() => res.json('Champion added'))

@@ -24,7 +24,7 @@ class Create extends Component {
         name: "",
         origin: [],
         class: [],
-        cost: 0,
+        cost: [0, 0, 0],
         ability: {
           name: "",
           description: "",
@@ -38,14 +38,14 @@ class Create extends Component {
         },
         stats: {
           offense: {
-            damage: 0,
+            damage: [0, 0, 0],
             attackSpeed: 0,
             spellPower: 0,
             critChance: 0,
             range: 0,
           },
           defense: {
-            health: 0,
+            health: [0, 0, 0],
             armor: 0,
             magicResist: 0,
             dodgeChance: 0,
@@ -128,7 +128,7 @@ class Create extends Component {
       champion.ability[event.target.name] = event.target.value;
     }
     else if (event.target.id === "abilityStats") {
-      champion.ability.abilityStats[event.target.name] = event.target.value;
+      champion.ability.stats[event.target.name] = event.target.value;
     }
     else if (event.target.id === "offense") {
       champion.stats.offense[event.target.name] = event.target.value;
@@ -164,10 +164,10 @@ class Create extends Component {
     e.preventDefault();
     const champion = {
      id: this.state.champion.id,
-      key: this.state.champion.key,
-      name: this.state.champion.name,
-      origin: this.state.champion.origin,
-     class: this.state.champion.class,
+     key: this.state.champion.key,
+     name: this.state.champion.name,
+     origin: this.state.champion.origin,
+     classe: this.state.champion.class,
      cost: this.state.champion.cost,
      ability: this.state.champion.ability,
      stats: this.state.champion.stats,
@@ -304,15 +304,15 @@ class Create extends Component {
                     </FormGroup>
                     <FormGroup>
                       <Label>Ability Name: </Label>
-                      <Input type="text" id="ability" name="abilityName" onChange={this.handleChampions} />
+                      <Input type="text" id="ability" name="name" onChange={this.handleChampions} />
                     </FormGroup>
                     <FormGroup>
                       <Label>Ability Description: </Label>
-                      <Input type="text" id="ability" name="abilityDescription" onChange={this.handleChampions} />
+                      <Input type="text" id="ability" name="description" onChange={this.handleChampions} />
                     </FormGroup>
                     <FormGroup>
                       <Label>Ability Type: </Label>
-                      <Input type="text" id="ability" name="abilityType" onChange={this.handleChampions} />
+                      <Input type="text" id="ability" name="type" onChange={this.handleChampions} />
                     </FormGroup>
                     <FormGroup>
                       <Label>Mana Cost: </Label>
@@ -324,11 +324,11 @@ class Create extends Component {
                     </FormGroup>
                     <FormGroup>
                       <Label>Ability Stat Type: </Label>
-                      <Input type="text" id="abilityStats" name="abilityStatType" onChange={this.handleChampions} />
+                      <Input type="text" id="abilityStats" name="type" onChange={this.handleChampions} />
                     </FormGroup>
                     <FormGroup>
                       <Label>Ability Stat Value: </Label>
-                      <Input type="number" id="abilityStats" name="abilityStatValue" onChange={this.handleChampions} />
+                      <Input type="number" id="abilityStats" name="value" onChange={this.handleChampions} />
                     </FormGroup>
                     </Col>
                     <Col md={6}>

@@ -5,12 +5,10 @@ const Schema = mongoose.Schema;
 const championSchema = new Schema({
   id: {type: Number},
   key: {type: String},
-  name: {
-    type: String,
-  },
+  name: {type: String},
   origin: [{type: String}],
   class: [{type: String}],
-  cost: {type: Number},
+  cost: [{type: Number}],
   ability: {
     name: {type: String},
     description: {type: String},
@@ -24,14 +22,14 @@ const championSchema = new Schema({
   },
   stats: {
     offense: {
-      damage: {type: Number},
+      damage: [{type: Number}],
       attackSpeed: {type: Number},
       spellPower: {type: Number},
       critChance: {type: Number},
       range: {type: Number},
     },
     defense: {
-      health: {type: Number},
+      health: [{type: Number}],
       armor: {type: Number},
       magicResist: {type: Number},
     },
