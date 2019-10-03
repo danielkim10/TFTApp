@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import {Button, Row, Col, Collapse, Form, FormGroup, Card, CardHeader,
         CardBody, CardFooter, Label, Input} from 'reactstrap';
 import Select from 'react-select';
+import {ToastsContainer, ToastsStore} from 'react-toasts';
 import axios from 'axios';
-import Formgroups from '../sub-components/formgroups'
 
 class Create extends Component {
   constructor(props) {
@@ -82,7 +82,7 @@ class Create extends Component {
         image: "",
       },
     }
-    this.handleInputs = this.handleInputs.bind(this);
+    
     this.handleChampions = this.handleChampions.bind(this);
     this.handleChampionSubmit = this.handleChampionSubmit.bind(this);
     this.handleClasses = this.handleClasses.bind(this)
@@ -115,11 +115,6 @@ class Create extends Component {
             })
           }
         })
-  }
-
-  handleInputs(event) {
-
-
   }
 
   handleChampions(event) {
@@ -175,7 +170,7 @@ class Create extends Component {
     }
 
     axios.post('http://localhost:5000/champions/add', champion)
-      .then(res => console.log(res.data));
+      .then(res => console.log(res.data))
   }
 
   handleClassSubmit(e) {
@@ -190,7 +185,7 @@ class Create extends Component {
     }
 
     axios.post('http://localhost:5000/classes/add', classe)
-     .then(res => console.log(res.data));
+     .then(res => console.log(res.data))
   }
 
   handleItemSubmit(e) {
@@ -209,7 +204,7 @@ class Create extends Component {
     }
 
     axios.post('http://localhost:5000/items/add', item)
-     .then(res => console.log(res.data));
+     .then(res => console.log(res.data))
   }
 
   handleOriginSubmit(e) {
@@ -224,7 +219,7 @@ class Create extends Component {
     }
 
     axios.post('http://localhost:5000/origins/add', origin)
-      .then(res => console.log(res.data));
+      .then(res => console.log(res.data))
   }
 
   championToggle() {
@@ -255,6 +250,17 @@ class Create extends Component {
     this.setState({champion: champion});
   }
 
+  renderFormGroup(label, type, id, name, handler) {
+    return (
+      <Fragment>
+        <FormGroup>
+          <Label>{label}</Label>
+          <Input type={type} id={id} name={name} handler={handler} />
+        </FormGroup>
+      </Fragment>
+    );
+  }
+
   render() {
     const origins = [];
     for (let i = 0; i < this.state.origins.length; i++) {
@@ -268,6 +274,7 @@ class Create extends Component {
 
       return (
         <div>
+        <ToastsContainer store={ToastsStore}/>
             <Card style={{width: "100%"}}>
               <CardHeader>
                 <i class="fa-fa-align-justify"></i><strong>Champions</strong>
@@ -278,18 +285,29 @@ class Create extends Component {
                 <Form onSubmit={this.handleSubmit}>
                   <Row>
                   <Col md={6}>
-                    <FormGroup>
+                    {/*<FormGroup>
                       <Label>ID: </Label>
                       <Input type="number" id="id" name="id" onChange={this.handleChampions} />
-                    </FormGroup>
-                    <FormGroup>
+                    </FormGroup>*/}
+                    {this.renderFormGroup("ID: ", "number", "id", "id", this.handleChampions)}
+                    {this.renderFormGroup("Key: ", "text", "key", "key", this.handleChampions)}
+                    {this.renderFormGroup("Name: ", "text", "name", "name", this.handleChampions)}
+                    {this.renderFormGroup("Cost: ", "text", "cost", "cost", this.handleChampions)}
+                    {this.renderFormGroup("Ability Name: ", "text", "ability", "name", this.handleChampions)}
+                    {this.renderFormGroup("Ability Description: ", "text", "ability", "description", this.handleChampions)}
+                    {this.renderFormGroup("Ability Type: ", "text", "ability", "type", this.handleChampions)}
+                    {this.renderFormGroup("Mana Cost: ", "number", "ability", "manaCost", this.handleChampions)}
+                    {this.renderFormGroup("Mana Start: ", "number", "ability", "manaStart", this.handleChampions)}
+                    {this.renderFormGroup("Ability Stat Type: ", "text", "abilityStats", "type", this.handleChampions)}
+                    {this.renderFormGroup("Ability Stat Value: ", "text", "abilityStats", "value", this.handleChampions)}
+                    {/*<FormGroup>
                       <Label>Key: </Label>
                       <Input type="text" id="key" name="key" onChange={this.handleChampions} />
                     </FormGroup>
                     <FormGroup>
                       <Label>Name: </Label>
                       <Input type="text" id="name" name="name" onChange={this.handleChampions} />
-                    </FormGroup>
+                    </FormGroup>*/}
                     <FormGroup>
                       <Label>Origin: </Label>
                       <Select options={origins} className="basic-multi-select" classNamePrefix="select" isMulti id="origin" name="origin" onChange={event => this.handleSelect(event, 0)}/>
@@ -298,7 +316,7 @@ class Create extends Component {
                       <Label>Class: </Label>
                       <Select options={classes} className="basic-multi-select" classNamePrefix="select" isMulti id="class" name="class" onChange={event => this.handleSelect(event, 1)}/>
                     </FormGroup>
-                    <FormGroup>
+                    {/*<FormGroup>
                       <Label>Cost: </Label>
                       <Input type="number" id="cost" name="cost" onChange={this.handleChampions} />
                     </FormGroup>
@@ -329,10 +347,19 @@ class Create extends Component {
                     <FormGroup>
                       <Label>Ability Stat Value: </Label>
                       <Input type="number" id="abilityStats" name="value" onChange={this.handleChampions} />
-                    </FormGroup>
+                    </FormGroup>*/}
                     </Col>
                     <Col md={6}>
-                    <FormGroup>
+                    {this.renderFormGroup("Damage: ", "text", "offense", "damage", this.handleChampions)}
+                    {this.renderFormGroup("Attack Speed: ", "number", "offense", "attackSpeed", this.handleChampions)}
+                    {this.renderFormGroup("Spell Power: ", "number", "offense", "spellPower", this.handleChampions)}
+                    {this.renderFormGroup("Crit Chance: ", "number", "offense", "critChance", this.handleChampions)}
+                    {this.renderFormGroup("Dodge Chance: ", "number", "defense", "dodgeChance", this.handleChampions)}
+                    {this.renderFormGroup("Range: ", "number", "offense", "range", this.handleChampions)}
+                    {this.renderFormGroup("Health: ", "text", "defense", "health", this.handleChampions)}
+                    {this.renderFormGroup("Armor: ", "number", "defense", "armor", this.handleChampions)}
+                    {this.renderFormGroup("Magic Resist: ", "number", "defense", "magicResist", this.handleChampions)}
+                    {/*<FormGroup>
                       <Label>Damage: </Label>
                       <Input type="number" id="offense" name="damage" onChange={this.handleChampions} />
                     </FormGroup>
@@ -367,7 +394,7 @@ class Create extends Component {
                     <FormGroup>
                       <Label>Magic Resist: </Label>
                       <Input type="number" id="defense" name="magicResist" onChange={this.handleChampions} />
-                    </FormGroup>
+                    </FormGroup>*/}
                     </Col>
                     </Row>
                 </Form>
@@ -387,7 +414,16 @@ class Create extends Component {
                 <Form onSubmit={this.handleSubmit}>
                   <Row>
                     <Col>
-                      <FormGroup>
+                    {this.renderFormGroup("Key: ", "text", "key", "key", this.handleClasses)}
+                    {this.renderFormGroup("Name: ", "text", "name", "name", this.handleClasses)}
+                    {this.renderFormGroup("Description: ", "text", "description", "description", this.handleClasses)}
+                    {this.renderFormGroup("Bonuses: ", "text", "bonuses", "bonuses", this.handleClasses)}
+                    {this.renderFormGroup("Image: ", "text", "image", "image", this.handleClasses)}
+                    <FormGroup>
+                      <Label>Must be exact: </Label>
+                      <Input type="checkbox" id="exact" name="exact" />
+                    </FormGroup>
+                      {/*<FormGroup>
                         <Label>Key: </Label>
                         <Input type="text" id="key" name="key" onChange={this.handleClasses} />
                       </FormGroup>
@@ -410,7 +446,7 @@ class Create extends Component {
                       <FormGroup>
                         <Label>Image: </Label>
                         <Input type="text" id="image" name="image" onChange={this.handleClasses} />
-                      </FormGroup>
+                      </FormGroup>*/}
                     </Col>
                   </Row>
                 </Form>
@@ -430,6 +466,16 @@ class Create extends Component {
                 <Form onSubmit={this.handleSubmit}>
                   <Row>
                     <Col>
+                    {this.renderFormGroup("Key: ", "text", "key", "key", this.handleOrigins)}
+                    {this.renderFormGroup("Name: ", "text", "name", "name", this.handleOrigins)}
+                    {this.renderFormGroup("Description: ", "text", "description", "description", this.handleOrigins)}
+                    {this.renderFormGroup("Bonuses: ", "text", "bonuses", "bonuses", this.handleOrigins)}
+                    {this.renderFormGroup("Image: ", "text", "image", "image", this.handleOrigins)}
+                    <FormGroup>
+                      <Label>Must be exact: </Label>
+                      <Input type="checkbox" id="exact" name="exact" />
+                    </FormGroup>
+                    {/*
                       <FormGroup>
                         <Label>Key: </Label>
                         <Input type="text" id="key" name="key" onChange={this.handleOrigins} />
@@ -453,7 +499,7 @@ class Create extends Component {
                       <FormGroup>
                         <Label>Image: </Label>
                         <Input type="text" id="image" name="image" onChange={this.handleOrigins} />
-                      </FormGroup>
+                      </FormGroup>*/}
                     </Col>
                   </Row>
                 </Form>
@@ -473,7 +519,15 @@ class Create extends Component {
                   <Form onSubmit={this.handleSubmit}>
                     <Row>
                       <Col>
-                        <FormGroup>
+                        {this.renderFormGroup("Key: ", "text", "key", "key", this.handleItems)}
+                        {this.renderFormGroup("Name: ", "text", "name", "name", this.handleItems)}
+                        {this.renderFormGroup("Type: ", "text", "type", "type", this.handleItems)}
+                        {this.renderFormGroup("Bonus: ", "text", "bonus", "bonus", this.handleItems)}
+                        {this.renderFormGroup("Depth: ", "number", "depth", "depth", this.handleItems)}
+                        {this.renderFormGroup("Stats: ", "text", "stats", "stats", this.handleItems)}
+                        {this.renderFormGroup("Builds From: ", "text", "buildsFrom", "buildsFrom", this.handleItems)}
+                        {this.renderFormGroup("Builds Into: ", "text", "buildsInto", "buildsInto", this.handleItems)}
+                        {/*<FormGroup>
                           <Label>Key: </Label>
                           <Input type="text" id="key" name="key" onChange={this.handleItems} />
                         </FormGroup>
@@ -508,7 +562,7 @@ class Create extends Component {
                         <FormGroup>
                           <Label>Unique (one per champion): </Label>
                           <Input type="checkbox" id="unique" name="unique" onChange={this.handleItems} />
-                        </FormGroup>
+                        </FormGroup>*/}
                       </Col>
                     </Row>
                   </Form>
