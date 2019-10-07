@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col } from 'reactstrap';
+import { Row, Col, Card, CardHeader, CardBody, Container } from 'reactstrap';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
@@ -72,12 +72,42 @@ class Edit extends Component {
     }
       return (
         <div>
+        <Container fluid>
           <Row>
-            <Col>{champions}</Col>
-            <Col>{classes}</Col>
-            <Col>{items}</Col>
-            <Col>{origins}</Col>
+          <Card>
+            <CardHeader>
+              <i class="fa-fa-align-justify"></i><strong>Champions</strong>
+            </CardHeader>
+            <CardBody>
+              <Col>{champions}</Col>
+            </CardBody>
+          </Card>
+          <Card>
+            <CardHeader>
+              <i class="fa-fa-align-justify"></i><strong>Classes</strong>
+            </CardHeader>
+            <CardBody>
+              <Col>{classes}</Col>
+            </CardBody>
+          </Card>
+          <Card>
+            <CardHeader>
+              <i class="fa-fa-align-justify"></i><strong>Items</strong>
+            </CardHeader>
+            <CardBody>
+              <Col>{items}</Col>
+            </CardBody>
+          </Card>
+          <Card>
+            <CardHeader>
+              <i class="fa-fa-align-justify"></i><strong>Origins</strong>
+            </CardHeader>
+            <CardBody>
+              <Col>{origins}</Col>
+            </CardBody>
+          </Card>
           </Row>
+          </Container>
         </div>
       )
   }

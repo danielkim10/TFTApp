@@ -7,6 +7,20 @@ router.route('/').get((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
+router.route('/:key')
+  .all(function(req, res, next) {
+    next();
+  })
+  .get(function(req, res, next) {
+    res.json(req.champion);
+  })
+  .post(function(req, res, next) {
+    next(new Error('not implemented'));
+  })
+  .delete(function(req, res, next) {
+    next(new Error('not implemented'));
+  })
+
 router.route('/add').post((req, res) => {
   const id = req.body.id;
   const key = req.body.key;

@@ -82,7 +82,7 @@ class Create extends Component {
         image: "",
       },
     }
-    
+
     this.handleChampions = this.handleChampions.bind(this);
     this.handleChampionSubmit = this.handleChampionSubmit.bind(this);
     this.handleClasses = this.handleClasses.bind(this)
@@ -241,12 +241,17 @@ class Create extends Component {
   handleSelect(event, choose) {
     let champion = Object.assign({}, this.state.champion);
     if (choose === 0) {
-      champion.origin = event;
+      champion.origin = [];
+      for (let i = 0; i < event.length; i++) {
+        champion.origin.push(event[i].label);
+      }
     }
     else if (choose === 1) {
-      champion.class = event;
+      champion.class = [];
+      for (let i = 0; i < event.length; i++) {
+        champion.class.push(event[i].label);
+      }
     }
-
     this.setState({champion: champion});
   }
 
@@ -285,10 +290,6 @@ class Create extends Component {
                 <Form onSubmit={this.handleSubmit}>
                   <Row>
                   <Col md={6}>
-                    {/*<FormGroup>
-                      <Label>ID: </Label>
-                      <Input type="number" id="id" name="id" onChange={this.handleChampions} />
-                    </FormGroup>*/}
                     {this.renderFormGroup("ID: ", "number", "id", "id", this.handleChampions)}
                     {this.renderFormGroup("Key: ", "text", "key", "key", this.handleChampions)}
                     {this.renderFormGroup("Name: ", "text", "name", "name", this.handleChampions)}
@@ -300,14 +301,6 @@ class Create extends Component {
                     {this.renderFormGroup("Mana Start: ", "number", "ability", "manaStart", this.handleChampions)}
                     {this.renderFormGroup("Ability Stat Type: ", "text", "abilityStats", "type", this.handleChampions)}
                     {this.renderFormGroup("Ability Stat Value: ", "text", "abilityStats", "value", this.handleChampions)}
-                    {/*<FormGroup>
-                      <Label>Key: </Label>
-                      <Input type="text" id="key" name="key" onChange={this.handleChampions} />
-                    </FormGroup>
-                    <FormGroup>
-                      <Label>Name: </Label>
-                      <Input type="text" id="name" name="name" onChange={this.handleChampions} />
-                    </FormGroup>*/}
                     <FormGroup>
                       <Label>Origin: </Label>
                       <Select options={origins} className="basic-multi-select" classNamePrefix="select" isMulti id="origin" name="origin" onChange={event => this.handleSelect(event, 0)}/>
@@ -316,38 +309,6 @@ class Create extends Component {
                       <Label>Class: </Label>
                       <Select options={classes} className="basic-multi-select" classNamePrefix="select" isMulti id="class" name="class" onChange={event => this.handleSelect(event, 1)}/>
                     </FormGroup>
-                    {/*<FormGroup>
-                      <Label>Cost: </Label>
-                      <Input type="number" id="cost" name="cost" onChange={this.handleChampions} />
-                    </FormGroup>
-                    <FormGroup>
-                      <Label>Ability Name: </Label>
-                      <Input type="text" id="ability" name="name" onChange={this.handleChampions} />
-                    </FormGroup>
-                    <FormGroup>
-                      <Label>Ability Description: </Label>
-                      <Input type="text" id="ability" name="description" onChange={this.handleChampions} />
-                    </FormGroup>
-                    <FormGroup>
-                      <Label>Ability Type: </Label>
-                      <Input type="text" id="ability" name="type" onChange={this.handleChampions} />
-                    </FormGroup>
-                    <FormGroup>
-                      <Label>Mana Cost: </Label>
-                      <Input type="number" id="ability" name="manaCost" onChange={this.handleChampions} />
-                    </FormGroup>
-                    <FormGroup>
-                      <Label>Mana Start: </Label>
-                      <Input type="number" id="ability" name="manaStart" onChange={this.handleChampions} />
-                    </FormGroup>
-                    <FormGroup>
-                      <Label>Ability Stat Type: </Label>
-                      <Input type="text" id="abilityStats" name="type" onChange={this.handleChampions} />
-                    </FormGroup>
-                    <FormGroup>
-                      <Label>Ability Stat Value: </Label>
-                      <Input type="number" id="abilityStats" name="value" onChange={this.handleChampions} />
-                    </FormGroup>*/}
                     </Col>
                     <Col md={6}>
                     {this.renderFormGroup("Damage: ", "text", "offense", "damage", this.handleChampions)}
@@ -359,42 +320,6 @@ class Create extends Component {
                     {this.renderFormGroup("Health: ", "text", "defense", "health", this.handleChampions)}
                     {this.renderFormGroup("Armor: ", "number", "defense", "armor", this.handleChampions)}
                     {this.renderFormGroup("Magic Resist: ", "number", "defense", "magicResist", this.handleChampions)}
-                    {/*<FormGroup>
-                      <Label>Damage: </Label>
-                      <Input type="number" id="offense" name="damage" onChange={this.handleChampions} />
-                    </FormGroup>
-                    <FormGroup>
-                      <Label>Attack Speed: </Label>
-                      <Input type="number" id="offense" name="attackSpeed" onChange={this.handleChampions} />
-                    </FormGroup>
-                    <FormGroup>
-                      <Label>Spell Power: </Label>
-                      <Input type="number" id="offense" name="spellPower" onChange={this.handleChampions} />
-                    </FormGroup>
-                    <FormGroup>
-                      <Label>Crit Chance: </Label>
-                      <Input type="number" id="offense" name="critChance" onChange={this.handleChampions} />
-                    </FormGroup>
-                    <FormGroup>
-                      <Label>Dodge Chance: </Label>
-                      <Input type="number" id="defense" name="dodgeChance" onChange={this.handleChampions} />
-                    </FormGroup>
-                    <FormGroup>
-                      <Label>Range: </Label>
-                      <Input type="number" id="offense" name="range" onChange={this.handleChampions} />
-                    </FormGroup>
-                    <FormGroup>
-                      <Label>Health: </Label>
-                      <Input type="number" id="defense" name="health" onChange={this.handleChampions} />
-                    </FormGroup>
-                    <FormGroup>
-                      <Label>Armor: </Label>
-                      <Input type="number" id="defense" name="armor" onChange={this.handleChampions} />
-                    </FormGroup>
-                    <FormGroup>
-                      <Label>Magic Resist: </Label>
-                      <Input type="number" id="defense" name="magicResist" onChange={this.handleChampions} />
-                    </FormGroup>*/}
                     </Col>
                     </Row>
                 </Form>
@@ -423,30 +348,6 @@ class Create extends Component {
                       <Label>Must be exact: </Label>
                       <Input type="checkbox" id="exact" name="exact" />
                     </FormGroup>
-                      {/*<FormGroup>
-                        <Label>Key: </Label>
-                        <Input type="text" id="key" name="key" onChange={this.handleClasses} />
-                      </FormGroup>
-                      <FormGroup>
-                        <Label>Name: </Label>
-                        <Input type="text" id="name" name="name" onChange={this.handleClasses} />
-                      </FormGroup>
-                      <FormGroup>
-                        <Label>Description: </Label>
-                        <Input type="text" id="description" name="description" onChange={this.handleClasses} />
-                      </FormGroup>
-                      <FormGroup>
-                        <Label>Bonuses (Be very specific): </Label>
-                        <Input type="text" id="bonuses" name="bonuses" onChange={this.handleClasses} />
-                      </FormGroup>
-                      <FormGroup>
-                        <Label>Must be exact: </Label>
-                        <Input type="checkbox" id="exact" name="exact" />
-                      </FormGroup>
-                      <FormGroup>
-                        <Label>Image: </Label>
-                        <Input type="text" id="image" name="image" onChange={this.handleClasses} />
-                      </FormGroup>*/}
                     </Col>
                   </Row>
                 </Form>
@@ -475,31 +376,6 @@ class Create extends Component {
                       <Label>Must be exact: </Label>
                       <Input type="checkbox" id="exact" name="exact" />
                     </FormGroup>
-                    {/*
-                      <FormGroup>
-                        <Label>Key: </Label>
-                        <Input type="text" id="key" name="key" onChange={this.handleOrigins} />
-                      </FormGroup>
-                      <FormGroup>
-                        <Label>Name: </Label>
-                        <Input type="text" id="name" name="name" onChange={this.handleOrigins} />
-                      </FormGroup>
-                      <FormGroup>
-                        <Label>Description: </Label>
-                        <Input type="text" id="description" name="description" onChange={this.handleOrigins} />
-                      </FormGroup>
-                      <FormGroup>
-                        <Label>Bonuses (Be very specific): </Label>
-                        <Input type="text" id="bonuses" name="bonuses" onChange={this.handleOrigins} />
-                      </FormGroup>
-                      <FormGroup>
-                        <Label>Must be exact: </Label>
-                        <Input type="checkbox" id="exact" name="exact" />
-                      </FormGroup>
-                      <FormGroup>
-                        <Label>Image: </Label>
-                        <Input type="text" id="image" name="image" onChange={this.handleOrigins} />
-                      </FormGroup>*/}
                     </Col>
                   </Row>
                 </Form>
@@ -527,42 +403,10 @@ class Create extends Component {
                         {this.renderFormGroup("Stats: ", "text", "stats", "stats", this.handleItems)}
                         {this.renderFormGroup("Builds From: ", "text", "buildsFrom", "buildsFrom", this.handleItems)}
                         {this.renderFormGroup("Builds Into: ", "text", "buildsInto", "buildsInto", this.handleItems)}
-                        {/*<FormGroup>
-                          <Label>Key: </Label>
-                          <Input type="text" id="key" name="key" onChange={this.handleItems} />
-                        </FormGroup>
-                        <FormGroup>
-                          <Label>Name: </Label>
-                          <Input type="text" id="name" name="name" onChange={this.handleItems} />
-                        </FormGroup>
-                        <FormGroup>
-                          <Label>Type: </Label>
-                          <Input type="text" id="type" name="type" onChange={this.handleItems} />
-                        </FormGroup>
-                        <FormGroup>
-                          <Label>Bonus: </Label>
-                          <Input type="text" id="bonus" name="bonus" onChange={this.handleItems} />
-                        </FormGroup>
-                        <FormGroup>
-                          <Label>Depth: </Label>
-                          <Input type="number" id="depth" name="depth" onChange={this.handleItems} />
-                        </FormGroup>
-                        <FormGroup>
-                          <Label>Stats: </Label>
-                          <Input type="text" id="stats" name="stats" onChange={this.handleItems} />
-                        </FormGroup>
-                        <FormGroup>
-                          <Label>Builds From: </Label>
-                          <Input type="text" id="buildsFrom" name="buildsFrom" onChange={this.handleItems} />
-                        </FormGroup>
-                        <FormGroup>
-                          <Label>Builds Into: </Label>
-                          <Input type="text" id="buildsInto" name="buildsInto" onChange={this.handleItems} />
-                        </FormGroup>
                         <FormGroup>
                           <Label>Unique (one per champion): </Label>
                           <Input type="checkbox" id="unique" name="unique" onChange={this.handleItems} />
-                        </FormGroup>*/}
+                        </FormGroup>
                       </Col>
                     </Row>
                   </Form>
