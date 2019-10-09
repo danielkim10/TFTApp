@@ -20,7 +20,7 @@ class Edit extends Component {
       .then(response => {
         if (response.data.length > 0) {
           this.setState({
-            champions: response.data.map(champion => champion.name)
+            champions: response.data.map(champion => champion)
           })
         }
       });
@@ -29,7 +29,7 @@ class Edit extends Component {
         .then(response => {
           if (response.data.length > 0) {
             this.setState({
-              classes: response.data.map(classe => classe.name)
+              classes: response.data.map(classe => classe)
             })
           }
         });
@@ -38,7 +38,7 @@ class Edit extends Component {
           .then(response => {
             if (response.data.length > 0) {
               this.setState({
-                items: response.data.map(item => item.name)
+                items: response.data.map(item => item)
               })
             }
           });
@@ -47,7 +47,7 @@ class Edit extends Component {
             .then(response => {
               if (response.data.length > 0) {
                 this.setState({
-                  origins: response.data.map(origin => origin.name)
+                  origins: response.data.map(origin => origin)
                 })
               }
             });
@@ -59,16 +59,20 @@ class Edit extends Component {
     const items = [];
     const origins = [];
     for (let i = 0; i < this.state.champions.length; i++) {
-      champions.push(<p>{this.state.champions[i]}</p>);
+      let pathname = "/Champion/" + this.state.champions[i].key;
+      champions.push(<Link to={pathname}><p>{this.state.champions[i].name}</p></Link>);
     }
     for (let i = 0; i < this.state.classes.length; i++) {
-      classes.push(<p>{this.state.classes[i]}</p>);
+      let pathname = "/Class/" + this.state.classes[i].key;
+      classes.push(<Link to={pathname}><p>{this.state.classes[i].name}</p></Link>);
     }
     for (let i = 0; i < this.state.items.length; i++) {
-      items.push(<p>{this.state.items[i]}</p>);
+      let pathname = "/Item/" + this.state.items[i].key;
+      items.push(<Link to={pathname}><p>{this.state.items[i].name}</p></Link>);
     }
     for (let i = 0; i < this.state.origins.length; i++) {
-      origins.push(<p>{this.state.origins[i]}</p>);
+      let pathname="/Origin/" + this.state.origins[i].key;
+      origins.push(<Link to={pathname}><p>{this.state.origins[i].name}</p></Link>);
     }
       return (
         <div>

@@ -267,15 +267,8 @@ class Create extends Component {
   }
 
   render() {
-    const origins = [];
-    for (let i = 0; i < this.state.origins.length; i++) {
-      origins.push({value: this.state.origins[i].key, label: this.state.origins[i].name});
-    }
-
-    const classes = [];
-    for (let j = 0; j < this.state.classes.length; j++) {
-      classes.push({value: this.state.classes[j].key, label: this.state.classes[j].name});
-    }
+    const origins = [].concat(this.state.origins.map((origin) => {return { value: origin.key, label: origin.name}}));
+    const classes = [].concat(this.state.classes.map((classe) => {return { value: classe.key, label: classe.name}}));
 
       return (
         <div>
