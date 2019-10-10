@@ -5,7 +5,7 @@ class Champion extends Component {
     super(props);
     this.state = {
       champion: {
-        id: 0,
+        id: match.params.id,
         key: "",
         name: "",
         origin: [],

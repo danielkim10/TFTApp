@@ -59,19 +59,19 @@ class Edit extends Component {
     const items = [];
     const origins = [];
     for (let i = 0; i < this.state.champions.length; i++) {
-      let pathname = "/Champion/" + this.state.champions[i].key;
+      let pathname = "/champion/" + this.state.champions[i].key;
       champions.push(<Link to={pathname}><p>{this.state.champions[i].name}</p></Link>);
     }
     for (let i = 0; i < this.state.classes.length; i++) {
-      let pathname = "/Class/" + this.state.classes[i].key;
+      let pathname = "/class/" + this.state.classes[i].key;
       classes.push(<Link to={pathname}><p>{this.state.classes[i].name}</p></Link>);
     }
     for (let i = 0; i < this.state.items.length; i++) {
-      let pathname = "/Item/" + this.state.items[i].key;
+      let pathname = "/item/" + this.state.items[i].key;
       items.push(<Link to={pathname}><p>{this.state.items[i].name}</p></Link>);
     }
     for (let i = 0; i < this.state.origins.length; i++) {
-      let pathname="/Origin/" + this.state.origins[i].key;
+      let pathname="/origin/" + this.state.origins[i].key;
       origins.push(<Link to={pathname}><p>{this.state.origins[i].name}</p></Link>);
     }
       return (

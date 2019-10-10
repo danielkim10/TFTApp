@@ -96,6 +96,7 @@ class Create extends Component {
     this.itemToggle = this.itemToggle.bind(this);
     this.originToggle = this.originToggle.bind(this);
     this.handleSelect = this.handleSelect.bind(this);
+    this.handleJsonInput = this.handleJsonInput.bind(this);
   }
 
   componentDidMount() {
@@ -255,12 +256,89 @@ class Create extends Component {
     this.setState({champion: champion});
   }
 
+  handleClick(event, choose) {
+    if (choose === 0) {
+      let classe = Object.assign({}, this.state.class);
+      classe.mustBeExact = event.target.checked;
+      this.setState({class: classe});
+    }
+    else if (choose === 1) {
+      let origin = Object.assign({}, this.state.origin);
+      origin.mustBeExact = event.target.checked;
+      this.setState({origin: origin});
+    }
+  }
+
+  handleJsonInput(event) {
+    if (event.target.name === "cost") {
+      let champion = Object.assign({}, this.state.champion);
+      let cost = event.target.value.split(',');
+      champion.cost = [];
+      for (let i = 0; i < cost.length; i++) {
+        champion.cost.push(parseInt(cost[i]));
+      }
+      this.setState({champion: champion});
+    }
+    else if (event.target.name === "type") {
+      let champion = Object.assign({}, this.state.champion);
+      let abilityStats = JSON.parse(event.target.value);
+      for (let i = 0; i < abilityStats.length; i++) {
+        champion.ability.stats[i].type = abilityStats[i].type;
+      }
+      this.setState({champion: champion});
+    }
+    else if (event.target.name === "value") {
+      let champion = Object.assign({}, this.state.champion);
+      let abilityStats = JSON.parse(event.target.value);
+      for (let i = 0; i < abilityStats.length; i++) {
+        champion.ability.stats[i].value = parseInt(abilityStats[i].value);
+      }
+      this.setState({champion: champion});
+    }
+    else if (event.target.name === "damage") {
+      let champion = Object.assign({}, this.state.champion);
+      let damage = event.target.value.split(',');
+      champion.damage = [];
+      for (let i = 0; i < damage.length; i++) {
+        champion.damage.push(parseInt(damage[i]));
+      }
+      this.setState({champion: champion});
+    }
+    else if (event.target.name === "health") {
+      let champion = Object.assign({}, this.state.champion);
+      let health = event.target.value.split(',');
+      champion.health = [];
+      for (let i = 0; i < health.length; i++) {
+        champion.health.push(parseInt(health[i]));
+      }
+      this.setState({champion: champion});
+    }
+    else if (event.target.name === "classBonuses") {
+      let classe = Object.assign({}, this.state.class);
+      let bonuses = JSON.parse(event.target.value);
+      for (let i = 0; i < bonuses.length; i++) {
+        classe.bonuses[i].needed = parseInt(bonuses[i].needed);
+        classe.bonuses[i].effect = bonuses[i].effect;
+      }
+      this.setState({class: classe});
+    }
+    else if (event.target.name === "originBonuses") {
+      let origin = Object.assign({}, this.state.origin);
+      let bonuses = JSON.parse(event.target.value);
+      for (let i = 0; i < bonuses.length; i++) {
+        origin.bonuses[i].needed = parseInt(bonuses[i].needed);
+        origin.bonuses[i].effect = bonuses[i].effect;
+      }
+      this.setState({origin: origin});
+    }
+  }
+
   renderFormGroup(label, type, id, name, handler) {
     return (
       <Fragment>
         <FormGroup>
           <Label>{label}</Label>
-          <Input type={type} id={id} name={name} handler={handler} />
+          <Input type={type} id={id} name={name} onChange={handler} />
         </FormGroup>
       </Fragment>
     );
@@ -286,14 +364,14 @@ class Create extends Component {
                     {this.renderFormGroup("ID: ", "number", "id", "id", this.handleChampions)}
                     {this.renderFormGroup("Key: ", "text", "key", "key", this.handleChampions)}
                     {this.renderFormGroup("Name: ", "text", "name", "name", this.handleChampions)}
-                    {this.renderFormGroup("Cost: ", "text", "cost", "cost", this.handleChampions)}
+                    {this.renderFormGroup("Cost: ", "text", "cost", "cost", this.handleJsonInput)}
                     {this.renderFormGroup("Ability Name: ", "text", "ability", "name", this.handleChampions)}
                     {this.renderFormGroup("Ability Description: ", "text", "ability", "description", this.handleChampions)}
                     {this.renderFormGroup("Ability Type: ", "text", "ability", "type", this.handleChampions)}
                     {this.renderFormGroup("Mana Cost: ", "number", "ability", "manaCost", this.handleChampions)}
                     {this.renderFormGroup("Mana Start: ", "number", "ability", "manaStart", this.handleChampions)}
-                    {this.renderFormGroup("Ability Stat Type: ", "text", "abilityStats", "type", this.handleChampions)}
-                    {this.renderFormGroup("Ability Stat Value: ", "text", "abilityStats", "value", this.handleChampions)}
+                    {this.renderFormGroup("Ability Stat Type: ", "text", "abilityStats", "type", this.JsonInput)}
+                    {this.renderFormGroup("Ability Stat Value: ", "text", "abilityStats", "value", this.JsonInput)}
                     <FormGroup>
                       <Label>Origin: </Label>
                       <Select options={origins} className="basic-multi-select" classNamePrefix="select" isMulti id="origin" name="origin" onChange={event => this.handleSelect(event, 0)}/>
@@ -304,13 +382,13 @@ class Create extends Component {
                     </FormGroup>
                     </Col>
                     <Col md={6}>
-                    {this.renderFormGroup("Damage: ", "text", "offense", "damage", this.handleChampions)}
+                    {this.renderFormGroup("Damage: ", "text", "offense", "damage", this.handleJsonInput)}
                     {this.renderFormGroup("Attack Speed: ", "number", "offense", "attackSpeed", this.handleChampions)}
                     {this.renderFormGroup("Spell Power: ", "number", "offense", "spellPower", this.handleChampions)}
                     {this.renderFormGroup("Crit Chance: ", "number", "offense", "critChance", this.handleChampions)}
                     {this.renderFormGroup("Dodge Chance: ", "number", "defense", "dodgeChance", this.handleChampions)}
                     {this.renderFormGroup("Range: ", "number", "offense", "range", this.handleChampions)}
-                    {this.renderFormGroup("Health: ", "text", "defense", "health", this.handleChampions)}
+                    {this.renderFormGroup("Health: ", "text", "defense", "health", this.handleJsonInput)}
                     {this.renderFormGroup("Armor: ", "number", "defense", "armor", this.handleChampions)}
                     {this.renderFormGroup("Magic Resist: ", "number", "defense", "magicResist", this.handleChampions)}
                     </Col>
@@ -335,11 +413,11 @@ class Create extends Component {
                     {this.renderFormGroup("Key: ", "text", "key", "key", this.handleClasses)}
                     {this.renderFormGroup("Name: ", "text", "name", "name", this.handleClasses)}
                     {this.renderFormGroup("Description: ", "text", "description", "description", this.handleClasses)}
-                    {this.renderFormGroup("Bonuses: ", "text", "bonuses", "bonuses", this.handleClasses)}
+                    {this.renderFormGroup("Bonuses: ", "text", "bonuses", "classBonuses", this.handleJsonInput)}
                     {this.renderFormGroup("Image: ", "text", "image", "image", this.handleClasses)}
                     <FormGroup>
                       <Label>Must be exact: </Label>
-                      <Input type="checkbox" id="exact" name="exact" />
+                      <Input type="checkbox" id="exact" name="exact" onClick={event => this.handleClick(event, 0)}/>
                     </FormGroup>
                     </Col>
                   </Row>
@@ -363,11 +441,11 @@ class Create extends Component {
                     {this.renderFormGroup("Key: ", "text", "key", "key", this.handleOrigins)}
                     {this.renderFormGroup("Name: ", "text", "name", "name", this.handleOrigins)}
                     {this.renderFormGroup("Description: ", "text", "description", "description", this.handleOrigins)}
-                    {this.renderFormGroup("Bonuses: ", "text", "bonuses", "bonuses", this.handleOrigins)}
+                    {this.renderFormGroup("Bonuses: ", "text", "bonuses", "originBonuses", this.handleJsonInput)}
                     {this.renderFormGroup("Image: ", "text", "image", "image", this.handleOrigins)}
                     <FormGroup>
                       <Label>Must be exact: </Label>
-                      <Input type="checkbox" id="exact" name="exact" />
+                      <Input type="checkbox" id="exact" name="exact" onClick={event => this.handleClick(event, 1)}/>
                     </FormGroup>
                     </Col>
                   </Row>
