@@ -9,6 +9,7 @@ import MatchHistory from "./components/matchhistory.component";
 import SavedBuilds from "./components/savedbuilds.component";
 import Create from "./components/create.component";
 import Edit from "./components/edit.component";
+import Champion from "./components/champion.component";
 import Guides from "./components/guides.component";
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
         <Route path="/savedbuilds" component={SavedBuilds} />
         <Route path="/create" component={Create} />
         <Route path="/edit" component={Edit} />
+        <Route path="/champion" render={() => <Champion />} />
         <Route path="/guides" component={Guides} />
       </div>
     </Router>
