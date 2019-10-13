@@ -15,10 +15,7 @@ const championSchema = new Schema({
     type: {type: String},
     manaCost: {type: Number},
     manaStart: {type: Number},
-    stats: {
-      type: {type: String},
-      value: {type: Number},
-    },
+    stats:[{type: Object}],
   },
   stats: {
     offense: {

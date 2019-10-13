@@ -5,20 +5,16 @@ import Select from 'react-select';
 import {ToastsContainer, ToastsStore} from 'react-toasts';
 import axios from 'axios';
 
-class Item extends Component {
+class Origin extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      item: {
+      origin: {
         key: "",
         name: "",
-        type: "",
-        bonus: "",
-        depth: 0,
-        stats: [],
-        buildsFrom: [],
-        buildsInto: [],
-        unique: false,
+        description: "",
+        bonuses: [],
+        mustBeExact: false,
         image: "",
       },
     }
@@ -31,4 +27,4 @@ class Item extends Component {
   }
 }
 
-export default Item;
+export default Origin;

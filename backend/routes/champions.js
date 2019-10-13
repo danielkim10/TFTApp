@@ -7,19 +7,31 @@ router.route('/').get((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route('/:key')
-  .all(function(req, res, next) {
-    next();
-  })
-  .get(function(req, res, next) {
-    res.json(req.champion);
-  })
-  .post(function(req, res, next) {
-    next(new Error('not implemented'));
-  })
-  .delete(function(req, res, next) {
-    next(new Error('not implemented'));
-  })
+router.route('/:id').get((req, res) => {
+  Champion.findById(req.params.id)
+    .then(champion => res.json(champion))
+    .catch(err => res.status(400).json('Error: ' + err));
+});
+
+router.route('/update/:id').post((req, res) => {
+  Champion.findById(req.params.id)
+    .then(champion => {
+      champion.id = req.body.id;
+      champion.key = req.body.key;
+      champion.name = req.body.name;
+      champion.cost = req.body.cost;
+      champion.origin = req.body.origin;
+      champion.class = req.body.class;
+      champion.ability = req.body.ability;
+      champion.stats = req.body.stats;
+      champion.image = req.body.image;
+
+      champion.save()
+        .then(() => res.json('Champion updated'))
+        .catch(err => res.status(400).json('Error: ' + err));
+    })
+    .catch(err => res.status(400).json('Error: ' + err));
+});
 
 router.route('/add').post((req, res) => {
   const id = req.body.id;

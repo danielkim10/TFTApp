@@ -59,25 +59,26 @@ class Edit extends Component {
     const items = [];
     const origins = [];
     for (let i = 0; i < this.state.champions.length; i++) {
-      let pathname = "/champion/" + this.state.champions[i].key;
-      champions.push(<Link to={pathname}><p>{this.state.champions[i].name}</p></Link>);
+      let pathname = "/champion/" + this.state.champions[i]._id;
+      champions.push(<Link to={{pathname: pathname, id: this.state.champions[i]._id}}><p>{this.state.champions[i].name}</p></Link>);
     }
     for (let i = 0; i < this.state.classes.length; i++) {
-      let pathname = "/class/" + this.state.classes[i].key;
-      classes.push(<Link to={pathname}><p>{this.state.classes[i].name}</p></Link>);
+      let pathname = "/class/" + this.state.classes[i]._id;
+      classes.push(<Link to={pathname} params={{ id: this.state.classes[i]._id }}><p>{this.state.classes[i].name}</p></Link>);
     }
     for (let i = 0; i < this.state.items.length; i++) {
-      let pathname = "/item/" + this.state.items[i].key;
-      items.push(<Link to={pathname}><p>{this.state.items[i].name}</p></Link>);
+      let pathname = "/item/" + this.state.items[i]._id;
+      items.push(<Link to={pathname} parmas={{ id: this.state.items[i]._id }}><p>{this.state.items[i].name}</p></Link>);
     }
     for (let i = 0; i < this.state.origins.length; i++) {
-      let pathname="/origin/" + this.state.origins[i].key;
-      origins.push(<Link to={pathname}><p>{this.state.origins[i].name}</p></Link>);
+      let pathname="/origin/" + this.state.origins[i]._id;
+      origins.push(<Link to={pathname} params={{ id: this.state.origins[i]._id }}><p>{this.state.origins[i].name}</p></Link>);
     }
       return (
         <div>
-        <Container fluid>
+        <Card>
           <Row>
+          <Col>
           <Card>
             <CardHeader>
               <i class="fa-fa-align-justify"></i><strong>Champions</strong>
@@ -86,6 +87,8 @@ class Edit extends Component {
               <Col>{champions}</Col>
             </CardBody>
           </Card>
+          </Col>
+          <Col>
           <Card>
             <CardHeader>
               <i class="fa-fa-align-justify"></i><strong>Classes</strong>
@@ -94,6 +97,8 @@ class Edit extends Component {
               <Col>{classes}</Col>
             </CardBody>
           </Card>
+          </Col>
+          <Col>
           <Card>
             <CardHeader>
               <i class="fa-fa-align-justify"></i><strong>Items</strong>
@@ -102,6 +107,8 @@ class Edit extends Component {
               <Col>{items}</Col>
             </CardBody>
           </Card>
+          </Col>
+          <Col>
           <Card>
             <CardHeader>
               <i class="fa-fa-align-justify"></i><strong>Origins</strong>
@@ -110,8 +117,9 @@ class Edit extends Component {
               <Col>{origins}</Col>
             </CardBody>
           </Card>
+          </Col>
           </Row>
-          </Container>
+          </Card>
         </div>
       )
   }

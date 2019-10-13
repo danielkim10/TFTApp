@@ -1,7 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import {Button, Row, Col, Collapse, Form, FormGroup, Card, CardHeader,
         CardBody, CardFooter, Label, Input} from 'reactstrap';
-import Select from 'react-select';
 import {ToastsContainer, ToastsStore} from 'react-toasts';
 import axios from 'axios';
 
@@ -31,10 +30,8 @@ class Create extends Component {
           type: "",
           manaCost: 0,
           manaStart: 0,
-          stats: {
-            type: "",
-            value: 0,
-          }
+          statsType: [],
+          statsValue: [],
         },
         stats: {
           offense: {
@@ -95,27 +92,10 @@ class Create extends Component {
     this.classToggle = this.classToggle.bind(this);
     this.itemToggle = this.itemToggle.bind(this);
     this.originToggle = this.originToggle.bind(this);
-    this.handleSelect = this.handleSelect.bind(this);
     this.handleJsonInput = this.handleJsonInput.bind(this);
   }
 
   componentDidMount() {
-    axios.get('http://localhost:5000/origins/')
-      .then(response => {
-        if (response.data.length > 0) {
-          this.setState({
-            origins: response.data.map(origin => origin)
-          })
-        }
-      });
-    axios.get('http://localhost:5000/classes/')
-        .then(response => {
-          if (response.data.length > 0) {
-            this.setState({
-              classes: response.data.map(classe => classe)
-            })
-          }
-        })
   }
 
   handleChampions(event) {
@@ -239,23 +219,6 @@ class Create extends Component {
     this.setState( {originCollapse: !this.state.originCollapse} );
   }
 
-  handleSelect(event, choose) {
-    let champion = Object.assign({}, this.state.champion);
-    if (choose === 0) {
-      champion.origin = [];
-      for (let i = 0; i < event.length; i++) {
-        champion.origin.push(event[i].label);
-      }
-    }
-    else if (choose === 1) {
-      champion.class = [];
-      for (let i = 0; i < event.length; i++) {
-        champion.class.push(event[i].label);
-      }
-    }
-    this.setState({champion: champion});
-  }
-
   handleClick(event, choose) {
     if (choose === 0) {
       let classe = Object.assign({}, this.state.class);
@@ -276,6 +239,24 @@ class Create extends Component {
       champion.cost = [];
       for (let i = 0; i < cost.length; i++) {
         champion.cost.push(parseInt(cost[i]));
+      }
+      this.setState({champion: champion});
+    }
+    else if (event.target.name === "origin") {
+      let champion = Object.assign({}, this.state.champion);
+      let origin = event.target.value.split(',');
+      champion.origin = [];
+      for (let i = 0; i < origin.length; i++) {
+        champion.origin.push(origin[i]);
+      }
+      this.setState({champion: champion});
+    }
+    else if (event.target.name === "class") {
+      let champion = Object.assign({}, this.state.champion);
+      let classe =  event.target.value.split(',');
+      champion.class = [];
+      for (let i = 0; i < classe.length; i++) {
+        champion.class.push(classe[i]);
       }
       this.setState({champion: champion});
     }
@@ -345,9 +326,6 @@ class Create extends Component {
   }
 
   render() {
-    const origins = [].concat(this.state.origins.map((origin) => {return { value: origin.key, label: origin.name}}));
-    const classes = [].concat(this.state.classes.map((classe) => {return { value: classe.key, label: classe.name}}));
-
       return (
         <div>
         <ToastsContainer store={ToastsStore}/>
@@ -365,6 +343,8 @@ class Create extends Component {
                     {this.renderFormGroup("Key: ", "text", "key", "key", this.handleChampions)}
                     {this.renderFormGroup("Name: ", "text", "name", "name", this.handleChampions)}
                     {this.renderFormGroup("Cost: ", "text", "cost", "cost", this.handleJsonInput)}
+                    {this.renderFormGroup("Origin: ", "text", "origin", "origin", this.handleJsonInput)}
+                    {this.renderFormGroup("Class: ", "text", "class", "class", this.handleJsonInput)}
                     {this.renderFormGroup("Ability Name: ", "text", "ability", "name", this.handleChampions)}
                     {this.renderFormGroup("Ability Description: ", "text", "ability", "description", this.handleChampions)}
                     {this.renderFormGroup("Ability Type: ", "text", "ability", "type", this.handleChampions)}
@@ -372,14 +352,6 @@ class Create extends Component {
                     {this.renderFormGroup("Mana Start: ", "number", "ability", "manaStart", this.handleChampions)}
                     {this.renderFormGroup("Ability Stat Type: ", "text", "abilityStats", "type", this.JsonInput)}
                     {this.renderFormGroup("Ability Stat Value: ", "text", "abilityStats", "value", this.JsonInput)}
-                    <FormGroup>
-                      <Label>Origin: </Label>
-                      <Select options={origins} className="basic-multi-select" classNamePrefix="select" isMulti id="origin" name="origin" onChange={event => this.handleSelect(event, 0)}/>
-                    </FormGroup>
-                    <FormGroup>
-                      <Label>Class: </Label>
-                      <Select options={classes} className="basic-multi-select" classNamePrefix="select" isMulti id="class" name="class" onChange={event => this.handleSelect(event, 1)}/>
-                    </FormGroup>
                     </Col>
                     <Col md={6}>
                     {this.renderFormGroup("Damage: ", "text", "offense", "damage", this.handleJsonInput)}
