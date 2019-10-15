@@ -13,6 +13,23 @@ router.route('/:id').get((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 })
 
+router.route('/update/:id').post((req, res) => {
+  Origin.findById(req.params.id)
+    .then(origin => {
+      origin.key = req.body.key;
+      origin.name = req.body.name;
+      origin.description = req.body.description;
+      origin.bonuses = req.body.bonuses;
+      origin.mustBeExact = req.body.mustBeExact;
+      origin.image = req.body.image;
+
+      origin.save()
+        .then(() => res.json('Origin updated'))
+        .catch(err => res.status(400).json('Error: ' + err));
+    })
+    .catch(err => res.status(400).json('Error :' + err));
+});
+
 router.route('/add').post((req, res) => {
   const key = req.body.key;
   const name = req.body.name;

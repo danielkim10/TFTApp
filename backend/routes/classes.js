@@ -13,6 +13,23 @@ router.route('/:id').get((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
+router.route('/update/:id').post((req, res) => {
+  Class.findById(req.params.id)
+    .then(classe => {
+      classe.key = req.body.key;
+      classe.name = req.body.name;
+      classe.description = req.body.description;
+      classe.bonuses = req.body.bonuses;
+      classe.mustBeExact = req.body.mustBeExact;
+      classe.image = req.body.image;
+
+      classe.save()
+        .then(() => res.json('Class updated'))
+        .catch(err => res.status(400).json('Error: ' + err));
+    })
+    .catch(err => res.status(400).json('Error :' + err));
+});
+
 router.route('/add').post((req, res) => {
   const key = req.body.key;
   const name = req.body.name;
