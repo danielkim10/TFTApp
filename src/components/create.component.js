@@ -22,7 +22,7 @@ class Create extends Component {
         key: "",
         name: "",
         origin: [],
-        class: [],
+        classe: [],
         cost: [0, 0, 0],
         ability: {
           name: "",
@@ -50,7 +50,7 @@ class Create extends Component {
         },
         image: "",
       },
-      class: {
+      classe: {
         key: "",
         name: "",
         description: "",
@@ -121,7 +121,7 @@ class Create extends Component {
   handleClasses(event) {
     let classe = Object.assign({}, this.state.class);
     classe[event.target.id] = event.target.value;
-    this.setState({ class: classe });
+    this.setState({ classe: classe });
   }
 
   handleItems(event) {
@@ -223,7 +223,7 @@ class Create extends Component {
     if (choose === 0) {
       let classe = Object.assign({}, this.state.class);
       classe.mustBeExact = event.target.checked;
-      this.setState({class: classe});
+      this.setState({classe: classe});
     }
     else if (choose === 1) {
       let origin = Object.assign({}, this.state.origin);
@@ -251,12 +251,12 @@ class Create extends Component {
       }
       this.setState({champion: champion});
     }
-    else if (event.target.name === "class") {
+    else if (event.target.name === "classe") {
       let champion = Object.assign({}, this.state.champion);
       let classe =  event.target.value.split(',');
-      champion.class = [];
+      champion.classe = [];
       for (let i = 0; i < classe.length; i++) {
-        champion.class.push(classe[i]);
+        champion.classe.push(classe[i]);
       }
       this.setState({champion: champion});
     }
@@ -344,7 +344,7 @@ class Create extends Component {
                     {this.renderFormGroup("Name: ", "text", "name", "name", this.handleChampions)}
                     {this.renderFormGroup("Cost: ", "text", "cost", "cost", this.handleJsonInput)}
                     {this.renderFormGroup("Origin: ", "text", "origin", "origin", this.handleJsonInput)}
-                    {this.renderFormGroup("Class: ", "text", "class", "class", this.handleJsonInput)}
+                    {this.renderFormGroup("Class: ", "text", "classe", "classe", this.handleJsonInput)}
                     {this.renderFormGroup("Ability Name: ", "text", "ability", "name", this.handleChampions)}
                     {this.renderFormGroup("Ability Description: ", "text", "ability", "description", this.handleChampions)}
                     {this.renderFormGroup("Ability Type: ", "text", "ability", "type", this.handleChampions)}

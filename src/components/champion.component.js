@@ -11,7 +11,7 @@ class Champion extends Component {
     this.state = {
       tempStrings: {
           origin: "",
-          class: "",
+          classe: "",
           cost: "",
           statsType: "",
           statsValue: "",
@@ -25,7 +25,7 @@ class Champion extends Component {
         key: "",
         name: "",
         origin: [],
-        class: [],
+        classe: [],
         cost: [],
         ability: {
           name: "",
@@ -33,8 +33,7 @@ class Champion extends Component {
           type: "",
           manaCost: 0,
           manaStart: 0,
-          statsType: [],
-          statsValue: [],
+          stats: []
         },
         stats: {
           offense: {
@@ -65,6 +64,7 @@ class Champion extends Component {
         let tempStrings = Object.assign({}, this.state.tempStrings);
         let abilityStatType = [];
         let abilityStatValue = [];
+        let _abilityStatValue = "";
         champion = response.data;
         for (let i = 0; i < response.data.ability.stats.length; i++) {
           abilityStatType.push(response.data.ability.stats[i].type);
@@ -72,9 +72,16 @@ class Champion extends Component {
         }
         tempStrings.cost = response.data.cost.join();
         tempStrings.origin = response.data.origin.join();
-        tempStrings.class = response.data.class.join();
+        tempStrings.classe = response.data.classe.join();
         tempStrings.statsType = abilityStatType.join();
-        tempStrings.statsValue = abilityStatValue.join();
+        for (let i = 0; i < abilityStatValue.length; i++) {
+          _abilityStatValue += abilityStatValue[i].join();
+          if (i < abilityStatValue.length -1) {
+            _abilityStatValue += '/';
+          }
+        }
+
+        tempStrings.statsValue = _abilityStatValue;
         tempStrings.damage = response.data.stats.offense.damage.join();
         tempStrings.health = response.data.stats.defense.health.join();
         champion.ability.statsType = abilityStatType;
@@ -88,12 +95,11 @@ class Champion extends Component {
 
   handleChampions(event) {
     if (event.target.name === "cost" || event.target.name === "damage" || event.target.name === "health" ||
-        event.target.name === "origin" || event.target.name === "class" || event.target.name === "statsType" || event.target.name === "statsValue") {
+        event.target.name === "origin" || event.target.name === "classe" || event.target.name === "statsType" || event.target.name === "statsValue") {
         let tempStrings = Object.assign({}, this.state.tempStrings);
         tempStrings[event.target.name] = event.target.value;
         this.setState({tempStrings: tempStrings});
     }
-
     else {
       let champion = Object.assign({}, this.state.champion);
       if (event.target.id === "ability") {
@@ -115,43 +121,56 @@ class Champion extends Component {
   handleSubmit(e) {
     e.preventDefault();
 
-    let _champion = Object.assign({}, this.state.champion);
+    let champion = Object.assign({}, this.state.champion);
     let cost = this.state.tempStrings.cost.split(',');
+    for (let i in cost) {
+      cost[i] = parseInt(cost[i]);
+    }
     let origin = this.state.tempStrings.origin.split(',');
-    let classe = this.state.tempStrings.class.split(',');
+    let classe = this.state.tempStrings.classe.split(',');
     let damage = this.state.tempStrings.damage.split(',');
+    for (let i in damage) {
+      damage[i] = parseInt(damage[i]);
+    }
     let health = this.state.tempStrings.health.split(',');
+    for (let i in health) {
+      health[i] = parseInt(health[i]);
+    }
+    let stats = [];
     let statsType = this.state.tempStrings.statsType.split(',');
     let _statsValue = this.state.tempStrings.statsValue.split('/');
     let statsValue = [];
     for (let i in _statsValue) {
-      statsValue[i].push(_statsValue[i].split(','));
+      let __statsValue = _statsValue[i].split(',');
+      for (let j in __statsValue) {
+          __statsValue[j] = parseFloat(__statsValue[j]);
+      }
+      statsValue.push(__statsValue);
+      stats.push({type: statsType[i], value: statsValue[i]});
     }
 
-    _champion.cost = cost;
-    _champion.origin = origin;
-    _champion.class = classe;
-    _champion.damage = damage;
-    _champion.health = health;
-    _champion.statsType = statsType;
-    _champion.statsValue = statsValue;
-    this.setState({champion: _champion});
-
-    const champion = {
-     id: this.state.champion.id,
-     key: this.state.champion.key,
-     name: this.state.champion.name,
-     origin: this.state.champion.origin,
-     classe: this.state.champion.class,
-     cost: this.state.champion.cost,
-     ability: this.state.champion.ability,
-     stats: this.state.champion.stats,
-     image: this.state.champion.image,
-    }
-
-    axios.post('http://localhost:5000/champions/update/' + this.props.match.params.id, champion)
-      .then(res => console.log(res.data));
-    window.location = '/edit';
+    champion.cost = cost;
+    champion.origin = origin;
+    champion.classe = classe;
+    champion.stats.offense.damage = damage;
+    champion.stats.defense.health = health;
+    champion.ability.stats = stats;
+    this.setState({champion: champion}, function() {
+      const _champion = {
+       id: this.state.champion.id,
+       key: this.state.champion.key,
+       name: this.state.champion.name,
+       origin: this.state.champion.origin,
+       classe: this.state.champion.classe,
+       cost: this.state.champion.cost,
+       ability: this.state.champion.ability,
+       stats: this.state.champion.stats,
+       image: this.state.champion.image,
+      }
+      axios.post('http://localhost:5000/champions/update/' + this.props.match.params.id, _champion)
+        .then(res => console.log(res.data));
+      window.location = '/edit';
+    });
   }
 
   renderFormGroup(label, type, id, name, handler, state) {
@@ -181,7 +200,7 @@ class Champion extends Component {
                 {this.renderFormGroup("Name: ", "text", "name", "name", this.handleChampions, this.state.champion.name)}
                 {this.renderFormGroup("Cost: ", "text", "cost", "cost", this.handleChampions, this.state.tempStrings.cost)}
                 {this.renderFormGroup("Origin: ", "text", "origin", "origin", this.handleChampions, this.state.tempStrings.origin)}
-                {this.renderFormGroup("Class: ", "text", "class", "class", this.handleChampions, this.state.tempStrings.class)}
+                {this.renderFormGroup("Class: ", "text", "classe", "classe", this.handleChampions, this.state.tempStrings.classe)}
                 {this.renderFormGroup("Ability Name: ", "text", "ability", "name", this.handleChampions, this.state.champion.ability.name)}
                 {this.renderFormGroup("Ability Description: ", "text", "ability", "description", this.handleChampions, this.state.champion.ability.description)}
                 {this.renderFormGroup("Ability Type: ", "text", "ability", "type", this.handleChampions, this.state.champion.ability.type)}
