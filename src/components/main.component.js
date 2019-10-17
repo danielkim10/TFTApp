@@ -7,7 +7,16 @@ export default class Main extends Component {
     this.state = {
       name: '',
       team: [],
+      activeClasses: [],
+      activeOrigins: [],
+      allChampions: [],
+      allItems: [],
+      championsPool: [],
     }
+  }
+
+  componentDidMount() {
+
   }
 
   render() {

@@ -36,14 +36,20 @@ class Class extends Component {
           classe = response.data;
           let needed = [];
           let effect = [];
+          let checkpoint = "";
           for (let i = 0; i < response.data.bonuses.length; i++) {
             needed.push(response.data.bonuses[i].needed);
             effect.push(response.data.bonuses[i].effect);
+
+            checkpoint += needed[i].toString() + ',' + effect[i];
+            if (i < response.data.bonuses.length -1) {
+              checkpoint += '/';
+            }
           }
           let _needed = needed.join();
           let _effect = effect.join();
-          tempStrings.bonuses = response.data.bonuses.join();
-          classe.bonuses = response.data.bonuses.join();
+          tempStrings.bonuses = checkpoint;
+
 
           this.setState({class: classe, tempStrings: tempStrings});
         }
@@ -112,11 +118,11 @@ class Class extends Component {
             {this.renderFormGroup("Description: ", "text", "description", "description", this.handleClasses, this.state.class.description)}
             {this.renderFormGroup("Bonuses: ", "text", "bonuses", "classBonuses", this.handleClasses, this.state.tempStrings.bonuses)}
             {this.renderFormGroup("Image: ", "text", "image", "image", this.handleClasses, this.state.class.image)}
-            <FormGroup row>
-            <Col>
-              <Label>Must be exact: </Label></Col>
-              <Col><Input type="checkbox" id="exact" name="exact" onClick={this.handleClick}/></Col>
-
+            <FormGroup>
+            <Row>
+              <Col md={1}><Label>Must be exact: </Label></Col>
+              <Col md={1}><Input type="checkbox" id="exact" name="exact" onClick={this.handleClick}/></Col>
+            </Row>
             </FormGroup>
             </Col>
           </Row>

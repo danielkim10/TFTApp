@@ -50,6 +50,15 @@ class Create extends Component {
         },
         image: "",
       },
+      champTempStrings: {
+        origin: "",
+        classe: "",
+        cost: "",
+        statsType: "",
+        statsValue: "",
+        damage: "",
+        health: "",
+      },
       classe: {
         key: "",
         name: "",
@@ -57,6 +66,9 @@ class Create extends Component {
         bonuses: [],
         mustBeExact: false,
         image: "",
+      },
+      classTempStrings: {
+        bonuses: "",
       },
       item: {
         key: "",
@@ -70,6 +82,11 @@ class Create extends Component {
         unique: false,
         image: "",
       },
+      itemTempStrings: {
+        stats: "",
+        buildsFrom: "",
+        buildsInto: "",
+      },
       origin: {
         key: "",
         name: "",
@@ -77,6 +94,9 @@ class Create extends Component {
         bonuses: [],
         mustBeExact: false,
         image: "",
+      },
+      originTempStrings: {
+        bonuses: "",
       },
     }
 
@@ -99,6 +119,12 @@ class Create extends Component {
   }
 
   handleChampions(event) {
+    if (event.target.name === "cost" || event.target.name === "origin" || event.target.name === "classe" || event.target.name === "statsType" ||
+        event.target.name === "statsValue" || event.target.name === "damage" || event.target.name === "health") {
+
+    }
+
+
     let champion = Object.assign({}, this.state.champion);
     if (event.target.id === "ability") {
       champion.ability[event.target.name] = event.target.value;
@@ -388,8 +414,10 @@ class Create extends Component {
                     {this.renderFormGroup("Bonuses: ", "text", "bonuses", "classBonuses", this.handleJsonInput)}
                     {this.renderFormGroup("Image: ", "text", "image", "image", this.handleClasses)}
                     <FormGroup>
-                      <Label>Must be exact: </Label>
-                      <Input type="checkbox" id="exact" name="exact" onClick={event => this.handleClick(event, 0)}/>
+                    <Row>
+                      <Col md={1}><Label>Must be exact: </Label></Col>
+                      <Col md={1}><Input type="checkbox" id="exact" name="exact" onClick={event => this.handleClick(event, 0)}/></Col>
+                      </Row>
                     </FormGroup>
                     </Col>
                   </Row>
@@ -416,8 +444,10 @@ class Create extends Component {
                     {this.renderFormGroup("Bonuses: ", "text", "bonuses", "originBonuses", this.handleJsonInput)}
                     {this.renderFormGroup("Image: ", "text", "image", "image", this.handleOrigins)}
                     <FormGroup>
-                      <Label>Must be exact: </Label>
-                      <Input type="checkbox" id="exact" name="exact" onClick={event => this.handleClick(event, 1)}/>
+                      <Row>
+                        <Col md={1}><Label>Must be exact: </Label></Col>
+                        <Col md={1}><Input type="checkbox" id="exact" name="exact" onClick={event => this.handleClick(event, 1)}/></Col>
+                      </Row>
                     </FormGroup>
                     </Col>
                   </Row>
@@ -447,8 +477,10 @@ class Create extends Component {
                         {this.renderFormGroup("Builds From: ", "text", "buildsFrom", "buildsFrom", this.handleItems)}
                         {this.renderFormGroup("Builds Into: ", "text", "buildsInto", "buildsInto", this.handleItems)}
                         <FormGroup>
-                          <Label>Unique (one per champion): </Label>
-                          <Input type="checkbox" id="unique" name="unique" onChange={this.handleItems} />
+                          <Row>
+                            <Col md={1}><Label>Unique (one per champion): </Label></Col>
+                            <Col md={1}><Input type="checkbox" id="unique" name="unique" onChange={this.handleItems} /></Col>
+                          </Row>
                         </FormGroup>
                       </Col>
                     </Row>
