@@ -1,8 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import {Button, Row, Col, Form, FormGroup, Card, CardHeader,
         CardBody, CardFooter, Label, Input} from 'reactstrap';
-import Select from 'react-select';
-import {ToastsContainer, ToastsStore} from 'react-toasts';
 import axios from 'axios';
 
 class Origin extends Component {
@@ -10,7 +8,7 @@ class Origin extends Component {
     super(props);
     this.state = {
       tempStrings: {
-        bonuses: [],
+        bonuses: "",
       },
       origin: {
         key: "",
@@ -39,15 +37,19 @@ class Origin extends Component {
           let checkpoint = "";
           for (let i = 0; i < response.data.bonuses.length; i++) {
             needed.push(response.data.bonuses[i].needed);
-            effect.push(response.data.bonuses[i].effect);
-
-            checkpoint += needed[i].toString() + ',' + effect[i];
-            if (i < response.data.bonuses.length - 1) {
-              checkpoint += '/'
+            checkpoint += needed[i].toString();
+            if (i < response.data.bonuses.length -1) {
+              checkpoint += ',';
             }
           }
-          let _needed = needed.join();
-          let _effect = effect.join();
+          checkpoint += '/'
+          for (let i = 0; i < response.data.bonuses.length; i++) {
+            effect.push(response.data.bonuses[i].effect);
+            checkpoint += effect[i];
+            if (i < response.data.bonuses.length - 1) {
+              checkpoint += ','
+            }
+          }
           tempStrings.bonuses = checkpoint;
 
           this.setState({origin: origin, tempStrings: tempStrings});
@@ -58,7 +60,7 @@ class Origin extends Component {
   handleOrigins(event) {
     if (event.target.name === "bonuses") {
       let tempStrings = Object.assign({}, this.state.tempStrings);
-      tempStrings[event.target.name] = event.target.value;
+      tempStrings.bonuses = event.target.value;
       this.setState({tempStrings: tempStrings});
     }
     else {
@@ -76,6 +78,38 @@ class Origin extends Component {
 
   handleSubmit(e) {
     e.preventDefault();
+    let origin = Object.assign({}, this.state.origin);
+    let object = this.state.tempStrings.bonuses.split('/');
+    let needed = [];
+    let effect = [];
+    let bonuses = [];
+
+    let neededString = object[0].split(',');
+    for (let subString in neededString) {
+      needed.push(parseInt(neededString[subString]));
+    }
+    let effectString = object[1].split(',');
+    for (let subString in effectString) {
+      effect.push(effectString[subString]);
+    }
+
+    for (let i = 0; i < needed.length; i++) {
+      bonuses.push({needed: needed[i], effect: effect[i]});
+    }
+    origin.bonuses = bonuses;
+    this.setState({ origin: origin }, function() {
+      const _origin = {
+        key: this.state.origin.key,
+        name: this.state.origin.name,
+        description: this.state.origin.description,
+        bonuses: this.state.origin.bonuses,
+        mustBeExact: this.state.origin.mustBeExact,
+        image: this.state.origin.image,
+      }
+      axios.post('http://localhost:5000/origins/update/' + this.props.match.params.id, _origin)
+        .then(res => console.log(res.data));
+      window.location = '/edit';
+    });
   }
 
   renderFormGroup(label, type, id, name, handler, state) {
@@ -107,7 +141,7 @@ class Origin extends Component {
                   <FormGroup>
                   <Row>
                     <Col md={1}><Label>Must be exact: </Label></Col>
-                    <Col md={1}><Input type="checkbox" id="exact" name="exact" onClick={this.handleClick}/></Col>
+                    <Col md={1}><Input type="checkbox" id="exact" name="exact" onClick={this.handleClick} checked={this.state.origin.mustBeExact}/></Col>
                   </Row>
                   </FormGroup>
                 </Col>
@@ -115,7 +149,7 @@ class Origin extends Component {
             </Form>
           </CardBody>
           <CardFooter>
-            <Button type="button" color="primary" onClick={this.handleClick}>Submit</Button>
+            <Button type="button" color="primary" onClick={this.handleSubmit}>Submit</Button>
           </CardFooter>
         </Card>
       </div>

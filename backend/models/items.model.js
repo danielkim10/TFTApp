@@ -10,8 +10,8 @@ const itemSchema = new Schema({
   depth: {type: Number},
   stats: [{
     name: {type: String},
-    title: {type: String},
-    amount: {type: Number},
+    label: {type: String},
+    value: {type: Number},
   }],
   buildsFrom: [{type: String}],
   buildsInto: [{type: String}],

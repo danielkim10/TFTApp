@@ -13,6 +13,27 @@ router.route('/:id').get((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
+router.route('/update/:id').post((req, res) => {
+  Item.findById(req.params.id)
+    .then(item => {
+      item.key = req.body.key;
+      item.name = req.body.name;
+      item.type = req.body.type;
+      item.bonus = req.body.bonus;
+      item.depth = req.body.depth;
+      item.stats = req.body.stats;
+      item.buildsFrom = req.body.buildsFrom;
+      item.buildsInto = req.body.buildsInto;
+      item.unique = req.body.unique;
+      item.image = req.body.image;
+
+      item.save()
+        .then(() => res.json('Item updated'))
+        .catch(err => res.status(400).json('Error: ' + err));
+    })
+    .catch(err => res.status(400).json('Error: ' + err));
+});
+
 router.route('/add').post((req, res) => {
   const key = req.body.key;
   const name = req.body.name;

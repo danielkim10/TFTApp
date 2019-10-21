@@ -35,6 +35,7 @@ const championSchema = new Schema({
     },
   },
   image: {type: String},
+  icon: {type: String},
 });
 
 const Champion = mongoose.model('Champion', championSchema);

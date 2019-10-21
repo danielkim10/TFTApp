@@ -1,7 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import {Button, Row, Col, Form, FormGroup, Card, CardHeader,
         CardBody, CardFooter, Label, Input} from 'reactstrap';
-import {ToastsContainer, ToastsStore} from 'react-toasts';
 import axios from 'axios';
 
 
@@ -51,6 +50,7 @@ class Champion extends Component {
           },
         },
         image: "",
+        icon: "",
     }
   }
   this.handleChampions = this.handleChampions.bind(this);
@@ -123,8 +123,8 @@ class Champion extends Component {
 
     let champion = Object.assign({}, this.state.champion);
     let cost = this.state.tempStrings.cost.split(',');
-    for (let i in cost) {
-      cost[i] = parseInt(cost[i]);
+    for (let h in cost) {
+      cost[h] = parseInt(cost[h]);
     }
     let origin = this.state.tempStrings.origin.split(',');
     let classe = this.state.tempStrings.classe.split(',');
@@ -133,20 +133,20 @@ class Champion extends Component {
       damage[i] = parseInt(damage[i]);
     }
     let health = this.state.tempStrings.health.split(',');
-    for (let i in health) {
-      health[i] = parseInt(health[i]);
+    for (let j in health) {
+      health[j] = parseInt(health[j]);
     }
     let stats = [];
     let statsType = this.state.tempStrings.statsType.split(',');
     let _statsValue = this.state.tempStrings.statsValue.split('/');
     let statsValue = [];
-    for (let i in _statsValue) {
-      let __statsValue = _statsValue[i].split(',');
-      for (let j in __statsValue) {
-          __statsValue[j] = parseFloat(__statsValue[j]);
+    for (let k in _statsValue) {
+      let __statsValue = _statsValue[k].split(',');
+      for (let l in __statsValue) {
+          __statsValue[l] = parseFloat(__statsValue[l]);
       }
       statsValue.push(__statsValue);
-      stats.push({type: statsType[i], value: statsValue[i]});
+      stats.push({type: statsType[k], value: statsValue[k]});
     }
 
     champion.cost = cost;
@@ -166,6 +166,7 @@ class Champion extends Component {
        ability: this.state.champion.ability,
        stats: this.state.champion.stats,
        image: this.state.champion.image,
+       icon: this.state.champion.icon,
       }
       axios.post('http://localhost:5000/champions/update/' + this.props.match.params.id, _champion)
         .then(res => console.log(res.data));
@@ -219,6 +220,8 @@ class Champion extends Component {
                 {this.renderFormGroup("Health: ", "text", "defense", "health", this.handleChampions, this.state.tempStrings.health)}
                 {this.renderFormGroup("Armor: ", "number", "defense", "armor", this.handleChampions, this.state.champion.stats.defense.armor)}
                 {this.renderFormGroup("Magic Resist: ", "number", "defense", "magicResist", this.handleChampions, this.state.champion.stats.defense.magicResist)}
+                {this.renderFormGroup("Image: ", "text", "image", "image", this.handleChampions, this.state.champion.image)}
+                {this.renderFormGroup("Icon: ", "text", "icon", "icon", this.handleChampions, this.state.champion.icon)}
                 </Col>
                 </Row>
             </Form>

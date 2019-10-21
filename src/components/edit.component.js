@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Card, CardHeader, CardBody, Container } from 'reactstrap';
+import { Row, Col, Card, CardHeader, CardBody } from 'reactstrap';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
@@ -60,7 +60,7 @@ class Edit extends Component {
     const origins = [];
     for (let i = 0; i < this.state.champions.length; i++) {
       let pathname = "/champion/" + this.state.champions[i]._id;
-      champions.push(<Link to={{pathname: pathname, id: this.state.champions[i]._id}}><p>{this.state.champions[i].name}</p></Link>);
+      champions.push(<div><Link to={{pathname: pathname, id: this.state.champions[i]._id}}><p>{this.state.champions[i].name}</p></Link><img src={this.state.champions[i].icon} alt="Missing"/></div>);
     }
     for (let i = 0; i < this.state.classes.length; i++) {
       let pathname = "/class/" + this.state.classes[i]._id;
