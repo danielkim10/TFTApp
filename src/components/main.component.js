@@ -80,14 +80,24 @@ export default class Main extends Component {
       return (
         <div>
         <Row>
-        <Col>
-          <Card style={{width: "80%"}}>
+        <Col sm={2}></Col>
+        <Col sm={8}>
+          <Card name="activeTraits">
             <CardBody>
 
             </CardBody>
           </Card>
+          <Card style={{width: "100%"}} name="board">
+            <CardBody>
+
+            </CardBody>
+          </Card>
+          <Card name="pool">
+            <CardBody>
+            </CardBody>
+          </Card>
           </Col>
-          <Col>
+          <Col sm={2}>
 
           </Col>
           </Row>

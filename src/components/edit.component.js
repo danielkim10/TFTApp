@@ -60,19 +60,19 @@ class Edit extends Component {
     const origins = [];
     for (let i = 0; i < this.state.champions.length; i++) {
       let pathname = "/champion/" + this.state.champions[i]._id;
-      champions.push(<div><Link to={{pathname: pathname, id: this.state.champions[i]._id}}><p>{this.state.champions[i].name}</p></Link><img src={this.state.champions[i].icon} alt="Missing"/></div>);
+      champions.push(<div><Link to={{pathname: pathname, id: this.state.champions[i]._id}}><p>{this.state.champions[i].name} {this.state.champions[i].set}</p></Link>{/*<img src={this.state.champions[i].icon} alt="Missing"/>*/}</div>);
     }
     for (let i = 0; i < this.state.classes.length; i++) {
       let pathname = "/class/" + this.state.classes[i]._id;
-      classes.push(<Link to={pathname} params={{ id: this.state.classes[i]._id }}><p>{this.state.classes[i].name}</p></Link>);
+      classes.push(<Link to={pathname} params={{ id: this.state.classes[i]._id }}><p>{this.state.classes[i].name} {this.state.classes[i].set}</p></Link>);
     }
     for (let i = 0; i < this.state.items.length; i++) {
       let pathname = "/item/" + this.state.items[i]._id;
-      items.push(<Link to={pathname} parmas={{ id: this.state.items[i]._id }}><p>{this.state.items[i].name}</p></Link>);
+      items.push(<Link to={pathname} parmas={{ id: this.state.items[i]._id }}><p>{this.state.items[i].name} {this.state.items[i].set}</p></Link>);
     }
     for (let i = 0; i < this.state.origins.length; i++) {
       let pathname="/origin/" + this.state.origins[i]._id;
-      origins.push(<Link to={pathname} params={{ id: this.state.origins[i]._id }}><p>{this.state.origins[i].name}</p></Link>);
+      origins.push(<Link to={pathname} params={{ id: this.state.origins[i]._id }}><p>{this.state.origins[i].name} {this.state.origins[i].set}</p></Link>);
     }
       return (
         <div>

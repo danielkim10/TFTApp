@@ -49,6 +49,7 @@ class Champion extends Component {
             dodgeChance: 0,
           },
         },
+        set: 0,
         image: "",
         icon: "",
     }
@@ -165,6 +166,7 @@ class Champion extends Component {
        cost: this.state.champion.cost,
        ability: this.state.champion.ability,
        stats: this.state.champion.stats,
+       set: this.state.champion.set,
        image: this.state.champion.image,
        icon: this.state.champion.icon,
       }
@@ -220,6 +222,7 @@ class Champion extends Component {
                 {this.renderFormGroup("Health: ", "text", "defense", "health", this.handleChampions, this.state.tempStrings.health)}
                 {this.renderFormGroup("Armor: ", "number", "defense", "armor", this.handleChampions, this.state.champion.stats.defense.armor)}
                 {this.renderFormGroup("Magic Resist: ", "number", "defense", "magicResist", this.handleChampions, this.state.champion.stats.defense.magicResist)}
+                {this.renderFormGroup("Set: ", "number", "set", "set", this.handleChampions, this.state.champion.set)}
                 {this.renderFormGroup("Image: ", "text", "image", "image", this.handleChampions, this.state.champion.image)}
                 {this.renderFormGroup("Icon: ", "text", "icon", "icon", this.handleChampions, this.state.champion.icon)}
                 </Col>

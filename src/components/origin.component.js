@@ -16,6 +16,7 @@ class Origin extends Component {
         description: "",
         bonuses: [],
         mustBeExact: false,
+        set: "",
         image: "",
       },
     }
@@ -104,6 +105,7 @@ class Origin extends Component {
         description: this.state.origin.description,
         bonuses: this.state.origin.bonuses,
         mustBeExact: this.state.origin.mustBeExact,
+        set: this.state.origin.set,
         image: this.state.origin.image,
       }
       axios.post('http://localhost:5000/origins/update/' + this.props.match.params.id, _origin)
@@ -138,6 +140,8 @@ class Origin extends Component {
                   {this.renderFormGroup("Name: ", "text", "name", "name", this.handleOrigins, this.state.origin.name)}
                   {this.renderFormGroup("Description: ", "text", "description", "description", this.handleOrigins, this.state.origin.description)}
                   {this.renderFormGroup("Bonuses: ", "text", "bonuses", "bonuses", this.handleOrigins, this.state.tempStrings.bonuses)}
+                  {this.renderFormGroup("Set: ", "number", "set", "set", this.handleOrigins, this.state.origin.set)}
+                  {this.renderFormGroup("Image: ", "text", "image", "image", this.handleOrigins, this.state.origin.image)}
                   <FormGroup>
                   <Row>
                     <Col md={1}><Label>Must be exact: </Label></Col>

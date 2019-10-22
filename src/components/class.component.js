@@ -16,6 +16,7 @@ class Class extends Component {
         description: "",
         bonuses: [],
         mustBeExact: false,
+        set: 0,
         image: "",
       },
     }
@@ -104,6 +105,7 @@ class Class extends Component {
         description: this.state.class.description,
         bonuses: this.state.class.bonuses,
         mustBeExact: this.state.class.mustBeExact,
+        set: this.state.class.set,
         image: this.state.class.image,
       }
       axios.post('http://localhost:5000/classes/update/' + this.props.match.params.id, _class)
@@ -138,6 +140,7 @@ class Class extends Component {
             {this.renderFormGroup("Name: ", "text", "name", "name", this.handleClasses, this.state.class.name)}
             {this.renderFormGroup("Description: ", "text", "description", "description", this.handleClasses, this.state.class.description)}
             {this.renderFormGroup("Bonuses: ", "text", "bonuses", "bonuses", this.handleClasses, this.state.tempStrings.bonuses)}
+            {this.renderFormGroup("Set: ", "number", "set", "set", this.handleClasses, this.state.class.set)}
             {this.renderFormGroup("Image: ", "text", "image", "image", this.handleClasses, this.state.class.image)}
             <FormGroup>
             <Row>

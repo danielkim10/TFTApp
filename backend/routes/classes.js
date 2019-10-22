@@ -21,6 +21,7 @@ router.route('/update/:id').post((req, res) => {
       classe.description = req.body.description;
       classe.bonuses = req.body.bonuses;
       classe.mustBeExact = req.body.mustBeExact;
+      classe.set = req.body.set;
       classe.image = req.body.image;
 
       classe.save()
@@ -36,8 +37,9 @@ router.route('/add').post((req, res) => {
   const description = req.body.description;
   const bonuses = req.body.bonuses;
   const mustBeExact = req.body.mustBeExact;
+  const set = req.body.set;
   const image = req.body.image;
-  const newClass = new Class({key, name, description, bonuses, mustBeExact, image});
+  const newClass = new Class({key, name, description, bonuses, mustBeExact, set, image});
 
   newClass.save()
     .then(() => res.json('Class added'))

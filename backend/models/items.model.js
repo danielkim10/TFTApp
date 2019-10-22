@@ -16,6 +16,7 @@ const itemSchema = new Schema({
   buildsFrom: [{type: String}],
   buildsInto: [{type: String}],
   unique: {type: Boolean},
+  set: {type: Number},
   image: {type: String},
 });
 

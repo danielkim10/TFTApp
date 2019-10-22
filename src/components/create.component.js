@@ -47,6 +47,7 @@ class Create extends Component {
             dodgeChance: 0,
           }
         },
+        set: 0,
         image: "",
         icon: "",
       },
@@ -65,6 +66,7 @@ class Create extends Component {
         description: "",
         bonuses: [],
         mustBeExact: false,
+        set: 0,
         image: "",
       },
       classTempStrings: {
@@ -80,6 +82,7 @@ class Create extends Component {
         buildsFrom: [],
         buildsInto: [],
         unique: false,
+        set: 0,
         image: "",
       },
       itemTempStrings: {
@@ -93,6 +96,7 @@ class Create extends Component {
         description: "",
         bonuses: [],
         mustBeExact: false,
+        set: 0,
         image: "",
       },
       originTempStrings: {
@@ -318,6 +322,7 @@ class Create extends Component {
        buildsFrom: this.state.item.buildsFrom,
        buildsInto: this.state.item.buildsInto,
        unique: this.state.item.unique,
+       set: this.state.item.set,
        image: this.state.item.image
       }
       axios.post('http://localhost:5000/items/add', item)
@@ -351,6 +356,7 @@ class Create extends Component {
         description: this.state.origin.description,
         bonuses: this.state.origin.bonuses,
         mustBeExact: this.state.origin.mustBeExact,
+        set: this.state.origin.set,
         image: this.state.origin.image,
       }
       axios.post('http://localhost:5000/origins/add', origin)
@@ -442,6 +448,7 @@ class Create extends Component {
                     {this.renderFormGroup("Health: ", "text", "defense", "health", this.handleChampions)}
                     {this.renderFormGroup("Armor: ", "number", "defense", "armor", this.handleChampions)}
                     {this.renderFormGroup("Magic Resist: ", "number", "defense", "magicResist", this.handleChampions)}
+                    {this.renderFormGroup("Set: ", "number", "set", "set", this.handleChampions)}
                     {this.renderFormGroup("Image: ", "text", "image", "image", this.handleChampions)}
                     {this.renderFormGroup("Icon: ", "text", "icon", "icon", this.handleChampions)}
                     </Col>
@@ -467,6 +474,7 @@ class Create extends Component {
                     {this.renderFormGroup("Name: ", "text", "name", "name", this.handleClasses)}
                     {this.renderFormGroup("Description: ", "text", "description", "description", this.handleClasses)}
                     {this.renderFormGroup("Bonuses: ", "text", "bonuses", "classBonuses", this.handleClasses)}
+                    {this.renderFormGroup("Set: ", "number", "set", "set", this.handleClasses)}
                     {this.renderFormGroup("Image: ", "text", "image", "image", this.handleClasses)}
                     <FormGroup>
                     <Row>
@@ -497,6 +505,7 @@ class Create extends Component {
                     {this.renderFormGroup("Name: ", "text", "name", "name", this.handleOrigins)}
                     {this.renderFormGroup("Description: ", "text", "description", "description", this.handleOrigins)}
                     {this.renderFormGroup("Bonuses: ", "text", "bonuses", "originBonuses", this.handleOrigins)}
+                    {this.renderFormGroup("Set: ", "number", "set", "set", this.handleOrigins)}
                     {this.renderFormGroup("Image: ", "text", "image", "image", this.handleOrigins)}
                     <FormGroup>
                       <Row>
@@ -537,6 +546,8 @@ class Create extends Component {
                             <Col md={1}><Input type="checkbox" id="unique" name="unique" onClick={event => this.handleClick(event, 2)} /></Col>
                           </Row>
                         </FormGroup>
+                        {this.renderFormGroup("Set: ", "number", "set", "set", this.handleItems)}
+                        {this.renderFormGroup("Image: ", "text", "image", "image", this.handleItems)}
                       </Col>
                     </Row>
                   </Form>

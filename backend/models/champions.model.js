@@ -34,6 +34,7 @@ const championSchema = new Schema({
       magicResist: {type: Number},
     },
   },
+  set: {type: Number},
   image: {type: String},
   icon: {type: String},
 });

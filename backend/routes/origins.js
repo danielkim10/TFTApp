@@ -21,6 +21,7 @@ router.route('/update/:id').post((req, res) => {
       origin.description = req.body.description;
       origin.bonuses = req.body.bonuses;
       origin.mustBeExact = req.body.mustBeExact;
+      origin.set = req.body.set;
       origin.image = req.body.image;
 
       origin.save()
@@ -36,8 +37,9 @@ router.route('/add').post((req, res) => {
   const description = req.body.description;
   const bonuses = req.body.bonuses;
   const mustBeExact = req.body.mustBeExact;
+  const set = req.body.set;
   const image = req.body.image;
-  const newOrigin = new Origin({key, name, description, bonuses, mustBeExact, image});
+  const newOrigin = new Origin({key, name, description, bonuses, mustBeExact, set, image});
 
   newOrigin.save()
     .then(() => res.json('Origin added'))

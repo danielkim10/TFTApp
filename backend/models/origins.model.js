@@ -11,6 +11,7 @@ const originSchema = new Schema({
     effect: {type: String},
   }],
   mustBeExact: {type: Boolean},
+  set: {type: Number},
   image: {type: String},
 });
 

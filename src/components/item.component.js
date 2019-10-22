@@ -22,6 +22,7 @@ class Item extends Component {
         buildsFrom: [],
         buildsInto: [],
         unique: false,
+        set: 0,
         image: "",
       },
     }
@@ -111,6 +112,7 @@ class Item extends Component {
         buildsFrom: this.state.item.buildsFrom,
         buildsInto: this.state.item.buildsInto,
         unique: this.state.item.unique,
+        set: this.state.item.set,
         image: this.state.item.image,
       }
       axios.post('http://localhost:5000/items/update/' + this.props.match.params.id, item)
@@ -155,6 +157,8 @@ class Item extends Component {
                       <Col md={1}><Input type="checkbox" id="unique" name="unique" onClick={this.handleClick} checked={this.state.item.unique} /></Col>
                     </Row>
                   </FormGroup>
+                  {this.renderFormGroup("Set: ", "number", "set", "set", this.handleItems, this.state.item.set)}
+                  {this.renderFormGroup("Image: ", "text", "image", "image", this.handleItems, this.state.item.image)}
                 </Col>
               </Row>
             </Form>
