@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Row, Col, Card, CardHeader, CardBody } from 'reactstrap';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import Image from 'react-image-resizer';
 
 class Edit extends Component {
   constructor(props) {
@@ -60,7 +61,7 @@ class Edit extends Component {
     const origins = [];
     for (let i = 0; i < this.state.champions.length; i++) {
       let pathname = "/champion/" + this.state.champions[i]._id;
-      champions.push(<div><Link to={{pathname: pathname, id: this.state.champions[i]._id}}><p>{this.state.champions[i].name} {this.state.champions[i].set}</p></Link>{/*<img src={this.state.champions[i].icon} alt="Missing"/>*/}</div>);
+      champions.push(<div><Link to={{pathname: pathname, id: this.state.champions[i]._id}}><p>{this.state.champions[i].name} {this.state.champions[i].set}</p></Link><img src={this.state.champions[i].icon} height={40} width={40}/></div>);
     }
     for (let i = 0; i < this.state.classes.length; i++) {
       let pathname = "/class/" + this.state.classes[i]._id;

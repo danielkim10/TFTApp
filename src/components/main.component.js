@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Card, CardBody, Col, Row} from 'reactstrap';
 import axios from 'axios';
+import Hexagon from 'react-hexagon';
 
 export default class Main extends Component {
   constructor(props) {
@@ -17,7 +18,7 @@ export default class Main extends Component {
       activeClasses: [],
       activeOrigins: [],
     }
-
+    this.clearButton = this.clearButton.bind(this);
     this.randomButton = this.randomButton.bind(this);
   }
 
@@ -72,11 +73,33 @@ export default class Main extends Component {
 
   }
 
-  randomButton() {
+  clearButton() {
 
   }
 
+  randomButton() {
+    console.log("button clicked");
+  }
+
   render() {
+    const champions = [];
+    const classes = [];
+    const items = [];
+    const origins = [];
+
+    for (let i = 0; i < champions.length; i++) {
+      champions.push(this.state.champions[i].name)
+    }
+    for (let i = 0; i < classes.length; i++) {
+      classes.push(this.state.classes[i].name)
+    }
+    for (let i = 0; i < items.length; i++) {
+      items.push(this.state.items[i].name)
+    }
+    for (let i = 0; i < origins.length; i++) {
+      origins.push(this.state.origins[i].name)
+    }
+
       return (
         <div>
         <Row>
@@ -89,7 +112,7 @@ export default class Main extends Component {
           </Card>
           <Card style={{width: "100%"}} name="board">
             <CardBody>
-
+              <Hexagon diagonal="0.5"/><Hexagon diagonal="0.5"/><Hexagon diagonal="0.5"/><Hexagon diagonal="0.5"/><Hexagon diagonal="0.5"/><Hexagon diagonal="0.5"/><Hexagon diagonal="0.5"/>
             </CardBody>
           </Card>
           <Card name="pool">
