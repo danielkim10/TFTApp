@@ -27,6 +27,7 @@ export default class Main extends Component {
     this.clearButton = this.clearButton.bind(this);
     this.fillArrays = this.fillArrays.bind(this);
     this.randomButton = this.randomButton.bind(this);
+    this.runSimulation = this.runSimulation.bind(this);
   }
 
   componentDidMount() {
@@ -96,8 +97,13 @@ export default class Main extends Component {
 
   }
 
+  runSimulation() {
+
+  }
+
   randomButton() {
     this.fillArrays();
+    this.setState({team: [], synergies: []});
     const T1_CHAMPS = 4;
     const T2_CHAMPS = 5;
     const T3_CHAMPS = 4;
@@ -106,10 +112,14 @@ export default class Main extends Component {
     const MAX_CHAMPS = 9;
     const MAX_3_AND_UNDER = 7; // roll between 5 and 7 low tier
     const MAX_4_AND_UP = 4; // roll between 2 and 4 high tier
+    const MIN_BASIC_ITEMS = 12;
+    const MAX_BASIC_ITEMS = 16;
     let t5, t4, t3, t2, t1 = 0;
 
     let lowTierChamps = Math.floor(Math.random() * 3);
     let highTierChamps = Math.floor(Math.random() * 2);
+    let items = Math.floor(Math.random() * 4);
+    items += MIN_BASIC_ITEMS;
 
     t5 = Math.floor(Math.random() * T5_CHAMPS);
     highTierChamps -= t5;
@@ -131,32 +141,74 @@ export default class Main extends Component {
     let t3Champs = this.state.t3Champs;
     let t2Champs = this.state.t2Champs;
     let t1Champs = this.state.t1Champs;
+    let synergies = this.state.synergies;
+
+    /* PROCESS */
+    /*
+      1. Determine a random champion
+      2. Check team array to see if champion has already been added
+      3. Check team array to see if 2 of the same tier champ has already been added
+      4. Check team array to ensure that a tier 3 version of the champ doesnt already exist
+      5. Check if champ is a dupe. If it is, do not increment origins or classes
+      6. Check if origin has already been added
+      7. Check if class has already been added
+      8. Update synergies display and sort based on level
+      9. Randomize number of items for each champion
+      10. Randomize items for each champion one by one. If first item is thief's gloves, end
+      11. Check if item is restriction on champion (i.e. bork on yasuo)
+      12. Check if item is 'globally unique' (i.e. recurve bow)
+      13. Check if item is unique (i.e. Guardian Angel)
+      14. Add item bonuses to champion stats
+      15. Generate title for new team comp (e.g. wild assassins)
+      16. Generate string holding all information for user to copy paste
+    */
+
     for (let i = 0; i < t5; i++) {
-      team.push(t5Champs[Math.floor(Math.random() * t5Champs.length)]);
+      let champion = createChampion(t5Champs);
+      team.push(champion);
     }
     for (let i = 0; i < t4; i++) {
-      team.push(t4Champs[Math.floor(Math.random() * t4Champs.length)]);
+      let champion = createChampion(t4Champs);
+      team.push(champion);
     }
     for (let i = 0; i < t3; i++) {
-      team.push(t3Champs[Math.floor(Math.random() * t3Champs.length)]);
+      let champion = createChampion(t3Champs);
+      team.push(champion);
     }
     for (let i = 0; i < t2; i++) {
-      team.push(t2Champs[Math.floor(Math.random() * t2Champs.length)]);
+      let champion = createChampion(t2Champs);
+      team.push(champion);
     }
     for (let i = 0; i < t1; i++) {
-      team.push(t1Champs[Math.floor(Math.random() * t1Champs.length)]);
+      let champion = createChampion(t1Champs);
+      team.push(champion);
     }
+  }
 
-
-    //let t1 = Math.floor(Math.random() * t1Champs);
-    //let t2 = Math.floor(Math.random() * t2Champs);
-    //let t3 = Math.floor(Math.random() * t3Champs);
-    //let t4 = Math.floor(Math.random() * t4Champs);
-    //let t5 = Math.floor(Math.random() * t5Champs);
-
-
-
-    console.log("button clicked");
+  createChampion(champions) {
+    let champion = champions[Math.floor(Math.random() * champions.length)];
+    let tier = Math.floor(Math.random() * 6); // 0 1 2 = tier 1, 3 4 = tier 2, 5 = tier 3
+    let itemCount = Math.floor(Math.random() * 12); // 0-6 = 1 item, 7-9 = 2 items, 10-11 = 3 items
+    let synergies = this.state.synergies;
+    for (let j = 0; j < champion.origin.length; j++) {
+      if (synergies.includes(champion.origin[j])) {
+        let syn = synergies.find(synergy => synergy.name === champion.origin[j]);
+        syn.count++;
+      }
+      else {
+        synergies.push({name: champion.origin[j], count: 1});
+      }
+    }
+    for (let j = 0; j < champion.classe.length; j++) {
+      if (synergies.includes(champion.classe[j])) {
+        let syn = synergies.find(synergy => synergy.name === champion.classe[j]);
+        syn.count++;
+      }
+      else {
+        synergies.push({name: champion.classe[j], count: 1});
+      }
+    }
+    let c = {champion: champion, tier: tier}
   }
 
   render() {
