@@ -28,6 +28,7 @@ export default class Main extends Component {
     this.fillArrays = this.fillArrays.bind(this);
     this.randomButton = this.randomButton.bind(this);
     this.runSimulation = this.runSimulation.bind(this);
+    this.createChampion = this.createChampion.bind(this);
   }
 
   componentDidMount() {
@@ -142,6 +143,7 @@ export default class Main extends Component {
     let t2Champs = this.state.t2Champs;
     let t1Champs = this.state.t1Champs;
     let synergies = this.state.synergies;
+    let team = [];
 
     /* PROCESS */
     /*
@@ -164,48 +166,67 @@ export default class Main extends Component {
     */
 
     for (let i = 0; i < t5; i++) {
-      let champion = createChampion(t5Champs);
+      let champion = this.createChampion(t5Champs, team);
       team.push(champion);
     }
     for (let i = 0; i < t4; i++) {
-      let champion = createChampion(t4Champs);
+      let champion = this.createChampion(t4Champs, team);
       team.push(champion);
     }
     for (let i = 0; i < t3; i++) {
-      let champion = createChampion(t3Champs);
+      let champion = this.createChampion(t3Champs, team);
       team.push(champion);
     }
     for (let i = 0; i < t2; i++) {
-      let champion = createChampion(t2Champs);
+      let champion = this.createChampion(t2Champs, team);
       team.push(champion);
     }
     for (let i = 0; i < t1; i++) {
-      let champion = createChampion(t1Champs);
+      let champion = this.createChampion(t1Champs, team);
       team.push(champion);
     }
   }
 
-  createChampion(champions) {
-    let champion = champions[Math.floor(Math.random() * champions.length)];
-    let tier = Math.floor(Math.random() * 6); // 0 1 2 = tier 1, 3 4 = tier 2, 5 = tier 3
+  createChampion(champions, team) {
+    let passTest = false;
+    let champion;
+    let tier;
+    while (!passTest) {
+      champion = champions[Math.floor(Math.random() * champions.length)];
+      tier = Math.floor(Math.random() * 6); // 0 1 2 = tier 1, 3 4 = tier 2, 5 = tier 3
+      if ((team.filter(c => c.champion.name === champion.name && c.tier === tier).length < 2)
+        && !team.filter(c => c.champion.name === champion.name && c.tier === 3)) {
+        passTest = true;
+      }
+    }
+
     let itemCount = Math.floor(Math.random() * 12); // 0-6 = 1 item, 7-9 = 2 items, 10-11 = 3 items
+    if (itemCount < 7) itemCount = 1;
+    else if (itemCount > 6 && itemCount < 10) itemCount = 2;
+    else itemCount = 3;
+
+
     let synergies = this.state.synergies;
     for (let j = 0; j < champion.origin.length; j++) {
-      if (synergies.includes(champion.origin[j])) {
-        let syn = synergies.find(synergy => synergy.name === champion.origin[j]);
-        syn.count++;
-      }
-      else {
-        synergies.push({name: champion.origin[j], count: 1});
+      for (let k = 0; k < synergies.length; k++) {
+        if (synergies[k].name === champion.origin[j]) {
+          synergies[k].count++;
+          break;
+        }
+        if (k === synergies.length -1) {
+          synergies.push({name: champion.origin[j], count: 1});
+        }
       }
     }
     for (let j = 0; j < champion.classe.length; j++) {
-      if (synergies.includes(champion.classe[j])) {
-        let syn = synergies.find(synergy => synergy.name === champion.classe[j]);
-        syn.count++;
-      }
-      else {
-        synergies.push({name: champion.classe[j], count: 1});
+      for (let k = 0; k < synergies.length; k++) {
+        if (synergies[k].name === champion.classe[j]) {
+          synergies[k].count++;
+          break;
+        }
+        if (k === synergies.length -1) {
+          synergies.push({name: champion.classe[j], count: 1});
+        }
       }
     }
     let c = {champion: champion, tier: tier}
