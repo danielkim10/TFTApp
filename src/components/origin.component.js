@@ -11,6 +11,7 @@ class Origin extends Component {
         bonuses: "",
       },
       origin: {
+        id: 0,
         key: "",
         name: "",
         description: "",
@@ -100,6 +101,7 @@ class Origin extends Component {
     origin.bonuses = bonuses;
     this.setState({ origin: origin }, function() {
       const _origin = {
+        id: this.state.origin.id,
         key: this.state.origin.key,
         name: this.state.origin.name,
         description: this.state.origin.description,
@@ -136,6 +138,7 @@ class Origin extends Component {
             <Form>
               <Row>
                 <Col>
+                  {this.renderFormGroup("Id: ", "number", "id", "id", this.handleOrigins, this.state.origin.id)}
                   {this.renderFormGroup("Key: ", "text", "key", "key", this.handleOrigins, this.state.origin.key)}
                   {this.renderFormGroup("Name: ", "text", "name", "name", this.handleOrigins, this.state.origin.name)}
                   {this.renderFormGroup("Description: ", "text", "description", "description", this.handleOrigins, this.state.origin.description)}

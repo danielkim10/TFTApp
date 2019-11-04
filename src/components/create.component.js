@@ -61,6 +61,7 @@ class Create extends Component {
         health: "",
       },
       classe: {
+        id: 0,
         key: "",
         name: "",
         description: "",
@@ -82,6 +83,7 @@ class Create extends Component {
         buildsFrom: [],
         buildsInto: [],
         unique: false,
+        cannotEquip: "",
         set: 0,
         image: "",
       },
@@ -91,6 +93,7 @@ class Create extends Component {
         buildsInto: "",
       },
       origin: {
+        id: 0,
         key: "",
         name: "",
         description: "",
@@ -268,12 +271,13 @@ class Create extends Component {
     this.setState({ classe: _classe }, function() {
       e.preventDefault();
         const classe = {
-         key: this.state.class.key,
-         name: this.state.class.name,
-         description: this.state.class.description,
-         bonuses: this.state.class.bonuses,
-         mustBeExact: this.state.class.mustBeExact,
-         image: this.state.class.image
+         id: this.state.classe.id,
+         key: this.state.classe.key,
+         name: this.state.classe.name,
+         description: this.state.classe.description,
+         bonuses: this.state.classe.bonuses,
+         mustBeExact: this.state.classe.mustBeExact,
+         image: this.state.classe.image
         }
       axios.post('http://localhost:5000/classes/add', classe)
        .then(res => console.log(res.data))
@@ -322,6 +326,7 @@ class Create extends Component {
        buildsFrom: this.state.item.buildsFrom,
        buildsInto: this.state.item.buildsInto,
        unique: this.state.item.unique,
+       cannotEquip: this.state.item.cannotEquip,
        set: this.state.item.set,
        image: this.state.item.image
       }
@@ -351,6 +356,7 @@ class Create extends Component {
     this.setState({ origin: _origin }, function() {
       e.preventDefault();
       const origin = {
+        id: this.state.origin.id,
         key: this.state.origin.key,
         name: this.state.origin.name,
         description: this.state.origin.description,
@@ -470,6 +476,7 @@ class Create extends Component {
                 <Form onSubmit={this.handleSubmit}>
                   <Row>
                     <Col>
+                    {this.renderFormGroup("Id: ", "number", "id", "id", this.handleClasses)}
                     {this.renderFormGroup("Key: ", "text", "key", "key", this.handleClasses)}
                     {this.renderFormGroup("Name: ", "text", "name", "name", this.handleClasses)}
                     {this.renderFormGroup("Description: ", "text", "description", "description", this.handleClasses)}
@@ -501,6 +508,7 @@ class Create extends Component {
                 <Form onSubmit={this.handleSubmit}>
                   <Row>
                     <Col>
+                    {this.renderFormGroup("Id: ", "number", "id", "id", this.handleOrigins)}
                     {this.renderFormGroup("Key: ", "text", "key", "key", this.handleOrigins)}
                     {this.renderFormGroup("Name: ", "text", "name", "name", this.handleOrigins)}
                     {this.renderFormGroup("Description: ", "text", "description", "description", this.handleOrigins)}
@@ -546,6 +554,7 @@ class Create extends Component {
                             <Col md={1}><Input type="checkbox" id="unique" name="unique" onClick={event => this.handleClick(event, 2)} /></Col>
                           </Row>
                         </FormGroup>
+                        {this.renderFormGroup("Cannot Equip:", "text", "cannotEquip", "cannotEquip", this.handleItems)}
                         {this.renderFormGroup("Set: ", "number", "set", "set", this.handleItems)}
                         {this.renderFormGroup("Image: ", "text", "image", "image", this.handleItems)}
                       </Col>

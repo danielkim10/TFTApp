@@ -22,6 +22,7 @@ class Item extends Component {
         buildsFrom: [],
         buildsInto: [],
         unique: false,
+        cannotEquip: "",
         set: 0,
         image: "",
       },
@@ -112,6 +113,7 @@ class Item extends Component {
         buildsFrom: this.state.item.buildsFrom,
         buildsInto: this.state.item.buildsInto,
         unique: this.state.item.unique,
+        cannotEquip: this.state.item.cannotEquip,
         set: this.state.item.set,
         image: this.state.item.image,
       }
@@ -157,6 +159,7 @@ class Item extends Component {
                       <Col md={1}><Input type="checkbox" id="unique" name="unique" onClick={this.handleClick} checked={this.state.item.unique} /></Col>
                     </Row>
                   </FormGroup>
+                  {this.renderFormGroup("Cannot Equip: ", "text", "cannotEquip", "cannotEquip", this.handleItems, this.state.item.cannotEquip)}
                   {this.renderFormGroup("Set: ", "number", "set", "set", this.handleItems, this.state.item.set)}
                   {this.renderFormGroup("Image: ", "text", "image", "image", this.handleItems, this.state.item.image)}
                 </Col>

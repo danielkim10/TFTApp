@@ -16,6 +16,7 @@ router.route('/:id').get((req, res) => {
 router.route('/update/:id').post((req, res) => {
   Class.findById(req.params.id)
     .then(classe => {
+      classe.id = req.body.id;
       classe.key = req.body.key;
       classe.name = req.body.name;
       classe.description = req.body.description;
@@ -32,6 +33,7 @@ router.route('/update/:id').post((req, res) => {
 });
 
 router.route('/add').post((req, res) => {
+  const id = req.body.id;
   const key = req.body.key;
   const name = req.body.name;
   const description = req.body.description;
@@ -39,7 +41,7 @@ router.route('/add').post((req, res) => {
   const mustBeExact = req.body.mustBeExact;
   const set = req.body.set;
   const image = req.body.image;
-  const newClass = new Class({key, name, description, bonuses, mustBeExact, set, image});
+  const newClass = new Class({id, key, name, description, bonuses, mustBeExact, set, image});
 
   newClass.save()
     .then(() => res.json('Class added'))

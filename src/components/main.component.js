@@ -191,6 +191,7 @@ export default class Main extends Component {
     let passTest = false;
     let champion;
     let tier;
+    let items;
     while (!passTest) {
       champion = champions[Math.floor(Math.random() * champions.length)];
       tier = Math.floor(Math.random() * 6); // 0 1 2 = tier 1, 3 4 = tier 2, 5 = tier 3
@@ -229,7 +230,47 @@ export default class Main extends Component {
         }
       }
     }
+
+    let remainingSlots = itemCount;
+    for (let j = 0; j < itemCount && remainingSlots != 0; j++) {
+      let itemTest = true;
+      let item;
+      do {
+        itemTest = true;
+        item = this.state.items[Math.floor(Math.random() * this.state.items.length)];
+        if (item.key === "thiefsgloves" && j !== 0) {
+          itemTest = false;
+        }
+        else if (item.key === "thiefsgloves" && j == 0) {
+            remainingSlots = 0;
+        }
+
+        else if (items.filter(i => i.key === item.key).length > 0 && item.unique) {
+          itemTest = false;
+        }
+
+        else {
+          let itemOBonuses = item.bonuses.filter(b => b.name === 'origin');
+          //e.x. youmuus does not equip to assassins
+          for (let k = 0; k < champion.origin.length; k++) {
+              if (champion.origin[k] === item.cannotEquip) {
+                itemTest = false;
+              }
+          }
+
+          let itemCBonuses = item.bonuses.filter(b => b.name === 'class');
+          for (let k = 0; k < champion.classe.length; k++) {
+            if (champion.classe[k] === item.cannotEquip) {
+              itemTest = false;
+            }
+          }
+        }
+      } while (!itemTest)
+      items.push(item);
+    }
+
     let c = {champion: champion, tier: tier}
+    return c;
   }
 
   render() {

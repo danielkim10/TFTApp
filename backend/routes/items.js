@@ -25,6 +25,7 @@ router.route('/update/:id').post((req, res) => {
       item.buildsFrom = req.body.buildsFrom;
       item.buildsInto = req.body.buildsInto;
       item.unique = req.body.unique;
+      item.cannotEquip = req.body.cannotEquip;
       item.set = req.body.set;
       item.image = req.body.image;
 
@@ -45,9 +46,10 @@ router.route('/add').post((req, res) => {
   const buildsFrom = req.body.buildsFrom;
   const buildsInto = req.body.buildsInto;
   const unique = req.body.unique;
+  const cannotEquip = req.body.cannotEquip;
   const set = req.body.set;
   const image = req.body.image;
-  const newItem = new Item({key, name, type, bonus, depth, stats, buildsFrom, buildsInto, unique, set, image});
+  const newItem = new Item({key, name, type, bonus, depth, stats, buildsFrom, buildsInto, unique, cannotEquip, set, image});
 
   newItem.save()
     .then(() => res.json('Item added'))

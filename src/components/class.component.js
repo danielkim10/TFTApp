@@ -11,6 +11,7 @@ class Class extends Component {
         bonuses: "",
       },
       class: {
+        id: 0,
         key: "",
         name: "",
         description: "",
@@ -100,6 +101,7 @@ class Class extends Component {
     classe.bonuses = bonuses;
     this.setState({ class: classe }, function() {
       const _class = {
+        id: this.state.class.id,
         key: this.state.class.key,
         name: this.state.class.name,
         description: this.state.class.description,
@@ -136,6 +138,7 @@ class Class extends Component {
         <Form>
           <Row>
             <Col>
+            {this.renderFormGroup("Id: ", "number", "id", "id", this.handleClasses, this.state.class.id)}
             {this.renderFormGroup("Key: ", "text", "key", "key", this.handleClasses, this.state.class.key)}
             {this.renderFormGroup("Name: ", "text", "name", "name", this.handleClasses, this.state.class.name)}
             {this.renderFormGroup("Description: ", "text", "description", "description", this.handleClasses, this.state.class.description)}
