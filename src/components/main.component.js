@@ -25,10 +25,11 @@ export default class Main extends Component {
       t5Champs: [],
     }
     this.clearButton = this.clearButton.bind(this);
-    this.fillArrays = this.fillArrays.bind(this);
     this.randomButton = this.randomButton.bind(this);
+    this.findSynergies = this.findSynergies.bind(this);
     this.runSimulation = this.runSimulation.bind(this);
     this.createChampion = this.createChampion.bind(this);
+    this.clearTeam = this.clearTeam.bind(this);
   }
 
   componentDidMount() {
@@ -40,6 +41,47 @@ export default class Main extends Component {
           })
         }
       });
+    axios.get('http://localhost:5000/champions/tier/1')
+      .then(response => {
+        if (response.data.length > 0) {
+          this.setState({
+            t1Champs: response.data.map(champion => champion)
+          })
+        }
+      });
+      axios.get('http://localhost:5000/champions/tier/2')
+        .then(response => {
+          if (response.data.length > 0) {
+            this.setState({
+              t2Champs: response.data.map(champion => champion)
+            })
+          }
+        });
+        axios.get('http://localhost:5000/champions/tier/3')
+          .then(response => {
+            if (response.data.length > 0) {
+              this.setState({
+                t3Champs: response.data.map(champion => champion)
+              })
+            }
+          });
+          axios.get('http://localhost:5000/champions/tier/4')
+            .then(response => {
+              if (response.data.length > 0) {
+                this.setState({
+                  t4Champs: response.data.map(champion => champion)
+                })
+              }
+            });
+            axios.get('http://localhost:5000/champions/tier/5')
+              .then(response => {
+                if (response.data.length > 0) {
+                  this.setState({
+                    t5Champs: response.data.map(champion => champion)
+                  })
+                }
+              });
+
       axios.get('http://localhost:5000/classes/')
         .then(response => {
           if (response.data.length > 0) {
@@ -66,24 +108,16 @@ export default class Main extends Component {
             });
   }
 
-  fillArrays() {
-    if (this.state.t1Champs.length == 0) {
-      let t1Champs = (this.state.champions.filter(champion => champion.cost[0] == 1));
-      let t2Champs = (this.state.champions.filter(champion => champion.cost[0] == 2));
-      let t3Champs = (this.state.champions.filter(champion => champion.cost[0] == 3));
-      let t4Champs = (this.state.champions.filter(champion => champion.cost[0] == 4));
-      let t5Champs = (this.state.champions.filter(champion => champion.cost[0] == 5));
-
-      this.setState({t1Champs: t1Champs, t2Champs: t2Champs, t3Champs: t3Champs, t4Champs: t4Champs, t5Champs: t5Champs});
-    }
-  }
-
   addToTeam() {
 
   }
 
   removeFromTeam() {
 
+  }
+
+  clearTeam() {
+    this.setState({team: [], synergies: []});
   }
 
   addItem() {
@@ -103,24 +137,25 @@ export default class Main extends Component {
   }
 
   randomButton() {
-    this.fillArrays();
-    this.setState({team: [], synergies: []});
+    this.clearTeam();
     const T1_CHAMPS = 4;
     const T2_CHAMPS = 5;
     const T3_CHAMPS = 4;
     const T4_CHAMPS = 3;
     const T5_CHAMPS = 3;
-    const MAX_CHAMPS = 9;
+    const MAX_CHAMPS = 8;
     const MAX_3_AND_UNDER = 7; // roll between 5 and 7 low tier
     const MAX_4_AND_UP = 4; // roll between 2 and 4 high tier
     const MIN_BASIC_ITEMS = 12;
     const MAX_BASIC_ITEMS = 16;
     let t5, t4, t3, t2, t1 = 0;
 
-    let lowTierChamps = Math.floor(Math.random() * 3);
-    let highTierChamps = Math.floor(Math.random() * 2);
-    let items = Math.floor(Math.random() * 4);
-    items += MIN_BASIC_ITEMS;
+    let lowTierChamps = Math.floor(Math.random() * 2);
+    if (lowTierChamps === 0) lowTierChamps = 5;
+    else lowTierChamps = 6;
+    let highTierChamps = MAX_CHAMPS - lowTierChamps;
+    let teamItems = Math.floor(Math.random() * 4);
+    teamItems += MIN_BASIC_ITEMS;
 
     t5 = Math.floor(Math.random() * T5_CHAMPS);
     highTierChamps -= t5;
@@ -128,21 +163,16 @@ export default class Main extends Component {
 
     t3 = Math.floor(Math.random() * T3_CHAMPS);
     lowTierChamps -= t3;
-    if (lowTierChamps != 0) {
+    if (lowTierChamps !== 0) {
       t2 = Math.floor(Math.random() * lowTierChamps);
       lowTierChamps -= t2;
       t1 = lowTierChamps;
-    }
-    else {
-      t2 = 0;
-      t1 = 0;
     }
     let t5Champs = this.state.t5Champs;
     let t4Champs = this.state.t4Champs;
     let t3Champs = this.state.t3Champs;
     let t2Champs = this.state.t2Champs;
     let t1Champs = this.state.t1Champs;
-    let synergies = this.state.synergies;
     let team = [];
 
     /* PROCESS */
@@ -185,92 +215,132 @@ export default class Main extends Component {
       let champion = this.createChampion(t1Champs, team);
       team.push(champion);
     }
+    this.randomizeItems(team, teamItems);
+    this.findSynergies(team);
   }
 
   createChampion(champions, team) {
     let passTest = false;
-    let champion;
-    let tier;
-    let items;
+    let champion = {};
+    let tier = 0;
+    let isDupe = false;
     while (!passTest) {
       champion = champions[Math.floor(Math.random() * champions.length)];
       tier = Math.floor(Math.random() * 6); // 0 1 2 = tier 1, 3 4 = tier 2, 5 = tier 3
+      if (tier < 3) {
+        tier = 1;
+      }
+      else if (tier < 5) {
+        tier = 2;
+      }
+      else {
+        tier = 3;
+      }
       if ((team.filter(c => c.champion.name === champion.name && c.tier === tier).length < 2)
-        && !team.filter(c => c.champion.name === champion.name && c.tier === 3)) {
+        && !((team.filter(c => c.champion.name === champion.name).length < 1 && tier === 3))) {
         passTest = true;
       }
-    }
-
-    let itemCount = Math.floor(Math.random() * 12); // 0-6 = 1 item, 7-9 = 2 items, 10-11 = 3 items
-    if (itemCount < 7) itemCount = 1;
-    else if (itemCount > 6 && itemCount < 10) itemCount = 2;
-    else itemCount = 3;
-
-
-    let synergies = this.state.synergies;
-    for (let j = 0; j < champion.origin.length; j++) {
-      for (let k = 0; k < synergies.length; k++) {
-        if (synergies[k].name === champion.origin[j]) {
-          synergies[k].count++;
-          break;
-        }
-        if (k === synergies.length -1) {
-          synergies.push({name: champion.origin[j], count: 1});
-        }
+      else if (team.filter(c => c.champion.name === champion.name).length > 0) {
+        passTest = true;
+        isDupe = true;
       }
     }
-    for (let j = 0; j < champion.classe.length; j++) {
-      for (let k = 0; k < synergies.length; k++) {
-        if (synergies[k].name === champion.classe[j]) {
-          synergies[k].count++;
-          break;
-        }
-        if (k === synergies.length -1) {
-          synergies.push({name: champion.classe[j], count: 1});
-        }
-      }
-    }
+    let c = {champion: champion, tier: tier, items: [], isdupe: isDupe}
+    console.log(c);
+    return c;
+  }
 
-    let remainingSlots = itemCount;
-    for (let j = 0; j < itemCount && remainingSlots != 0; j++) {
-      let itemTest = true;
-      let item;
-      do {
-        itemTest = true;
-        item = this.state.items[Math.floor(Math.random() * this.state.items.length)];
-        if (item.key === "thiefsgloves" && j !== 0) {
-          itemTest = false;
-        }
-        else if (item.key === "thiefsgloves" && j == 0) {
-            remainingSlots = 0;
-        }
+  randomizeItems(team, teamItems) {
+    for (let i = 0; i < team.length; ++i) {
+      let items = [];
+      let itemCount = Math.floor(Math.random() * 12); // 0-6 = 1 item, 7-9 = 2 items, 10-11 = 3 items
+      if (itemCount < 7) itemCount = 1;
+      else if (itemCount > 6 && itemCount < 10) itemCount = 2;
+      else itemCount = 3;
 
-        else if (items.filter(i => i.key === item.key).length > 0 && item.unique) {
-          itemTest = false;
-        }
-
-        else {
-          let itemOBonuses = item.bonuses.filter(b => b.name === 'origin');
-          //e.x. youmuus does not equip to assassins
-          for (let k = 0; k < champion.origin.length; k++) {
-              if (champion.origin[k] === item.cannotEquip) {
-                itemTest = false;
-              }
+      let remainingSlots = itemCount;
+      for (let j = 0; j < itemCount && remainingSlots !== 0; j++) {
+        let itemTest = true;
+        let item = {};
+        do {
+          itemTest = true;
+          item = this.state.items[Math.floor(Math.random() * this.state.items.length)];
+          if (item.key === "thiefsgloves" && j !== 0) {
+            itemTest = false;
+          }
+          else if (item.key === "thiefsgloves" && j === 0) {
+              remainingSlots = 0;
           }
 
-          let itemCBonuses = item.bonuses.filter(b => b.name === 'class');
-          for (let k = 0; k < champion.classe.length; k++) {
-            if (champion.classe[k] === item.cannotEquip) {
+          else if (items.filter(i => i.key === item.key).length > 0 && item.unique) {
+            itemTest = false;
+          }
+
+          else if (item.depth > teamItems) {
+            item = this.state.items.filter(item => item.depth === 1)[Math.floor(Math.random()*this.state.items.filter(item => item.depth === 1).length)];
+          }
+
+          else {
+            let itemOBonuses = item.stats.filter(b => b.name === 'origin');
+            //e.x. youmuus does not equip to assassins
+            for (let k = 0; k < team[i].champion.origin.length; ++k) {
+                if (team[i].champion.origin[k] === item.cannotEquip) {
+                  itemTest = false;
+                }
+            }
+
+            let itemCBonuses = item.stats.filter(b => b.name === 'class');
+            for (let k = 0; k < team[i].champion.classe.length; ++k) {
+              if (team[i].champion.classe[k] === item.cannotEquip) {
+                itemTest = false;
+              }
+            }
+
+            if (items.filter(i => i.depth === 1).length > 0 && item.depth === 1) {
               itemTest = false;
             }
           }
-        }
-      } while (!itemTest)
-      items.push(item);
+        } while (!itemTest)
+        items.push(item);
+        teamItems -= item.depth;
+      }
+      team[i].items = items;
     }
+  }
 
-    let c = {champion: champion, tier: tier}
-    return c;
+  findSynergies(team) {
+    let synergies = this.state.synergies;
+    for (let i = 0; i < team.length; ++i) {
+      for (let j = 0; j < team[i].champion.origin.length; ++j) {
+        if (synergies.length === 0) {
+          synergies.push({name: team[i].champion.origin[j], count: 0});
+        }
+
+        for (let k = 0; k < synergies.length; ++k) {
+          if (synergies[k].name === team[i].champion.origin[j] && !team[i].isdupe) {
+            synergies[k].count++;
+            break;
+          }
+          if (k === synergies.length -1) {
+            synergies.push({name: team[i].champion.origin[j], count: 1});
+            k++;
+          }
+        }
+      }
+      for (let j = 0; j < team[i].champion.classe.length; ++j) {
+        for (let k = 0; k < synergies.length; ++k) {
+          if (synergies[k].name === team[i].champion.classe[j] && !team[i].isdupe) {
+            synergies[k].count++;
+            break;
+          }
+          if (k === synergies.length -1) {
+            synergies.push({name: team[i].champion.classe[j], count: 1});
+            k++;
+          }
+        }
+      }
+    }
+    this.setState({synergies: synergies});
   }
 
   render() {
@@ -279,16 +349,16 @@ export default class Main extends Component {
     const items = [];
     const origins = [];
 
-    for (let i = 0; i < champions.length; i++) {
+    for (let i = 0; i < champions.length; ++i) {
       champions.push(this.state.champions[i].name)
     }
-    for (let i = 0; i < classes.length; i++) {
+    for (let i = 0; i < classes.length; ++i) {
       classes.push(this.state.classes[i].name)
     }
-    for (let i = 0; i < items.length; i++) {
+    for (let i = 0; i < items.length; ++i) {
       items.push(this.state.items[i].name)
     }
-    for (let i = 0; i < origins.length; i++) {
+    for (let i = 0; i < origins.length; ++i) {
       origins.push(this.state.origins[i].name)
     }
 

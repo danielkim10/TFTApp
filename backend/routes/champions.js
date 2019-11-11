@@ -13,6 +13,18 @@ router.route('/:id').get((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
+router.route('/tier/:tier').get((req, res) => {
+  Champion.find({tier: req.params.tier})
+    .then(champion => res.json(champion))
+    .catch(err => res.status(400).json('Error: ' + err));
+});
+
+router.route('/set/:set').get((req, res) => {
+  Champion.find({set: req.params.set})
+    .then(champion => res.json(champion))
+    .catch(err => res.status(400).json('Error: ' + err));
+})
+
 router.route('/update/:id').post((req, res) => {
   Champion.findById(req.params.id)
     .then(champion => {
@@ -20,6 +32,7 @@ router.route('/update/:id').post((req, res) => {
       champion.key = req.body.key;
       champion.name = req.body.name;
       champion.cost = req.body.cost;
+      champion.tier = req.body.tier;
       champion.origin = req.body.origin;
       champion.classe = req.body.classe;
       champion.ability = req.body.ability;
@@ -42,12 +55,13 @@ router.route('/add').post((req, res) => {
   const origin = req.body.origin;
   const classe = req.body.classe;
   const cost = req.body.cost;
+  const tier = req.body.tier;
   const ability = req.body.ability;
   const stats = req.body.stats;
   const set = req.body.set;
   const image = req.body.image;
   const icon = req.body.icon;
-  const newChampion = new Champion({id, key, name, origin, classe, cost,
+  const newChampion = new Champion({id, key, name, origin, classe, cost, tier,
                                     ability, stats, set, image, icon});
 
   newChampion.save()

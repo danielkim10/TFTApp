@@ -26,6 +26,7 @@ class Champion extends Component {
         origin: [],
         classe: [],
         cost: [],
+        tier: 0,
         ability: {
           name: "",
           description: "",
@@ -164,6 +165,7 @@ class Champion extends Component {
        origin: this.state.champion.origin,
        classe: this.state.champion.classe,
        cost: this.state.champion.cost,
+       tier: this.state.champion.tier,
        ability: this.state.champion.ability,
        stats: this.state.champion.stats,
        set: this.state.champion.set,
@@ -202,6 +204,7 @@ class Champion extends Component {
                 {this.renderFormGroup("Key: ", "text", "key", "key", this.handleChampions, this.state.champion.key)}
                 {this.renderFormGroup("Name: ", "text", "name", "name", this.handleChampions, this.state.champion.name)}
                 {this.renderFormGroup("Cost: ", "text", "cost", "cost", this.handleChampions, this.state.tempStrings.cost)}
+                {this.renderFormGroup("Tier: ", "number", "tier", "tier", this.handleChampions, this.state.champion.tier)}
                 {this.renderFormGroup("Origin: ", "text", "origin", "origin", this.handleChampions, this.state.tempStrings.origin)}
                 {this.renderFormGroup("Class: ", "text", "classe", "classe", this.handleChampions, this.state.tempStrings.classe)}
                 {this.renderFormGroup("Ability Name: ", "text", "ability", "name", this.handleChampions, this.state.champion.ability.name)}

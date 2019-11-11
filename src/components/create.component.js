@@ -24,6 +24,7 @@ class Create extends Component {
         origin: [],
         classe: [],
         cost: [0, 0, 0],
+        tier: 0,
         ability: {
           name: "",
           description: "",
@@ -240,6 +241,7 @@ class Create extends Component {
        origin: this.state.champion.origin,
        classe: this.state.champion.classe,
        cost: this.state.champion.cost,
+       tier: this.state.champion.tier,
        ability: this.state.champion.ability,
        stats: this.state.champion.stats,
        image: this.state.champion.image,
@@ -434,6 +436,7 @@ class Create extends Component {
                     {this.renderFormGroup("Key: ", "text", "key", "key", this.handleChampions)}
                     {this.renderFormGroup("Name: ", "text", "name", "name", this.handleChampions)}
                     {this.renderFormGroup("Cost: ", "text", "cost", "cost", this.handleChampions)}
+                    {this.renderFormGroup("Tier: ", "number", "tier", "tier", this.handleChampions)}
                     {this.renderFormGroup("Origin: ", "text", "origin", "origin", this.handleChampions)}
                     {this.renderFormGroup("Class: ", "text", "classe", "classe", this.handleChampions)}
                     {this.renderFormGroup("Ability Name: ", "text", "ability", "name", this.handleChampions)}

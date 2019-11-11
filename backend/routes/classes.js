@@ -13,6 +13,12 @@ router.route('/:id').get((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
+router.route('/set/:set').get((req, res) => {
+  Class.find({set: req.params.set})
+    .then(champion => res.json(champion))
+    .catch(err => res.status(400).json('Error: ' + err));
+})
+
 router.route('/update/:id').post((req, res) => {
   Class.findById(req.params.id)
     .then(classe => {
