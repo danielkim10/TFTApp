@@ -136,7 +136,8 @@ export default class Main extends Component {
 
   }
 
-  randomButton() {
+  randomButton(e) {
+    e.preventDefault();
     this.clearTeam();
     const T1_CHAMPS = 4;
     const T2_CHAMPS = 5;
@@ -215,8 +216,9 @@ export default class Main extends Component {
       let champion = this.createChampion(t1Champs, team);
       team.push(champion);
     }
-    this.randomizeItems(team, teamItems);
+    team = this.randomizeItems(team, teamItems);
     this.findSynergies(team);
+    this.setState({team: team}); // temporary
   }
 
   createChampion(champions, team) {
@@ -245,21 +247,36 @@ export default class Main extends Component {
         isDupe = true;
       }
     }
-    let c = {champion: champion, tier: tier, items: [], isdupe: isDupe}
-    console.log(c);
+    let c = {champion: champion, tier: tier, items: [], remainingSlots: 6, isdupe: isDupe};
     return c;
   }
 
   randomizeItems(team, teamItems) {
-    for (let i = 0; i < team.length; ++i) {
-      let items = [];
+    let teamMember;
+    let items;
+    while (teamItems > 0) {
+      teamMember = {};
+      items = [];
       let itemCount = Math.floor(Math.random() * 12); // 0-6 = 1 item, 7-9 = 2 items, 10-11 = 3 items
-      if (itemCount < 7) itemCount = 1;
-      else if (itemCount > 6 && itemCount < 10) itemCount = 2;
-      else itemCount = 3;
+      // if (itemCount < 7) itemCount = 1;
+      // else if (itemCount > 6 && itemCount < 10) itemCount = 2;
+      // else itemCount = 3;
 
-      let remainingSlots = itemCount;
-      for (let j = 0; j < itemCount && remainingSlots !== 0; j++) {
+      if (itemCount >= 10 && teamItems >= 6) itemCount = 3;
+      else if ((itemCount >= 7 && itemCount <= 9) || (itemCount >= 10 && teamItems <= 4)) itemCount = 2
+      else if ((itemCount <= 6) || (itemCount >= 7 && teamItems <= 2)) itemCount = 1;
+      else itemCount = 1;
+
+      let champTest = true;
+      do {
+        champTest = true;
+        teamMember = team[Math.floor(Math.random() * team.length)];
+        if (teamMember.remainingSlots === 0 || teamMember.remainingSlots < itemCount*2) {
+          champTest = false;
+        }
+      } while (champTest === false);
+
+      for (let j = 0; j < itemCount && teamMember.remainingSlots > 0; j++) {
         let itemTest = true;
         let item = {};
         do {
@@ -267,9 +284,6 @@ export default class Main extends Component {
           item = this.state.items[Math.floor(Math.random() * this.state.items.length)];
           if (item.key === "thiefsgloves" && j !== 0) {
             itemTest = false;
-          }
-          else if (item.key === "thiefsgloves" && j === 0) {
-              remainingSlots = 0;
           }
 
           else if (items.filter(i => i.key === item.key).length > 0 && item.unique) {
@@ -280,18 +294,22 @@ export default class Main extends Component {
             item = this.state.items.filter(item => item.depth === 1)[Math.floor(Math.random()*this.state.items.filter(item => item.depth === 1).length)];
           }
 
+          else if (teamMember.remainingSlots % 2 === 1 && item.depth === 1) {
+            itemTest = false;
+          }
+
           else {
             let itemOBonuses = item.stats.filter(b => b.name === 'origin');
             //e.x. youmuus does not equip to assassins
-            for (let k = 0; k < team[i].champion.origin.length; ++k) {
-                if (team[i].champion.origin[k] === item.cannotEquip) {
+            for (let k = 0; k < teamMember.champion.origin.length; ++k) {
+                if (teamMember.champion.origin[k] === item.cannotEquip) {
                   itemTest = false;
                 }
             }
 
             let itemCBonuses = item.stats.filter(b => b.name === 'class');
-            for (let k = 0; k < team[i].champion.classe.length; ++k) {
-              if (team[i].champion.classe[k] === item.cannotEquip) {
+            for (let k = 0; k < teamMember.champion.classe.length; ++k) {
+              if (teamMember.champion.classe[k] === item.cannotEquip) {
                 itemTest = false;
               }
             }
@@ -302,10 +320,17 @@ export default class Main extends Component {
           }
         } while (!itemTest)
         items.push(item);
+        if (item.key === "thiefsgloves") {
+          teamMember.remainingSlots = 0;
+        }
+        else {
+          teamMember.remainingSlots -= item.depth;
+        }
         teamItems -= item.depth;
       }
-      team[i].items = items;
+      teamMember.items = items;
     }
+    return team;
   }
 
   findSynergies(team) {
@@ -348,6 +373,8 @@ export default class Main extends Component {
     const classes = [];
     const items = [];
     const origins = [];
+    const synergies = [];
+    const team = [];
 
     for (let i = 0; i < champions.length; ++i) {
       champions.push(this.state.champions[i].name)
@@ -362,6 +389,25 @@ export default class Main extends Component {
       origins.push(this.state.origins[i].name)
     }
 
+    for (let i = 0; i < this.state.team.length; ++i) {
+      let c = this.state.team[i];
+      team.push(
+        <Card>
+          <CardBody>
+            <Row>{"Name: " + c.champion.name}</Row>
+            <Row>{"Tier: " + c.tier}</Row>
+            <Row>{"Items: " + (c.items.length === 3 ?
+            (c.items[0].name + ", " + c.items[1].name + ", " + c.items[2].name) :
+            (c.items.length === 2 ? (c.items[0].name + ", " + c.items[1].name) :
+            (c.items.length === 1 ? c.items[0].name : "None")))}</Row>
+          </CardBody>
+        </Card>);
+    }
+
+    for (let i = 0; i < this.state.synergies.length; ++i) {
+      synergies.push(<Card><CardBody>{this.state.synergies[i].name + ": " + this.state.synergies[i].count}</CardBody></Card>);
+    }
+
       return (
         <div>
         <Row>
@@ -369,7 +415,7 @@ export default class Main extends Component {
         <Col sm={8}>
           <Card name="activeTraits">
             <CardBody>
-
+              <Row>{synergies}</Row>
             </CardBody>
           </Card>
           <Card>
@@ -381,12 +427,11 @@ export default class Main extends Component {
           </Card>
           <Card name="pool">
             <CardBody>
+              <Row>{team}</Row>
             </CardBody>
           </Card>
           </Col>
-          <Col sm={2}>
-
-          </Col>
+          <Col sm={2}></Col>
           </Row>
           <Button type="button" color="primary" onClick={this.randomButton}>Random</Button>
         </div>
