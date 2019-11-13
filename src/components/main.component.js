@@ -33,7 +33,7 @@ export default class Main extends Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:5000/champions/')
+    axios.get('http://localhost:5000/champions/set/1')
       .then(response => {
         if (response.data.length > 0) {
           this.setState({
@@ -41,7 +41,7 @@ export default class Main extends Component {
           })
         }
       });
-    axios.get('http://localhost:5000/champions/tier/1')
+    axios.get('http://localhost:5000/champions/set/1/tier/1')
       .then(response => {
         if (response.data.length > 0) {
           this.setState({
@@ -49,7 +49,7 @@ export default class Main extends Component {
           })
         }
       });
-      axios.get('http://localhost:5000/champions/tier/2')
+      axios.get('http://localhost:5000/champions/set/1/tier/2')
         .then(response => {
           if (response.data.length > 0) {
             this.setState({
@@ -57,7 +57,7 @@ export default class Main extends Component {
             })
           }
         });
-        axios.get('http://localhost:5000/champions/tier/3')
+        axios.get('http://localhost:5000/champions/set/1/tier/3')
           .then(response => {
             if (response.data.length > 0) {
               this.setState({
@@ -65,7 +65,7 @@ export default class Main extends Component {
               })
             }
           });
-          axios.get('http://localhost:5000/champions/tier/4')
+          axios.get('http://localhost:5000/champions/set/1/tier/4')
             .then(response => {
               if (response.data.length > 0) {
                 this.setState({
@@ -73,7 +73,7 @@ export default class Main extends Component {
                 })
               }
             });
-            axios.get('http://localhost:5000/champions/tier/5')
+            axios.get('http://localhost:5000/champions/set/1/tier/5')
               .then(response => {
                 if (response.data.length > 0) {
                   this.setState({
@@ -82,7 +82,7 @@ export default class Main extends Component {
                 }
               });
 
-      axios.get('http://localhost:5000/classes/')
+      axios.get('http://localhost:5000/classes/set/1')
         .then(response => {
           if (response.data.length > 0) {
             this.setState({
@@ -90,7 +90,7 @@ export default class Main extends Component {
             })
           }
         });
-        axios.get('http://localhost:5000/items/')
+        axios.get('http://localhost:5000/items/set/1')
           .then(response => {
             if (response.data.length > 0) {
               this.setState({
@@ -98,7 +98,7 @@ export default class Main extends Component {
               })
             }
           });
-          axios.get('http://localhost:5000/origins/')
+          axios.get('http://localhost:5000/origins/set/1')
             .then(response => {
               if (response.data.length > 0) {
                 this.setState({
@@ -129,7 +129,7 @@ export default class Main extends Component {
   }
 
   clearButton() {
-
+    this.clearTeam();
   }
 
   runSimulation() {
@@ -139,23 +139,17 @@ export default class Main extends Component {
   randomButton(e) {
     e.preventDefault();
     this.clearTeam();
-    const T1_CHAMPS = 4;
-    const T2_CHAMPS = 5;
     const T3_CHAMPS = 4;
-    const T4_CHAMPS = 3;
     const T5_CHAMPS = 3;
     const MAX_CHAMPS = 8;
-    const MAX_3_AND_UNDER = 7; // roll between 5 and 7 low tier
-    const MAX_4_AND_UP = 4; // roll between 2 and 4 high tier
     const MIN_BASIC_ITEMS = 12;
-    const MAX_BASIC_ITEMS = 16;
     let t5, t4, t3, t2, t1 = 0;
 
     let lowTierChamps = Math.floor(Math.random() * 2);
     if (lowTierChamps === 0) lowTierChamps = 5;
     else lowTierChamps = 6;
     let highTierChamps = MAX_CHAMPS - lowTierChamps;
-    let teamItems = Math.floor(Math.random() * 4);
+    let teamItems = Math.floor(Math.random() * 2);
     teamItems += MIN_BASIC_ITEMS;
 
     t5 = Math.floor(Math.random() * T5_CHAMPS);
@@ -433,7 +427,10 @@ export default class Main extends Component {
           </Col>
           <Col sm={2}></Col>
           </Row>
+          <Row>
           <Button type="button" color="primary" onClick={this.randomButton}>Random</Button>
+          <Button type="button" color="primary" onClick={this.clearTeam}>Clear</Button>
+          </Row>
         </div>
       )
   }

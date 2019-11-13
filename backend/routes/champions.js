@@ -7,6 +7,18 @@ router.route('/').get((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
+router.route('/set/:set').get((req, res) => {
+  Champion.find({set: req.params.set})
+    .then(champion => res.json(champion))
+    .catch(err => res.status(400).json('Error: ' + err));
+})
+
+router.route('/set/:set/tier/:tier').get((req, res) => {
+  Champion.find({set: req.params.set, tier: req.params.tier})
+    .then(champion => res.json(champion))
+    .catch(err => res.status(400).json('Error: ' +err));
+})
+
 router.route('/:id').get((req, res) => {
   Champion.findById(req.params.id)
     .then(champion => res.json(champion))
@@ -18,12 +30,6 @@ router.route('/tier/:tier').get((req, res) => {
     .then(champion => res.json(champion))
     .catch(err => res.status(400).json('Error: ' + err));
 });
-
-router.route('/set/:set').get((req, res) => {
-  Champion.find({set: req.params.set})
-    .then(champion => res.json(champion))
-    .catch(err => res.status(400).json('Error: ' + err));
-})
 
 router.route('/update/:id').post((req, res) => {
   Champion.findById(req.params.id)

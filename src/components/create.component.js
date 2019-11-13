@@ -244,6 +244,7 @@ class Create extends Component {
        tier: this.state.champion.tier,
        ability: this.state.champion.ability,
        stats: this.state.champion.stats,
+       set: this.state.champion.set,
        image: this.state.champion.image,
        icon: this.state.champion.icon
       }
@@ -279,6 +280,7 @@ class Create extends Component {
          description: this.state.classe.description,
          bonuses: this.state.classe.bonuses,
          mustBeExact: this.state.classe.mustBeExact,
+         set: this.state.classe.set,
          image: this.state.classe.image
         }
       axios.post('http://localhost:5000/classes/add', classe)
