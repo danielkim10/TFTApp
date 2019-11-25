@@ -8,11 +8,11 @@ import CheatSheet from "./components/cheatsheet.component";
 import MatchHistory from "./components/matchhistory.component";
 import SavedBuilds from "./components/savedbuilds.component";
 import Create from "./components/create.component";
-import Edit from "./components/edit.component";
-import Champion from "./components/champion.component";
-import Class from "./components/class.component";
-import Item from "./components/item.component";
-import Origin from "./components/origin.component";
+import Edit from "./components/edit-pages/edit.component";
+import Champion from "./components/edit-pages/champion.component";
+import Class from "./components/edit-pages/class.component";
+import Item from "./components/edit-pages/item.component";
+import Origin from "./components/edit-pages/origin.component";
 import Guides from "./components/guides.component";
 
 function App() {
@@ -25,9 +25,9 @@ function App() {
         <Route path="/cheatsheet" component={CheatSheet} />
         <Route path="/matchhistory" component={MatchHistory} />
         <Route path="/savedbuilds" component={SavedBuilds} />
-        <Route path="/create" component={Create} />
+        <Route path="/create" component={Create}/>
         <Route path="/edit" component={Edit} />
-        <Route path="/champion/:id" component={Champion} />
+        <Route path="/champion/:id" component={Champion}/>
         <Route path="/class/:id" component={Class} />
         <Route path="/item/:id" component={Item} />
         <Route path="/origin/:id" component={Origin} />

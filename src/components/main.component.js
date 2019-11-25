@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import { Button, Card, CardBody, Col, Row} from 'reactstrap';
+import { Button, Card, CardHeader, CardBody, Col, Row} from 'reactstrap';
 import axios from 'axios';
-import Hexagon from 'react-hexagon';
-import HexagonGrid from 'react-hexagon-grid';
+import { HexGrid, Layout, Hexagon, Text, Pattern, Path, Hex } from 'react-hexgrid';
+import './hexgrid.css'
+import GameArena from './gamearena.component.js'
+import Api from '../api-helper/api.js'
 
 export default class Main extends Component {
   constructor(props) {
@@ -405,8 +407,8 @@ export default class Main extends Component {
       return (
         <div>
         <Row>
-        <Col sm={2}></Col>
-        <Col sm={8}>
+        <Col sm={1}></Col>
+        <Col sm={7}>
           <Card name="activeTraits">
             <CardBody>
               <Row>{synergies}</Row>
@@ -414,9 +416,38 @@ export default class Main extends Component {
           </Card>
           <Card>
             <CardBody>
-              <HexagonGrid gridWidth={700} gridHeight={600}/>
-              <Row><svg height="100px" width="100px"><Hexagon flatTop/></svg><svg height="100px" width="100px"><Hexagon flatTop/></svg><svg height="100px" width="100px"><Hexagon flatTop/></svg><svg height="100px" width="100px"><Hexagon flatTop/></svg><svg height="100px" width="100px"><Hexagon flatTop/></svg><svg height="100px" width="100px"><Hexagon flatTop/></svg><svg height="100px" width="100px"><Hexagon flatTop/></svg></Row>
-              <Row><svg height="100px" width="100px"><Hexagon flatTop/></svg><svg height="100px" width="100px"><Hexagon flatTop/></svg><svg height="100px" width="100px"><Hexagon flatTop/></svg><svg height="100px" width="100px"><Hexagon flatTop/></svg><svg height="100px" width="100px"><Hexagon flatTop/></svg><svg height="100px" width="100px"><Hexagon flatTop/></svg><svg height="100px" width="100px"><Hexagon flatTop/></svg></Row>
+            <HexGrid width={1400} height={600} viewBox="-50 -50 100 100">
+              <GameArena />
+                {/* Grid with manually inserted hexagons */}
+                {/* <Layout size={{ x: 10, y: 10 }} flat={false} spacing={1.0} origin={{ x: 0, y: 0 }}>
+                  <Hexagon q={0} r={0} s={0} />
+                  <Hexagon q={0} r={-1} s={1}/>
+                  <Hexagon q={-1} r={-1} s={1} />
+                  <Hexagon q={-2} r={-1} s={1} />
+                  <Hexagon q={-3} r={-1} s={1} />
+                  <Hexagon q={2} r={-1} s={1} />
+                  <Hexagon q={3} r={-1} s={1} />
+                  <Hexagon q={0} r={1} s={-1} />
+                  <Hexagon q={1} r={-1} s={0}>
+                  </Hexagon>
+                  <Hexagon q={1} r={0} s={-1}>
+                  </Hexagon>
+                  <Hexagon q={-1} r={1} s={0}>
+                  </Hexagon>
+                  <Hexagon q={1} r={1} s={0} />
+                  <Hexagon q={2} r={1} s={0} />
+                  <Hexagon q={-2} r={1} s={0} />
+                  <Hexagon q={-3} r={1} s={0} />
+                  <Hexagon q={-4} r={1} s={0} />
+                  <Hexagon q={-1} r={0} s={1} />
+                  <Hexagon q={-2} r={0} s={1} />
+                  <Hexagon q={-3} r={0} s={1} />
+                  <Hexagon q={2} r={0} s={1} />
+                  <Hexagon q={3} r={0} s={1} />
+                </Layout>
+                <Pattern id="pat-1" />
+                 <Pattern id="pat-2" /> */}
+              </HexGrid>
             </CardBody>
           </Card>
           <Card name="pool">
@@ -425,7 +456,24 @@ export default class Main extends Component {
             </CardBody>
           </Card>
           </Col>
-          <Col sm={2}></Col>
+          <Col sm={4}>
+          <Row>
+            <Card>
+              <CardHeader>
+              </CardHeader>
+              <CardBody>
+              </CardBody>
+            </Card>
+          </Row>
+          <Row>
+            <Card>
+              <CardHeader>
+              </CardHeader>
+              <CardBody>
+              </CardBody>
+            </Card>
+          </Row>
+          </Col>
           </Row>
           <Row>
           <Button type="button" color="primary" onClick={this.randomButton}>Random</Button>

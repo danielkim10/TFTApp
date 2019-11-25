@@ -106,6 +106,15 @@ class Create extends Component {
       originTempStrings: {
         bonuses: "",
       },
+      hex: {
+        key: "",
+        name: "",
+        description: "",
+        bonus: {},
+        bonusString: "",
+        set: 0,
+        image: "",
+      }
     }
 
     this.handleChampions = this.handleChampions.bind(this);
@@ -191,6 +200,12 @@ class Create extends Component {
       origin[event.target.id] = event.target.value;
       this.setState({ origin: origin });
     }
+  }
+
+  handleHexes(event) {
+    let hex = Object.assign({}, this.state.hex);
+    hex[event.target.id] = event.target.value;
+    this.setState({hex: hex});
   }
 
   handleChampionSubmit(e) {
@@ -341,7 +356,6 @@ class Create extends Component {
   }
 
   handleOriginSubmit(e) {
-
     let _origin = Object.assign({}, this.state.origin);
     let needed = [];
     let effect = [];
@@ -373,6 +387,14 @@ class Create extends Component {
         .then(res => console.log(res.data))
         window.location = '/';
     });
+  }
+
+  handleHexSubmit(e) {
+    let _hex = Object.assign({}, this.state.hex);
+    let bonusString = _hex.bonusString.split(',');
+    _hex.bonus.name = bonusString[0];
+    _hex.bonus.label = bonusString[1];
+    _hex.bonus.value = bonusString[2];
   }
 
   championToggle() {

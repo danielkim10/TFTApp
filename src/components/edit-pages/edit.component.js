@@ -61,19 +61,19 @@ class Edit extends Component {
     const origins = [];
     for (let i = 0; i < this.state.champions.length; i++) {
       let pathname = "/champion/" + this.state.champions[i]._id;
-      champions.push(<div><Link to={{pathname: pathname, id: this.state.champions[i]._id}}><p>{this.state.champions[i].name} {this.state.champions[i].set}</p></Link><img src={this.state.champions[i].icon} height={40} width={40}/></div>);
+      champions.push(<div><Link to={{ pathname: pathname, state: {data: this.state.champions[i]} }}><p>{this.state.champions[i].name} {this.state.champions[i].set}</p></Link><img src={this.state.champions[i].icon} height={40} width={40}/></div>);
     }
     for (let i = 0; i < this.state.classes.length; i++) {
       let pathname = "/class/" + this.state.classes[i]._id;
-      classes.push(<Link to={pathname} params={{ id: this.state.classes[i]._id }}><p>{this.state.classes[i].name} {this.state.classes[i].set}</p></Link>);
+      classes.push(<div><Link to={pathname} params={{ id: this.state.classes[i]._id }}><p>{this.state.classes[i].name} {this.state.classes[i].set}</p></Link></div>);
     }
     for (let i = 0; i < this.state.items.length; i++) {
       let pathname = "/item/" + this.state.items[i]._id;
-      items.push(<Link to={pathname} parmas={{ id: this.state.items[i]._id }}><p>{this.state.items[i].name} {this.state.items[i].set}</p></Link>);
+      items.push(<div><Link to={pathname} parmas={{ id: this.state.items[i]._id }}><p>{this.state.items[i].name} {this.state.items[i].set}</p></Link></div>);
     }
     for (let i = 0; i < this.state.origins.length; i++) {
       let pathname="/origin/" + this.state.origins[i]._id;
-      origins.push(<Link to={pathname} params={{ id: this.state.origins[i]._id }}><p>{this.state.origins[i].name} {this.state.origins[i].set}</p></Link>);
+      origins.push(<div><Link to={pathname} params={{ id: this.state.origins[i]._id }}><p>{this.state.origins[i].name} {this.state.origins[i].set}</p></Link></div>);
     }
       return (
         <div>
@@ -82,7 +82,7 @@ class Edit extends Component {
           <Col>
           <Card>
             <CardHeader>
-              <i class="fa-fa-align-justify"></i><strong>Champions</strong>
+              <strong>Champions</strong>
             </CardHeader>
             <CardBody>
               <Col>{champions}</Col>
@@ -92,7 +92,7 @@ class Edit extends Component {
           <Col>
           <Card>
             <CardHeader>
-              <i class="fa-fa-align-justify"></i><strong>Classes</strong>
+              <strong>Classes</strong>
             </CardHeader>
             <CardBody>
               <Col>{classes}</Col>
@@ -102,7 +102,7 @@ class Edit extends Component {
           <Col>
           <Card>
             <CardHeader>
-              <i class="fa-fa-align-justify"></i><strong>Items</strong>
+              <strong>Items</strong>
             </CardHeader>
             <CardBody>
               <Col>{items}</Col>
@@ -112,7 +112,7 @@ class Edit extends Component {
           <Col>
           <Card>
             <CardHeader>
-              <i class="fa-fa-align-justify"></i><strong>Origins</strong>
+              <strong>Origins</strong>
             </CardHeader>
             <CardBody>
               <Col>{origins}</Col>
