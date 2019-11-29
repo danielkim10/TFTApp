@@ -2,6 +2,8 @@ import React, { Component, Fragment } from 'react';
 import {Button, Row, Col, Form, FormGroup, Card, CardHeader,
         CardBody, CardFooter, Label, Input} from 'reactstrap';
 import axios from 'axios';
+import { renderFormGroup, renderFormGroupCheckbox } from '../../sub-components/formgroup.js';
+import { updateData } from '../../api-helper/api.js';
 
 class Class extends Component {
   constructor(props) {
@@ -110,9 +112,7 @@ class Class extends Component {
         set: this.state.class.set,
         image: this.state.class.image,
       }
-      axios.post('http://localhost:5000/classes/update/' + this.props.match.params.id, _class)
-        .then(res => console.log(res.data));
-      window.location = '/edit';
+      updateData('classes', this.props.match.params.id, _class, '/');
     });
   }
 
@@ -138,19 +138,14 @@ class Class extends Component {
         <Form>
           <Row>
             <Col>
-            {this.renderFormGroup("Id: ", "number", "id", "id", this.handleClasses, this.state.class.id)}
-            {this.renderFormGroup("Key: ", "text", "key", "key", this.handleClasses, this.state.class.key)}
-            {this.renderFormGroup("Name: ", "text", "name", "name", this.handleClasses, this.state.class.name)}
-            {this.renderFormGroup("Description: ", "text", "description", "description", this.handleClasses, this.state.class.description)}
-            {this.renderFormGroup("Bonuses: ", "text", "bonuses", "bonuses", this.handleClasses, this.state.tempStrings.bonuses)}
-            {this.renderFormGroup("Set: ", "number", "set", "set", this.handleClasses, this.state.class.set)}
-            {this.renderFormGroup("Image: ", "text", "image", "image", this.handleClasses, this.state.class.image)}
-            <FormGroup>
-            <Row>
-              <Col md={1}><Label>Must be exact: </Label></Col>
-              <Col md={1}><Input type="checkbox" id="exact" name="exact" onClick={this.handleClick} checked={this.state.class.mustBeExact}/></Col>
-            </Row>
-            </FormGroup>
+            {renderFormGroup("Id: ", "number", "id", "id", this.handleClasses, this.state.class.id)}
+            {renderFormGroup("Key: ", "text", "key", "key", this.handleClasses, this.state.class.key)}
+            {renderFormGroup("Name: ", "text", "name", "name", this.handleClasses, this.state.class.name)}
+            {renderFormGroup("Description: ", "text", "description", "description", this.handleClasses, this.state.class.description)}
+            {renderFormGroup("Bonuses: ", "text", "bonuses", "bonuses", this.handleClasses, this.state.tempStrings.bonuses)}
+            {renderFormGroup("Set: ", "number", "set", "set", this.handleClasses, this.state.class.set)}
+            {renderFormGroup("Image: ", "text", "image", "image", this.handleClasses, this.state.class.image)}
+            {renderFormGroupCheckbox("Must be exact: ", "checkbox", "exact", "exact", this.handleClick, this.state.class.mustBeExact)}
             </Col>
           </Row>
         </Form>

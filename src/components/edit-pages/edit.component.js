@@ -3,11 +3,12 @@ import { Row, Col, Card, CardHeader, CardBody } from 'reactstrap';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Image from 'react-image-resizer';
+import { getData } from '../../api-helper/api.js';
+import { cardColumn } from '../../sub-components/prebuiltcard.js';
 
 class Edit extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       champions: [],
       classes: [],
@@ -17,41 +18,18 @@ class Edit extends Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:5000/champions/')
-      .then(response => {
-        if (response.data.length > 0) {
-          this.setState({
-            champions: response.data.map(champion => champion)
-          })
-        }
-      });
-
-      axios.get('http://localhost:5000/classes/')
-        .then(response => {
-          if (response.data.length > 0) {
-            this.setState({
-              classes: response.data.map(classe => classe)
-            })
-          }
-        });
-
-        axios.get('http://localhost:5000/items/')
-          .then(response => {
-            if (response.data.length > 0) {
-              this.setState({
-                items: response.data.map(item => item)
-              })
-            }
-          });
-
-          axios.get('http://localhost:5000/origins/')
-            .then(response => {
-              if (response.data.length > 0) {
-                this.setState({
-                  origins: response.data.map(origin => origin)
-                })
-              }
-            });
+    getData('champions').then(data => {
+      this.setState({champions: data.map(champion => champion)})
+    });
+    getData('classes').then(data => {
+      this.setState({classes: data.map(classe => classe)})
+    });
+    getData('items').then(data => {
+      this.setState({items: data.map(item => item)})
+    });
+    getData('origins').then(data => {
+      this.setState({origins: data.map(origin => origin)})
+    });
   }
 
   render() {
@@ -79,46 +57,10 @@ class Edit extends Component {
         <div>
         <Card>
           <Row>
-          <Col>
-          <Card>
-            <CardHeader>
-              <strong>Champions</strong>
-            </CardHeader>
-            <CardBody>
-              <Col>{champions}</Col>
-            </CardBody>
-          </Card>
-          </Col>
-          <Col>
-          <Card>
-            <CardHeader>
-              <strong>Classes</strong>
-            </CardHeader>
-            <CardBody>
-              <Col>{classes}</Col>
-            </CardBody>
-          </Card>
-          </Col>
-          <Col>
-          <Card>
-            <CardHeader>
-              <strong>Items</strong>
-            </CardHeader>
-            <CardBody>
-              <Col>{items}</Col>
-            </CardBody>
-          </Card>
-          </Col>
-          <Col>
-          <Card>
-            <CardHeader>
-              <strong>Origins</strong>
-            </CardHeader>
-            <CardBody>
-              <Col>{origins}</Col>
-            </CardBody>
-          </Card>
-          </Col>
+          {cardColumn('Champions', champions)}
+          {cardColumn('Classes', classes)}
+          {cardColumn('Items', items)}
+          {cardColumn('Origins', origins)}
           </Row>
           </Card>
         </div>

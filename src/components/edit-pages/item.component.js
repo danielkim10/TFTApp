@@ -2,6 +2,8 @@ import React, { Component, Fragment } from 'react';
 import {Button, Row, Col, Form, FormGroup, Card, CardHeader,
         CardBody, CardFooter, Label, Input} from 'reactstrap';
 import axios from 'axios';
+import { renderFormGroup, renderFormGroupCheckbox } from '../../sub-components/formgroup.js';
+import { updateData } from '../../api-helper/api.js';
 
 class Item extends Component {
   constructor(props) {
@@ -117,21 +119,8 @@ class Item extends Component {
         set: this.state.item.set,
         image: this.state.item.image,
       }
-      axios.post('http://localhost:5000/items/update/' + this.props.match.params.id, item)
-       .then(res => console.log(res.data))
-       window.location = '/edit';
+      updateData('items', this.props.match.params.id, item, '/');
     });
-  }
-
-  renderFormGroup(label, type, id, name, handler, state) {
-    return (
-      <Fragment>
-        <FormGroup>
-          <Label>{label}</Label>
-          <Input type={type} id={id} name={name} onChange={handler} value={state}/>
-        </FormGroup>
-      </Fragment>
-    );
   }
 
   render() {
@@ -145,23 +134,18 @@ class Item extends Component {
             <Form onSubmit={this.handleSubmit}>
               <Row>
                 <Col>
-                  {this.renderFormGroup("Key: ", "text", "key", "key", this.handleItems, this.state.item.key)}
-                  {this.renderFormGroup("Name: ", "text", "name", "name", this.handleItems, this.state.item.name)}
-                  {this.renderFormGroup("Type: ", "text", "type", "type", this.handleItems, this.state.item.type)}
-                  {this.renderFormGroup("Bonus: ", "text", "bonus", "bonus", this.handleItems, this.state.item.bonus)}
-                  {this.renderFormGroup("Depth: ", "number", "depth", "depth", this.handleItems, this.state.item.depth)}
-                  {this.renderFormGroup("Stats: ", "text", "stats", "stats", this.handleItems, this.state.tempStrings.stats)}
-                  {this.renderFormGroup("Builds From: ", "text", "buildsFrom", "buildsFrom", this.handleItems, this.state.tempStrings.buildsFrom)}
-                  {this.renderFormGroup("Builds Into: ", "text", "buildsInto", "buildsInto", this.handleItems, this.state.tempStrings.buildsInto)}
-                  <FormGroup>
-                    <Row>
-                      <Col md={1}><Label>Unique (one per champion): </Label></Col>
-                      <Col md={1}><Input type="checkbox" id="unique" name="unique" onClick={this.handleClick} checked={this.state.item.unique} /></Col>
-                    </Row>
-                  </FormGroup>
-                  {this.renderFormGroup("Cannot Equip: ", "text", "cannotEquip", "cannotEquip", this.handleItems, this.state.item.cannotEquip)}
-                  {this.renderFormGroup("Set: ", "number", "set", "set", this.handleItems, this.state.item.set)}
-                  {this.renderFormGroup("Image: ", "text", "image", "image", this.handleItems, this.state.item.image)}
+                  {renderFormGroup("Key: ", "text", "key", "key", this.handleItems, this.state.item.key)}
+                  {renderFormGroup("Name: ", "text", "name", "name", this.handleItems, this.state.item.name)}
+                  {renderFormGroup("Type: ", "text", "type", "type", this.handleItems, this.state.item.type)}
+                  {renderFormGroup("Bonus: ", "text", "bonus", "bonus", this.handleItems, this.state.item.bonus)}
+                  {renderFormGroup("Depth: ", "number", "depth", "depth", this.handleItems, this.state.item.depth)}
+                  {renderFormGroup("Stats: ", "text", "stats", "stats", this.handleItems, this.state.tempStrings.stats)}
+                  {renderFormGroup("Builds From: ", "text", "buildsFrom", "buildsFrom", this.handleItems, this.state.tempStrings.buildsFrom)}
+                  {renderFormGroup("Builds Into: ", "text", "buildsInto", "buildsInto", this.handleItems, this.state.tempStrings.buildsInto)}
+                  {renderFormGroupCheckbox("Unique (one per champion): ", "checkbox", "unique", "unique", this.handleClick, this.state.item.unique)}
+                  {renderFormGroup("Cannot Equip: ", "text", "cannotEquip", "cannotEquip", this.handleItems, this.state.item.cannotEquip)}
+                  {renderFormGroup("Set: ", "number", "set", "set", this.handleItems, this.state.item.set)}
+                  {renderFormGroup("Image: ", "text", "image", "image", this.handleItems, this.state.item.image)}
                 </Col>
               </Row>
             </Form>

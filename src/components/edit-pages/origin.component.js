@@ -2,6 +2,8 @@ import React, { Component, Fragment } from 'react';
 import {Button, Row, Col, Form, FormGroup, Card, CardHeader,
         CardBody, CardFooter, Label, Input} from 'reactstrap';
 import axios from 'axios';
+import { renderFormGroup, renderFormGroupCheckbox } from '../../sub-components/formgroup.js';
+import { updateData } from '../../api-helper/api.js';
 
 class Origin extends Component {
   constructor(props) {
@@ -21,7 +23,6 @@ class Origin extends Component {
         image: "",
       },
     }
-
     this.handleOrigins = this.handleOrigins.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -110,21 +111,8 @@ class Origin extends Component {
         set: this.state.origin.set,
         image: this.state.origin.image,
       }
-      axios.post('http://localhost:5000/origins/update/' + this.props.match.params.id, _origin)
-        .then(res => console.log(res.data));
-      window.location = '/edit';
+      updateData('origins', this.props.match.params.id, _origin, '/');
     });
-  }
-
-  renderFormGroup(label, type, id, name, handler, state) {
-    return (
-      <Fragment>
-        <FormGroup>
-          <Label>{label}</Label>
-          <Input type={type} id={id} name={name} onChange={handler} value={state}/>
-        </FormGroup>
-      </Fragment>
-    );
   }
 
   render() {
@@ -138,19 +126,14 @@ class Origin extends Component {
             <Form>
               <Row>
                 <Col>
-                  {this.renderFormGroup("Id: ", "number", "id", "id", this.handleOrigins, this.state.origin.id)}
-                  {this.renderFormGroup("Key: ", "text", "key", "key", this.handleOrigins, this.state.origin.key)}
-                  {this.renderFormGroup("Name: ", "text", "name", "name", this.handleOrigins, this.state.origin.name)}
-                  {this.renderFormGroup("Description: ", "text", "description", "description", this.handleOrigins, this.state.origin.description)}
-                  {this.renderFormGroup("Bonuses: ", "text", "bonuses", "bonuses", this.handleOrigins, this.state.tempStrings.bonuses)}
-                  {this.renderFormGroup("Set: ", "number", "set", "set", this.handleOrigins, this.state.origin.set)}
-                  {this.renderFormGroup("Image: ", "text", "image", "image", this.handleOrigins, this.state.origin.image)}
-                  <FormGroup>
-                  <Row>
-                    <Col md={1}><Label>Must be exact: </Label></Col>
-                    <Col md={1}><Input type="checkbox" id="exact" name="exact" onClick={this.handleClick} checked={this.state.origin.mustBeExact}/></Col>
-                  </Row>
-                  </FormGroup>
+                  {renderFormGroup("Id: ", "number", "id", "id", this.handleOrigins, this.state.origin.id)}
+                  {renderFormGroup("Key: ", "text", "key", "key", this.handleOrigins, this.state.origin.key)}
+                  {renderFormGroup("Name: ", "text", "name", "name", this.handleOrigins, this.state.origin.name)}
+                  {renderFormGroup("Description: ", "text", "description", "description", this.handleOrigins, this.state.origin.description)}
+                  {renderFormGroup("Bonuses: ", "text", "bonuses", "bonuses", this.handleOrigins, this.state.tempStrings.bonuses)}
+                  {renderFormGroup("Set: ", "number", "set", "set", this.handleOrigins, this.state.origin.set)}
+                  {renderFormGroup("Image: ", "text", "image", "image", this.handleOrigins, this.state.origin.image)}
+                  {renderFormGroupCheckbox("Must be exact: ", "checkbox", "exact", "exact", this.handleClick, this.state.origin.mustBeExact)}
                 </Col>
               </Row>
             </Form>
