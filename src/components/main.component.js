@@ -4,7 +4,7 @@ import axios from 'axios';
 import { HexGrid, Layout, Hexagon, Text, Pattern, Path, Hex } from 'react-hexgrid';
 import './hexgrid.css'
 import GameArena from './gamearena.component.js'
-import Api from '../api-helper/api.js'
+import { getData } from '../api-helper/api.js'
 
 export default class Main extends Component {
   constructor(props) {
@@ -20,11 +20,6 @@ export default class Main extends Component {
       origins: [],
       activeClasses: [],
       activeOrigins: [],
-      t1Champs: [],
-      t2Champs: [],
-      t3Champs: [],
-      t4Champs: [],
-      t5Champs: [],
     }
     this.clearButton = this.clearButton.bind(this);
     this.randomButton = this.randomButton.bind(this);
@@ -35,79 +30,18 @@ export default class Main extends Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:5000/champions/set/1')
-      .then(response => {
-        if (response.data.length > 0) {
-          this.setState({
-            champions: response.data.map(champion => champion)
-          })
-        }
-      });
-    axios.get('http://localhost:5000/champions/set/1/tier/1')
-      .then(response => {
-        if (response.data.length > 0) {
-          this.setState({
-            t1Champs: response.data.map(champion => champion)
-          })
-        }
-      });
-      axios.get('http://localhost:5000/champions/set/1/tier/2')
-        .then(response => {
-          if (response.data.length > 0) {
-            this.setState({
-              t2Champs: response.data.map(champion => champion)
-            })
-          }
-        });
-        axios.get('http://localhost:5000/champions/set/1/tier/3')
-          .then(response => {
-            if (response.data.length > 0) {
-              this.setState({
-                t3Champs: response.data.map(champion => champion)
-              })
-            }
-          });
-          axios.get('http://localhost:5000/champions/set/1/tier/4')
-            .then(response => {
-              if (response.data.length > 0) {
-                this.setState({
-                  t4Champs: response.data.map(champion => champion)
-                })
-              }
-            });
-            axios.get('http://localhost:5000/champions/set/1/tier/5')
-              .then(response => {
-                if (response.data.length > 0) {
-                  this.setState({
-                    t5Champs: response.data.map(champion => champion)
-                  })
-                }
-              });
-
-      axios.get('http://localhost:5000/classes/set/1')
-        .then(response => {
-          if (response.data.length > 0) {
-            this.setState({
-              classes: response.data.map(classe => classe)
-            })
-          }
-        });
-        axios.get('http://localhost:5000/items/set/1')
-          .then(response => {
-            if (response.data.length > 0) {
-              this.setState({
-                items: response.data.map(item => item)
-              })
-            }
-          });
-          axios.get('http://localhost:5000/origins/set/1')
-            .then(response => {
-              if (response.data.length > 0) {
-                this.setState({
-                  origins: response.data.map(origin => origin)
-                })
-              }
-            });
+    getData('champions').then(data => {
+      this.setState({champions: data.filter(champion => champion.set === 1)});
+    });
+    getData('classes').then(data => {
+      this.setState({classes: data.filter(classe => classe)});
+    });
+    getData('items').then(data => {
+      this.setState({items: data.filter(champion => champion.set === 1)});
+    });
+    getData('origins').then(data => {
+      this.setState({origins: data.filter(origin => origin.set === 1)});
+    });
   }
 
   addToTeam() {
@@ -165,11 +99,11 @@ export default class Main extends Component {
       lowTierChamps -= t2;
       t1 = lowTierChamps;
     }
-    let t5Champs = this.state.t5Champs;
-    let t4Champs = this.state.t4Champs;
-    let t3Champs = this.state.t3Champs;
-    let t2Champs = this.state.t2Champs;
-    let t1Champs = this.state.t1Champs;
+    let t5Champs = this.state.champions.filter(champion => champion.tier === 5);
+    let t4Champs = this.state.champions.filter(champion => champion.tier === 4);
+    let t3Champs = this.state.champions.filter(champion => champion.tier === 3);
+    let t2Champs = this.state.champions.filter(champion => champion.tier === 2);
+    let t1Champs = this.state.champions.filter(champion => champion.tier === 1);
     let team = [];
 
     /* PROCESS */

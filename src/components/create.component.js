@@ -1,8 +1,9 @@
-import React, { Component, Fragment } from 'react';
-import {Button, Row, Col, Collapse, Form, FormGroup, Card, CardHeader,
-        CardBody, CardFooter, Label, Input} from 'reactstrap';
+import React, { Component } from 'react';
+import {Button, Row, Col, Collapse, Card, CardHeader,
+        CardBody, CardFooter} from 'reactstrap';
 import {ToastsContainer, ToastsStore} from 'react-toasts';
-import axios from 'axios';
+import { renderFormGroup, renderFormGroupCheckbox } from '../sub-components/formgroup.js';
+import { postData } from '../api-helper/api.js';
 
 class Create extends Component {
   constructor(props) {
@@ -13,6 +14,7 @@ class Create extends Component {
       classCollapse: false,
       itemCollapse: false,
       originCollapse: false,
+      hexCollapse: false,
 
       origins: [],
       classes: [],
@@ -125,10 +127,13 @@ class Create extends Component {
     this.handleItemSubmit = this.handleItemSubmit.bind(this);
     this.handleOrigins = this.handleOrigins.bind(this);
     this.handleOriginSubmit = this.handleOriginSubmit.bind(this);
+    this.handleHexes =this.handleHexes.bind(this);
+    this.handleHexSubmit = this.handleHexSubmit.bind(this);
     this.championToggle = this.championToggle.bind(this);
     this.classToggle = this.classToggle.bind(this);
     this.itemToggle = this.itemToggle.bind(this);
     this.originToggle = this.originToggle.bind(this);
+    this.hexToggle = this.hexToggle.bind(this);
   }
 
   componentDidMount() {
@@ -263,9 +268,7 @@ class Create extends Component {
        image: this.state.champion.image,
        icon: this.state.champion.icon
       }
-      axios.post('http://localhost:5000/champions/add', champion)
-        .then(res => console.log(res.data))
-        window.location = '/';
+      postData('champions', champion, '/');
     });
   }
 
@@ -298,9 +301,7 @@ class Create extends Component {
          set: this.state.classe.set,
          image: this.state.classe.image
         }
-      axios.post('http://localhost:5000/classes/add', classe)
-       .then(res => console.log(res.data))
-       window.location = '/';
+        postData('classes', classe, '/');
      });
   }
 
@@ -349,9 +350,7 @@ class Create extends Component {
        set: this.state.item.set,
        image: this.state.item.image
       }
-      axios.post('http://localhost:5000/items/add', item)
-       .then(res => console.log(res.data))
-       window.location = '/';
+      postData('items', item, '/');
      });
   }
 
@@ -383,9 +382,7 @@ class Create extends Component {
         set: this.state.origin.set,
         image: this.state.origin.image,
       }
-      axios.post('http://localhost:5000/origins/add', origin)
-        .then(res => console.log(res.data))
-        window.location = '/';
+      postData('origins', origin, '/');
     });
   }
 
@@ -395,6 +392,18 @@ class Create extends Component {
     _hex.bonus.name = bonusString[0];
     _hex.bonus.label = bonusString[1];
     _hex.bonus.value = bonusString[2];
+    this.setState({ hex: _hex }, function() {
+      e.preventDefault();
+      const hex = {
+        key: this.state.hex.key,
+        name: this.state.hex.name,
+        description: this.state.hex.description,
+        bonus: this.state.hex.bonus,
+        set: this.state.hex.set,
+        image: this.state.hex.image,
+      }
+      postData('hexes', hex, '/');
+    });
   }
 
   championToggle() {
@@ -411,6 +420,10 @@ class Create extends Component {
 
   originToggle() {
     this.setState( {originCollapse: !this.state.originCollapse} );
+  }
+
+  hexToggle() {
+    this.setState( {hexCollapse: !this.state.hexCollapse} );
   }
 
   handleClick(event, choose) {
@@ -431,62 +444,49 @@ class Create extends Component {
     }
   }
 
-  renderFormGroup(label, type, id, name, handler) {
-    return (
-      <Fragment>
-        <FormGroup>
-          <Label>{label}</Label>
-          <Input type={type} id={id} name={name} onChange={handler} />
-        </FormGroup>
-      </Fragment>
-    );
-  }
-
   render() {
       return (
         <div>
         <ToastsContainer store={ToastsStore}/>
             <Card style={{width: "100%"}}>
               <CardHeader>
-                <i class="fa-fa-align-justify"></i><strong>Champions</strong>
+                <strong>Champions</strong>
                 <Button color="primary" onClick={this.championToggle} style={{marginLeft: '1rem'}}>Toggle</Button>
               </CardHeader>
               <Collapse isOpen={this.state.championCollapse}>
               <CardBody>
-                <Form onSubmit={this.handleSubmit}>
-                  <Row>
+                <Row>
                   <Col md={6}>
-                    {this.renderFormGroup("ID: ", "number", "id", "id", this.handleChampions)}
-                    {this.renderFormGroup("Key: ", "text", "key", "key", this.handleChampions)}
-                    {this.renderFormGroup("Name: ", "text", "name", "name", this.handleChampions)}
-                    {this.renderFormGroup("Cost: ", "text", "cost", "cost", this.handleChampions)}
-                    {this.renderFormGroup("Tier: ", "number", "tier", "tier", this.handleChampions)}
-                    {this.renderFormGroup("Origin: ", "text", "origin", "origin", this.handleChampions)}
-                    {this.renderFormGroup("Class: ", "text", "classe", "classe", this.handleChampions)}
-                    {this.renderFormGroup("Ability Name: ", "text", "ability", "name", this.handleChampions)}
-                    {this.renderFormGroup("Ability Description: ", "text", "ability", "description", this.handleChampions)}
-                    {this.renderFormGroup("Ability Type: ", "text", "ability", "type", this.handleChampions)}
-                    {this.renderFormGroup("Mana Cost: ", "number", "ability", "manaCost", this.handleChampions)}
-                    {this.renderFormGroup("Mana Start: ", "number", "ability", "manaStart", this.handleChampions)}
-                    {this.renderFormGroup("Ability Stat Type: ", "text", "abilityStats", "statsType", this.handleChampions)}
-                    {this.renderFormGroup("Ability Stat Value: ", "text", "abilityStats", "statsValue", this.handleChampions)}
-                    </Col>
-                    <Col md={6}>
-                    {this.renderFormGroup("Damage: ", "text", "offense", "damage", this.handleChampions)}
-                    {this.renderFormGroup("Attack Speed: ", "number", "offense", "attackSpeed", this.handleChampions)}
-                    {this.renderFormGroup("Spell Power: ", "number", "offense", "spellPower", this.handleChampions)}
-                    {this.renderFormGroup("Crit Chance: ", "number", "offense", "critChance", this.handleChampions)}
-                    {this.renderFormGroup("Dodge Chance: ", "number", "defense", "dodgeChance", this.handleChampions)}
-                    {this.renderFormGroup("Range: ", "number", "offense", "range", this.handleChampions)}
-                    {this.renderFormGroup("Health: ", "text", "defense", "health", this.handleChampions)}
-                    {this.renderFormGroup("Armor: ", "number", "defense", "armor", this.handleChampions)}
-                    {this.renderFormGroup("Magic Resist: ", "number", "defense", "magicResist", this.handleChampions)}
-                    {this.renderFormGroup("Set: ", "number", "set", "set", this.handleChampions)}
-                    {this.renderFormGroup("Image: ", "text", "image", "image", this.handleChampions)}
-                    {this.renderFormGroup("Icon: ", "text", "icon", "icon", this.handleChampions)}
-                    </Col>
-                    </Row>
-                </Form>
+                    {renderFormGroup("ID: ", "number", "id", "id", this.handleChampions)}
+                    {renderFormGroup("Key: ", "text", "key", "key", this.handleChampions)}
+                    {renderFormGroup("Name: ", "text", "name", "name", this.handleChampions)}
+                    {renderFormGroup("Cost: ", "text", "cost", "cost", this.handleChampions)}
+                    {renderFormGroup("Tier: ", "number", "tier", "tier", this.handleChampions)}
+                    {renderFormGroup("Origin: ", "text", "origin", "origin", this.handleChampions)}
+                    {renderFormGroup("Class: ", "text", "classe", "classe", this.handleChampions)}
+                    {renderFormGroup("Ability Name: ", "text", "ability", "name", this.handleChampions)}
+                    {renderFormGroup("Ability Description: ", "text", "ability", "description", this.handleChampions)}
+                    {renderFormGroup("Ability Type: ", "text", "ability", "type", this.handleChampions)}
+                    {renderFormGroup("Mana Cost: ", "number", "ability", "manaCost", this.handleChampions)}
+                    {renderFormGroup("Mana Start: ", "number", "ability", "manaStart", this.handleChampions)}
+                    {renderFormGroup("Ability Stat Type: ", "text", "abilityStats", "statsType", this.handleChampions)}
+                    {renderFormGroup("Ability Stat Value: ", "text", "abilityStats", "statsValue", this.handleChampions)}
+                  </Col>
+                  <Col md={6}>
+                    {renderFormGroup("Damage: ", "text", "offense", "damage", this.handleChampions)}
+                    {renderFormGroup("Attack Speed: ", "number", "offense", "attackSpeed", this.handleChampions)}
+                    {renderFormGroup("Spell Power: ", "number", "offense", "spellPower", this.handleChampions)}
+                    {renderFormGroup("Crit Chance: ", "number", "offense", "critChance", this.handleChampions)}
+                    {renderFormGroup("Dodge Chance: ", "number", "defense", "dodgeChance", this.handleChampions)}
+                    {renderFormGroup("Range: ", "number", "offense", "range", this.handleChampions)}
+                    {renderFormGroup("Health: ", "text", "defense", "health", this.handleChampions)}
+                    {renderFormGroup("Armor: ", "number", "defense", "armor", this.handleChampions)}
+                    {renderFormGroup("Magic Resist: ", "number", "defense", "magicResist", this.handleChampions)}
+                    {renderFormGroup("Set: ", "number", "set", "set", this.handleChampions)}
+                    {renderFormGroup("Image: ", "text", "image", "image", this.handleChampions)}
+                    {renderFormGroup("Icon: ", "text", "icon", "icon", this.handleChampions)}
+                  </Col>
+                  </Row>
                 </CardBody>
                 <CardFooter>
                   <Button type="button" color="primary" onClick={this.handleChampionSubmit}>Submit</Button>
@@ -495,30 +495,23 @@ class Create extends Component {
               </Card>
               <Card>
               <CardHeader>
-                <i class="fa fa-align-justify"></i><strong>Classes</strong>
+                <strong>Classes</strong>
                 <Button color="primary" onClick={this.classToggle} style={{marginLeft: '1rem'}}>Toggle</Button>
               </CardHeader>
               <Collapse isOpen={this.state.classCollapse}>
               <CardBody>
-                <Form onSubmit={this.handleSubmit}>
-                  <Row>
-                    <Col>
-                    {this.renderFormGroup("Id: ", "number", "id", "id", this.handleClasses)}
-                    {this.renderFormGroup("Key: ", "text", "key", "key", this.handleClasses)}
-                    {this.renderFormGroup("Name: ", "text", "name", "name", this.handleClasses)}
-                    {this.renderFormGroup("Description: ", "text", "description", "description", this.handleClasses)}
-                    {this.renderFormGroup("Bonuses: ", "text", "bonuses", "classBonuses", this.handleClasses)}
-                    {this.renderFormGroup("Set: ", "number", "set", "set", this.handleClasses)}
-                    {this.renderFormGroup("Image: ", "text", "image", "image", this.handleClasses)}
-                    <FormGroup>
-                    <Row>
-                      <Col md={1}><Label>Must be exact: </Label></Col>
-                      <Col md={1}><Input type="checkbox" id="exact" name="exact" onClick={event => this.handleClick(event, 0)}/></Col>
-                      </Row>
-                    </FormGroup>
-                    </Col>
-                  </Row>
-                </Form>
+                <Row>
+                  <Col>
+                    {renderFormGroup("Id: ", "number", "id", "id", this.handleClasses)}
+                    {renderFormGroup("Key: ", "text", "key", "key", this.handleClasses)}
+                    {renderFormGroup("Name: ", "text", "name", "name", this.handleClasses)}
+                    {renderFormGroup("Description: ", "text", "description", "description", this.handleClasses)}
+                    {renderFormGroup("Bonuses: ", "text", "bonuses", "classBonuses", this.handleClasses)}
+                    {renderFormGroup("Set: ", "number", "set", "set", this.handleClasses)}
+                    {renderFormGroup("Image: ", "text", "image", "image", this.handleClasses)}
+                    {renderFormGroupCheckbox("Must be exact: ", "checkbox", "exact", "exact", event => this.handleClick(event, 0), null)}
+                  </Col>
+                </Row>
               </CardBody>
               <CardFooter>
                 <Button type="button" color="primary" onClick={this.handleClassSubmit}>Submit</Button>
@@ -527,30 +520,23 @@ class Create extends Component {
               </Card>
               <Card>
                 <CardHeader>
-                  <i class="fa fa-align-justify"></i><strong>Origins</strong>
+                  <strong>Origins</strong>
                   <Button color="primary" onClick={this.originToggle} style={{marginLeft: '1rem'}}>Toggle</Button>
                 </CardHeader>
                 <Collapse isOpen={this.state.originCollapse}>
                 <CardBody>
-                <Form onSubmit={this.handleSubmit}>
                   <Row>
                     <Col>
-                    {this.renderFormGroup("Id: ", "number", "id", "id", this.handleOrigins)}
-                    {this.renderFormGroup("Key: ", "text", "key", "key", this.handleOrigins)}
-                    {this.renderFormGroup("Name: ", "text", "name", "name", this.handleOrigins)}
-                    {this.renderFormGroup("Description: ", "text", "description", "description", this.handleOrigins)}
-                    {this.renderFormGroup("Bonuses: ", "text", "bonuses", "originBonuses", this.handleOrigins)}
-                    {this.renderFormGroup("Set: ", "number", "set", "set", this.handleOrigins)}
-                    {this.renderFormGroup("Image: ", "text", "image", "image", this.handleOrigins)}
-                    <FormGroup>
-                      <Row>
-                        <Col md={1}><Label>Must be exact: </Label></Col>
-                        <Col md={1}><Input type="checkbox" id="exact" name="exact" onClick={event => this.handleClick(event, 1)}/></Col>
-                      </Row>
-                    </FormGroup>
+                      {renderFormGroup("Id: ", "number", "id", "id", this.handleOrigins)}
+                      {renderFormGroup("Key: ", "text", "key", "key", this.handleOrigins)}
+                      {renderFormGroup("Name: ", "text", "name", "name", this.handleOrigins)}
+                      {renderFormGroup("Description: ", "text", "description", "description", this.handleOrigins)}
+                      {renderFormGroup("Bonuses: ", "text", "bonuses", "originBonuses", this.handleOrigins)}
+                      {renderFormGroup("Set: ", "number", "set", "set", this.handleOrigins)}
+                      {renderFormGroup("Image: ", "text", "image", "image", this.handleOrigins)}
+                      {renderFormGroupCheckbox("Must be exact: ", "checkbox", "exact", "exact", event => this.handleClick(event, 1), null)}
                     </Col>
                   </Row>
-                </Form>
                 </CardBody>
                 <CardFooter>
                   <Button type="button" color="primary" onClick={this.handleOriginSubmit}>Submit</Button>
@@ -559,38 +545,54 @@ class Create extends Component {
               </Card>
               <Card>
                 <CardHeader>
-                  <i class="fa fa-align-justify"></i><strong>Items</strong>
+                  <strong>Items</strong>
                   <Button color="primary" onClick={this.itemToggle} style={{marginLeft: '1rem'}}>Toggle</Button>
                 </CardHeader>
                 <Collapse isOpen={this.state.itemCollapse}>
                 <CardBody>
-                  <Form onSubmit={this.handleSubmit}>
-                    <Row>
-                      <Col>
-                        {this.renderFormGroup("Key: ", "text", "key", "key", this.handleItems)}
-                        {this.renderFormGroup("Name: ", "text", "name", "name", this.handleItems)}
-                        {this.renderFormGroup("Type: ", "text", "type", "type", this.handleItems)}
-                        {this.renderFormGroup("Bonus: ", "text", "bonus", "bonus", this.handleItems)}
-                        {this.renderFormGroup("Depth: ", "number", "depth", "depth", this.handleItems)}
-                        {this.renderFormGroup("Stats: ", "text", "stats", "stats", this.handleItems)}
-                        {this.renderFormGroup("Builds From: ", "text", "buildsFrom", "buildsFrom", this.handleItems)}
-                        {this.renderFormGroup("Builds Into: ", "text", "buildsInto", "buildsInto", this.handleItems)}
-                        <FormGroup>
-                          <Row>
-                            <Col md={1}><Label>Unique (one per champion): </Label></Col>
-                            <Col md={1}><Input type="checkbox" id="unique" name="unique" onClick={event => this.handleClick(event, 2)} /></Col>
-                          </Row>
-                        </FormGroup>
-                        {this.renderFormGroup("Cannot Equip:", "text", "cannotEquip", "cannotEquip", this.handleItems)}
-                        {this.renderFormGroup("Set: ", "number", "set", "set", this.handleItems)}
-                        {this.renderFormGroup("Image: ", "text", "image", "image", this.handleItems)}
-                      </Col>
-                    </Row>
-                  </Form>
+                  <Row>
+                    <Col>
+                      {renderFormGroup("Key: ", "text", "key", "key", this.handleItems)}
+                      {renderFormGroup("Name: ", "text", "name", "name", this.handleItems)}
+                      {renderFormGroup("Type: ", "text", "type", "type", this.handleItems)}
+                      {renderFormGroup("Bonus: ", "text", "bonus", "bonus", this.handleItems)}
+                      {renderFormGroup("Depth: ", "number", "depth", "depth", this.handleItems)}
+                      {renderFormGroup("Stats: ", "text", "stats", "stats", this.handleItems)}
+                      {renderFormGroup("Builds From: ", "text", "buildsFrom", "buildsFrom", this.handleItems)}
+                      {renderFormGroup("Builds Into: ", "text", "buildsInto", "buildsInto", this.handleItems)}
+                      {renderFormGroupCheckbox("Unique (one per champion): ", "checkbox", "unique", "unique", event => this.handleClick(event, 2), null)}
+                      {renderFormGroup("Cannot Equip:", "text", "cannotEquip", "cannotEquip", this.handleItems)}
+                      {renderFormGroup("Set: ", "number", "set", "set", this.handleItems)}
+                      {renderFormGroup("Image: ", "text", "image", "image", this.handleItems)}
+                    </Col>
+                  </Row>
                 </CardBody>
                 <CardFooter>
                   <Button type="button" color="primary" onClick={this.handleItemSubmit}>Submit</Button>
                 </CardFooter>
+                </Collapse>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <strong>Hexes</strong>
+                  <Button color="primary" onClick={this.hexToggle} style={{marginLeft: '1rem'}}>Toggle</Button>
+                </CardHeader>
+                <Collapse isOpen={this.state.hexCollapse}>
+                  <CardBody>
+                    <Row>
+                      <Col>
+                        {renderFormGroup("Key: ", "text", "key", "key", this.handleHexes)}
+                        {renderFormGroup("Name: ", "text", "name", "name", this.handleHexes)}
+                        {renderFormGroup("Description: ", "text", "description", "description", this.handleHexes)}
+                        {renderFormGroup("Bonuses: ", "text", "bonusString", "bonusString", this.handleHexes)}
+                        {renderFormGroup("Set: ", "text", "set", "set", this.handleHexes)}
+                        {renderFormGroup("Image: ", "text", "image", "image", this.handleHexes)}
+                      </Col>
+                    </Row>
+                  </CardBody>
+                  <CardFooter>
+                    <Button type="button" color="primary" onClick={this.handleHexSubmit}>Submit</Button>
+                  </CardFooter>
                 </Collapse>
               </Card>
         </div>

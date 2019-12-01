@@ -3,7 +3,7 @@ import {Button, Row, Col, Form, FormGroup, Card, CardHeader,
         CardBody, CardFooter, Label, Input} from 'reactstrap';
 import axios from 'axios';
 import { renderFormGroup, renderFormGroupCheckbox } from '../../sub-components/formgroup.js';
-import { updateData } from '../../api-helper/api.js';
+import { getDataFromId, updateData } from '../../api-helper/api.js';
 
 class Item extends Component {
   constructor(props) {
@@ -35,22 +35,20 @@ class Item extends Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:5000/items/' + this.props.match.params.id)
-    .then(response => {
-      if (response.data.key) {
-        let item = Object.assign({}, this.state.item);
+    // getDataFromId('items', this.props.match.params.id).then(data => {
+      // if (data.key) {
+        let item = Object.assign({}, this.props.location.state.data);
         let tempStrings = Object.assign({}, this.state.tempStrings);
-        item = response.data;
-        let buildsFrom = response.data.buildsFrom.join();
-        let buildsInto = response.data.buildsInto.join();
+        // item = data;
+        let buildsFrom = item.buildsFrom.join();
+        let buildsInto = item.buildsInto.join();
         let statsName = [];
         let statsTitle = [];
         let statsValue = [];
         let stats = "";
-        for (let i = 0; i < response.data.stats.length; i++) {
-          statsName.push(response.data.stats[i].name);
-          statsTitle.push(response.data.stats[i].label);
-          statsValue.push(response.data.stats[i].value);
+        for (let i = 0; i < item.stats.length; i++) {
+          statsTitle.push(item.stats[i].label);
+          statsValue.push(item.stats[i].value);
         }
         for (let i = 0; i < statsName.length; i++) {
           stats += statsName[i] + ',' + statsTitle[i] + ',' + statsValue[i];
@@ -64,8 +62,8 @@ class Item extends Component {
         this.setState({
           item: item, tempStrings: tempStrings
         });
-      }
-    })
+      // }
+    // });
   }
 
   handleItems(event) {

@@ -3,7 +3,7 @@ import {Button, Row, Col, Form, FormGroup, Card, CardHeader,
         CardBody, CardFooter, Label, Input} from 'reactstrap';
 import axios from 'axios';
 import { renderFormGroup, renderFormGroupCheckbox } from '../../sub-components/formgroup.js';
-import { updateData } from '../../api-helper/api.js';
+import { getDataFromId, updateData } from '../../api-helper/api.js';
 
 class Origin extends Component {
   constructor(props) {
@@ -29,35 +29,34 @@ class Origin extends Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:5000/origins/' + this.props.match.params.id)
-      .then(response => {
-        if (response.data.key) {
-          let origin = Object.assign({}, this.state.origin);
-          let tempStrings = Object.assign({}, this.state.tempStrings);
-          origin = response.data;
-          let needed = [];
-          let effect = [];
-          let checkpoint = "";
-          for (let i = 0; i < response.data.bonuses.length; i++) {
-            needed.push(response.data.bonuses[i].needed);
-            checkpoint += needed[i].toString();
-            if (i < response.data.bonuses.length -1) {
-              checkpoint += ',';
-            }
+    // getDataFromId('origins', this.props.match.params.id).then(data => {
+      // if (data.key) {
+        let origin = Object.assign({}, this.props.location.state.data);
+        let tempStrings = Object.assign({}, this.state.tempStrings);
+        // origin = data;
+        let needed = [];
+        let effect = [];
+        let checkpoint = "";
+        for (let i = 0; i < origin.bonuses.length; i++) {
+          needed.push(origin.bonuses[i].needed);
+          checkpoint += needed[i].toString();
+          if (i < origin.bonuses.length -1) {
+            checkpoint += '^';
           }
-          checkpoint += '/'
-          for (let i = 0; i < response.data.bonuses.length; i++) {
-            effect.push(response.data.bonuses[i].effect);
-            checkpoint += effect[i];
-            if (i < response.data.bonuses.length - 1) {
-              checkpoint += ','
-            }
-          }
-          tempStrings.bonuses = checkpoint;
-
-          this.setState({origin: origin, tempStrings: tempStrings});
         }
-      })
+        checkpoint += '/'
+        for (let i = 0; i < origin.bonuses.length; i++) {
+          effect.push(origin.bonuses[i].effect);
+          checkpoint += effect[i];
+          if (i < origin.bonuses.length - 1) {
+            checkpoint += '^'
+          }
+        }
+        tempStrings.bonuses = checkpoint;
+
+        this.setState({origin: origin, tempStrings: tempStrings});
+      // }
+    // });
   }
 
   handleOrigins(event) {
@@ -87,11 +86,11 @@ class Origin extends Component {
     let effect = [];
     let bonuses = [];
 
-    let neededString = object[0].split(',');
+    let neededString = object[0].split('^');
     for (let subString in neededString) {
       needed.push(parseInt(neededString[subString]));
     }
-    let effectString = object[1].split(',');
+    let effectString = object[1].split('^');
     for (let subString in effectString) {
       effect.push(effectString[subString]);
     }

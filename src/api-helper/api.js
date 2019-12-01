@@ -1,13 +1,11 @@
 import axios from 'axios';
 
 export function getData(db) {
-  var url = 'http://localhost:5000/' + db + '/';
-  return axios.get(url)
+  return axios.get('http://localhost:5000/' + db + '/')
     .then(res => res.data);
 }
 export function getDataFromId(db, id) {
-  var response;
-  return axios.post('http://localhost:5000/' + db + '/' + id)
+  return axios.get('http://localhost:5000/' + db + '/' + id)
     .then(res => res.data);
 }
 export function postData(db, postObject, windowUrl) {

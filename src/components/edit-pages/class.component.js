@@ -3,7 +3,7 @@ import {Button, Row, Col, Form, FormGroup, Card, CardHeader,
         CardBody, CardFooter, Label, Input} from 'reactstrap';
 import axios from 'axios';
 import { renderFormGroup, renderFormGroupCheckbox } from '../../sub-components/formgroup.js';
-import { updateData } from '../../api-helper/api.js';
+import { getDataFromId, updateData } from '../../api-helper/api.js';
 
 class Class extends Component {
   constructor(props) {
@@ -30,35 +30,34 @@ class Class extends Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:5000/classes/' + this.props.match.params.id)
-      .then(response => {
-        if (response.data.key) {
-          let classe = Object.assign({}, this.state.class);
-          let tempStrings = Object.assign({}, this.state.tempStrings);
-          classe = response.data;
-          let needed = [];
-          let effect = [];
-          let checkpoint = "";
-          for (let i = 0; i < response.data.bonuses.length; i++) {
-            needed.push(response.data.bonuses[i].needed);
-            checkpoint += needed[i].toString();
-            if (i < response.data.bonuses.length -1) {
-              checkpoint += ',';
-            }
+    // getDataFromId('classes', this.props.match.params.id).then(data => {
+      // if (data.key) {
+        let classe = Object.assign({}, this.props.location.state.data);
+        let tempStrings = Object.assign({}, this.state.tempStrings);
+        // classe = data;
+        let needed = [];
+        let effect = [];
+        let checkpoint = "";
+        for (let i = 0; i < classe.bonuses.length; i++) {
+          needed.push(classe.bonuses[i].needed);
+          checkpoint += needed[i].toString();
+          if (i < classe.bonuses.length -1) {
+            checkpoint += '^';
           }
-          checkpoint += '/'
-          for (let i = 0; i < response.data.bonuses.length; i++) {
-            effect.push(response.data.bonuses[i].effect);
-            checkpoint += effect[i];
-            if (i < response.data.bonuses.length - 1) {
-              checkpoint += ','
-            }
-          }
-          tempStrings.bonuses = checkpoint;
-
-          this.setState({class: classe, tempStrings: tempStrings});
         }
-      })
+        checkpoint += '/'
+        for (let i = 0; i < classe.bonuses.length; i++) {
+          effect.push(classe.bonuses[i].effect);
+          checkpoint += effect[i];
+          if (i < classe.bonuses.length - 1) {
+            checkpoint += '^'
+          }
+        }
+        tempStrings.bonuses = checkpoint;
+
+        this.setState({class: classe, tempStrings: tempStrings});
+      // }
+    // });
   }
 
   handleClasses(event) {
@@ -88,11 +87,11 @@ class Class extends Component {
     let effect = [];
     let bonuses = [];
 
-    let neededString = object[0].split(',');
+    let neededString = object[0].split('^');
     for (let subString in neededString) {
       needed.push(parseInt(neededString[subString]));
     }
-    let effectString = object[1].split(',');
+    let effectString = object[1].split('^');
     for (let subString in effectString) {
       effect.push(effectString[subString]);
     }

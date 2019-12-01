@@ -43,15 +43,15 @@ class Edit extends Component {
     }
     for (let i = 0; i < this.state.classes.length; i++) {
       let pathname = "/class/" + this.state.classes[i]._id;
-      classes.push(<div><Link to={pathname} params={{ id: this.state.classes[i]._id }}><p>{this.state.classes[i].name} {this.state.classes[i].set}</p></Link></div>);
+      classes.push(<div><Link to={{ pathname: pathname, state: {data: this.state.classes[i]} }}><p>{this.state.classes[i].name} {this.state.classes[i].set}</p></Link></div>);
     }
     for (let i = 0; i < this.state.items.length; i++) {
       let pathname = "/item/" + this.state.items[i]._id;
-      items.push(<div><Link to={pathname} parmas={{ id: this.state.items[i]._id }}><p>{this.state.items[i].name} {this.state.items[i].set}</p></Link></div>);
+      items.push(<div><Link to={{ pathname: pathname, state: {data: this.state.items[i]} }}><p>{this.state.items[i].name} {this.state.items[i].set}</p></Link></div>);
     }
     for (let i = 0; i < this.state.origins.length; i++) {
       let pathname="/origin/" + this.state.origins[i]._id;
-      origins.push(<div><Link to={pathname} params={{ id: this.state.origins[i]._id }}><p>{this.state.origins[i].name} {this.state.origins[i].set}</p></Link></div>);
+      origins.push(<div><Link to={{ pathname: pathname, state: {data: this.state.origins[i]} }}><p>{this.state.origins[i].name} {this.state.origins[i].set}</p></Link></div>);
     }
       return (
         <div>

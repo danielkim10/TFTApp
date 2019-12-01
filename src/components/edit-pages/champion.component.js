@@ -3,7 +3,7 @@ import {Button, Row, Col, Form, FormGroup, Card, CardHeader,
         CardBody, CardFooter, Label, Input} from 'reactstrap';
 import axios from 'axios';
 import { renderFormGroup } from '../../sub-components/formgroup.js'
-import { updateData } from '../../api-helper/api.js'
+import { getDataFromId, updateData } from '../../api-helper/api.js'
 
 class Champion extends Component {
   constructor(props) {
@@ -60,18 +60,19 @@ class Champion extends Component {
   this.handleSubmit = this.handleSubmit.bind(this);
 }
   componentDidMount() {
+    // getDataFromId('champions', this.props.match.params.id).then(data => {
       let champion = Object.assign({}, this.props.location.state.data);
       let tempStrings = Object.assign({}, this.state.tempStrings);
       let abilityStatType = [];
       let abilityStatValue = [];
       let _abilityStatValue = "";
-      for (let i = 0; i < this.props.location.state.data.ability.stats.length; i++) {
-        abilityStatType.push(this.props.location.state.data.ability.stats[i].type);
-        abilityStatValue.push(this.props.location.state.data.ability.stats[i].value);
+      for (let i = 0; i < champion.ability.stats.length; i++) {
+        abilityStatType.push(champion.ability.stats[i].type);
+        abilityStatValue.push(champion.ability.stats[i].value);
       }
-      tempStrings.cost = this.props.location.state.data.cost.join();
-      tempStrings.origin = this.props.location.state.data.origin.join();
-      tempStrings.classe = this.props.location.state.data.classe.join();
+      tempStrings.cost = champion.cost.join();
+      tempStrings.origin = champion.origin.join();
+      tempStrings.classe = champion.classe.join();
       tempStrings.statsType = abilityStatType.join();
       for (let i = 0; i < abilityStatValue.length; i++) {
         _abilityStatValue += abilityStatValue[i].join();
@@ -79,15 +80,15 @@ class Champion extends Component {
           _abilityStatValue += '/';
         }
       }
-
       tempStrings.statsValue = _abilityStatValue;
-      tempStrings.damage = this.props.location.state.data.stats.offense.damage.join();
-      tempStrings.health = this.props.location.state.data.stats.defense.health.join();
+      tempStrings.damage = champion.stats.offense.damage.join();
+      tempStrings.health = champion.stats.defense.health.join();
       champion.ability.statsType = abilityStatType;
       champion.ability.statsValue = abilityStatValue;
       this.setState({
         champion: champion, tempStrings: tempStrings
       });
+    // });
   }
 
   handleChampions(event) {
