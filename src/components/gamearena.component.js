@@ -52,7 +52,7 @@ class GameArena extends Component {
   render() {
     const { hexagons } = this.state;
     return (
-      <Layout className="arena" size={{ x: 12, y: 12 }} flat={false} spacing={1} origin={{ x: -100, y: -30 }}>
+      <Layout className="arena" size={{ x: 10, y: 10 }} flat={false} spacing={1} origin={{ x: -100, y: -30 }}>
       {
         hexagons.map((hex, i) => (
           <Hexagon

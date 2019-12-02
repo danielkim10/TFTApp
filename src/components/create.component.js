@@ -16,16 +16,16 @@ class Create extends Component {
       originCollapse: false,
       hexCollapse: false,
 
-      origins: [],
-      classes: [],
-
       champion: {
         id: 0,
         key: "",
         name: "",
         origin: [],
+        originTempString: "",
         classe: [],
-        cost: [0, 0, 0],
+        classeTempString: "",
+        cost: 0,
+        costTempString: "",
         tier: 0,
         ability: {
           name: "",
@@ -34,10 +34,13 @@ class Create extends Component {
           manaCost: 0,
           manaStart: 0,
           stats: [],
+          statsTypeTempString: "",
+          statsValueTempString: "",
         },
         stats: {
           offense: {
             damage: [0, 0, 0],
+            damageTempString: "",
             attackSpeed: 0,
             spellPower: 0,
             critChance: 0,
@@ -45,6 +48,7 @@ class Create extends Component {
           },
           defense: {
             health: [0, 0, 0],
+            healthTempString: "",
             armor: 0,
             magicResist: 0,
             dodgeChance: 0,
@@ -83,8 +87,11 @@ class Create extends Component {
         bonus: "",
         depth: 0,
         stats: [],
+        statsTempString: "",
         buildsFrom: [],
+        buildsFromTempString: "",
         buildsInto: [],
+        buildsIntoTempString: "",
         unique: false,
         cannotEquip: "",
         set: 0,
@@ -101,6 +108,7 @@ class Create extends Component {
         name: "",
         description: "",
         bonuses: [],
+        bonusesTempString: "",
         mustBeExact: false,
         set: 0,
         image: "",
@@ -140,14 +148,14 @@ class Create extends Component {
   }
 
   handleChampions(event) {
-    if (event.target.name === "cost" || event.target.name === "origin" || event.target.name === "classe" || event.target.name === "statsType" ||
-        event.target.name === "statsValue" || event.target.name === "damage" || event.target.name === "health") {
-          let champTempStrings = Object.assign({}, this.state.champTempStrings);
-          champTempStrings[event.target.name] = event.target.value;
-          this.setState({ champTempStrings: champTempStrings });
-    }
+    // if (event.target.name === "cost" || event.target.name === "origin" || event.target.name === "classe" || event.target.name === "statsType" ||
+    //     event.target.name === "statsValue" || event.target.name === "damage" || event.target.name === "health") {
+    //       let champTempStrings = Object.assign({}, this.state.champTempStrings);
+    //       champTempStrings[event.target.name] = event.target.value;
+    //       this.setState({ champTempStrings: champTempStrings });
+    // }
 
-    else {
+    // else {
       let champion = Object.assign({}, this.state.champion);
       if (event.target.id === "ability") {
         champion.ability[event.target.name] = event.target.value;
@@ -165,46 +173,46 @@ class Create extends Component {
         champion[event.target.name] = event.target.value;
       }
       this.setState({ champion: champion });
-    }
+    // }
   }
 
   handleClasses(event) {
-    if (event.target.name === "classBonuses") {
-        let classTempStrings = Object.assign({}, this.state.classTempStrings);
-        classTempStrings[event.target.name] = event.target.value;
-        this.setState({ classTempStrings: classTempStrings });
-    }
-    else {
-      let classe = Object.assign({}, this.state.class);
-      classe[event.target.id] = event.target.value;
-      this.setState({ classe: classe });
-    }
+    // if (event.target.name === "classBonuses") {
+    //     let classTempStrings = Object.assign({}, this.state.classTempStrings);
+    //     classTempStrings[event.target.name] = event.target.value;
+    //     this.setState({ classTempStrings: classTempStrings });
+    // }
+    // else {
+    let classe = Object.assign({}, this.state.class);
+    classe[event.target.id] = event.target.value;
+    this.setState({ classe: classe });
+    // }
   }
 
   handleItems(event) {
-    if (event.target.name === "stats" || event.target.name === "buildsFrom" || event.target.name === "buildsInto") {
-      let itemTempStrings = Object.assign({}, this.state.itemTempStrings);
-      itemTempStrings[event.target.name] = event.target.value;
-      this.setState({ itemTempStrings: itemTempStrings });
-    }
-    else {
+    // if (event.target.name === "stats" || event.target.name === "buildsFrom" || event.target.name === "buildsInto") {
+    //   let itemTempStrings = Object.assign({}, this.state.itemTempStrings);
+    //   itemTempStrings[event.target.name] = event.target.value;
+    //   this.setState({ itemTempStrings: itemTempStrings });
+    // }
+    // else {
       let item = Object.assign({}, this.state.item);
       item[event.target.id] = event.target.value;
       this.setState({ item: item });
-    }
+    // }
   }
 
   handleOrigins(event) {
-    if (event.target.name === "originBonuses") {
-      let originTempStrings = Object.assign({}, this.state.originTempStrings);
-      originTempStrings[event.target.name] = event.target.value;
-      this.setState({ originTempStrings: originTempStrings });
-    }
-    else {
+    // if (event.target.name === "originBonuses") {
+    //   let originTempStrings = Object.assign({}, this.state.originTempStrings);
+    //   originTempStrings[event.target.name] = event.target.value;
+    //   this.setState({ originTempStrings: originTempStrings });
+    // }
+    // else {
       let origin = Object.assign({}, this.state.origin);
       origin[event.target.id] = event.target.value;
       this.setState({ origin: origin });
-    }
+    // }
   }
 
   handleHexes(event) {
@@ -215,22 +223,22 @@ class Create extends Component {
 
   handleChampionSubmit(e) {
     let _champion = Object.assign({}, this.state.champion);
-    let cost = [];
+    // let cost = [];
     let damage = [];
     let health = [];
     let stats = [];
     let statsValue = [];
-    let costString = this.state.champTempStrings.cost.split(',');
-    let origin = this.state.champTempStrings.origin.split(',');
-    let classe = this.state.champTempStrings.classe.split(',');
-    let damageString = this.state.champTempStrings.damage.split(',');
-    let healthString = this.state.champTempStrings.health.split(',');
-    let statsType = this.state.champTempStrings.statsType.split(',');
-    let statsValueString = this.state.champTempStrings.statsValue.split('/');
+    // let costString = this.state.champTempStrings.cost.split(',');
+    let origin = this.state.champion.originTempString.split(',');
+    let classe = this.state.champion.classeTempString.split(',');
+    let damageString = this.state.champion.offense.damageTempString.split(',');
+    let healthString = this.state.champion.defense.healthTempString.split(',');
+    let statsType = this.state.champion.ability.statsTypeTempString.split(',');
+    let statsValueString = this.state.champion.ability.statsValueTempString.split('/');
 
-    for (let subString in costString) {
-      cost.push(parseInt(costString[subString]));
-    }
+    // for (let subString in costString) {
+    //   cost.push(parseInt(costString[subString]));
+    // }
     for (let subString in damageString) {
       damage.push(parseInt(damageString[subString]));
     }
@@ -245,7 +253,7 @@ class Create extends Component {
       statsValue.push(_statsValue);
       stats.push({type: statsType[k], value: statsValue[k]});
     }
-    _champion.cost = cost;
+    // _champion.cost = cost;
     _champion.origin = origin;
     _champion.classe = classe;
     _champion.stats.offense.damage = damage;
@@ -276,7 +284,7 @@ class Create extends Component {
     let _classe = Object.assign({}, this.state.classe);
     let needed = [];
     let effect = [];
-    let bonusString = this.state.classTempStrings.bonuses.split('/');
+    let bonusString = this.state.classe.bonusesTempString.split('/');
 
     let neededString = bonusString[0].split(',');
     for (let subString in neededString) {
@@ -313,7 +321,7 @@ class Create extends Component {
     let statsValue = [];
     let buildsFrom = [];
     let buildsInto = [];
-    let statsString = this.state.itemTempStrings.stats.split('/');
+    let statsString = this.state.item.statsTempString.split('/');
     for (let subString in statsString) {
       let _subString = statsString[subString].split(',');
       statsName.push(_subString[0]);
@@ -325,10 +333,10 @@ class Create extends Component {
     }
 
     if (_item.depth === "1") {
-      buildsFrom = this.state.itemTempStrings.buildsFrom.split(',');
+      buildsFrom = this.state.item.buildsFromTempString.split(',');
     }
     if (_item.depth === "2") {
-      buildsInto = this.state.itemTempStrings.buildsInto.split(',');
+      buildsInto = this.state.item.buildsIntoTempString.split(',');
     }
     _item.stats = stats;
     _item.buildsFrom = buildsFrom;
@@ -358,7 +366,7 @@ class Create extends Component {
     let _origin = Object.assign({}, this.state.origin);
     let needed = [];
     let effect = [];
-    let bonusString = this.state.originTempStrings.bonuses.split('/');
+    let bonusString = this.state.origin.bonusesTempString.split('/');
     let neededString = bonusString[0].split(',');
     for (let subString in neededString) {
       needed.push(parseInt(subString));
@@ -462,24 +470,24 @@ class Create extends Component {
                     {renderFormGroup("Name: ", "text", "name", "name", this.handleChampions)}
                     {renderFormGroup("Cost: ", "text", "cost", "cost", this.handleChampions)}
                     {renderFormGroup("Tier: ", "number", "tier", "tier", this.handleChampions)}
-                    {renderFormGroup("Origin: ", "text", "origin", "origin", this.handleChampions)}
-                    {renderFormGroup("Class: ", "text", "classe", "classe", this.handleChampions)}
+                    {renderFormGroup("Origin: ", "text", "originTempString", "originTempString", this.handleChampions)}
+                    {renderFormGroup("Class: ", "text", "classeTempString", "classeTempString", this.handleChampions)}
                     {renderFormGroup("Ability Name: ", "text", "ability", "name", this.handleChampions)}
                     {renderFormGroup("Ability Description: ", "text", "ability", "description", this.handleChampions)}
                     {renderFormGroup("Ability Type: ", "text", "ability", "type", this.handleChampions)}
                     {renderFormGroup("Mana Cost: ", "number", "ability", "manaCost", this.handleChampions)}
                     {renderFormGroup("Mana Start: ", "number", "ability", "manaStart", this.handleChampions)}
-                    {renderFormGroup("Ability Stat Type: ", "text", "abilityStats", "statsType", this.handleChampions)}
-                    {renderFormGroup("Ability Stat Value: ", "text", "abilityStats", "statsValue", this.handleChampions)}
+                    {renderFormGroup("Ability Stat Type: ", "text", "abilityStats", "statsTypeTempString", this.handleChampions)}
+                    {renderFormGroup("Ability Stat Value: ", "text", "abilityStats", "statsValueTempString", this.handleChampions)}
                   </Col>
                   <Col md={6}>
-                    {renderFormGroup("Damage: ", "text", "offense", "damage", this.handleChampions)}
+                    {renderFormGroup("Damage: ", "text", "offense", "damageTempString", this.handleChampions)}
                     {renderFormGroup("Attack Speed: ", "number", "offense", "attackSpeed", this.handleChampions)}
                     {renderFormGroup("Spell Power: ", "number", "offense", "spellPower", this.handleChampions)}
                     {renderFormGroup("Crit Chance: ", "number", "offense", "critChance", this.handleChampions)}
                     {renderFormGroup("Dodge Chance: ", "number", "defense", "dodgeChance", this.handleChampions)}
                     {renderFormGroup("Range: ", "number", "offense", "range", this.handleChampions)}
-                    {renderFormGroup("Health: ", "text", "defense", "health", this.handleChampions)}
+                    {renderFormGroup("Health: ", "text", "defense", "healthTempString", this.handleChampions)}
                     {renderFormGroup("Armor: ", "number", "defense", "armor", this.handleChampions)}
                     {renderFormGroup("Magic Resist: ", "number", "defense", "magicResist", this.handleChampions)}
                     {renderFormGroup("Set: ", "number", "set", "set", this.handleChampions)}
@@ -506,7 +514,7 @@ class Create extends Component {
                     {renderFormGroup("Key: ", "text", "key", "key", this.handleClasses)}
                     {renderFormGroup("Name: ", "text", "name", "name", this.handleClasses)}
                     {renderFormGroup("Description: ", "text", "description", "description", this.handleClasses)}
-                    {renderFormGroup("Bonuses: ", "text", "bonuses", "classBonuses", this.handleClasses)}
+                    {renderFormGroup("Bonuses: ", "text", "bonusesTempString", "bonusesTempString", this.handleClasses)}
                     {renderFormGroup("Set: ", "number", "set", "set", this.handleClasses)}
                     {renderFormGroup("Image: ", "text", "image", "image", this.handleClasses)}
                     {renderFormGroupCheckbox("Must be exact: ", "checkbox", "exact", "exact", event => this.handleClick(event, 0), null)}
@@ -531,7 +539,7 @@ class Create extends Component {
                       {renderFormGroup("Key: ", "text", "key", "key", this.handleOrigins)}
                       {renderFormGroup("Name: ", "text", "name", "name", this.handleOrigins)}
                       {renderFormGroup("Description: ", "text", "description", "description", this.handleOrigins)}
-                      {renderFormGroup("Bonuses: ", "text", "bonuses", "originBonuses", this.handleOrigins)}
+                      {renderFormGroup("Bonuses: ", "text", "bonusesTempString", "bonusesTempString", this.handleOrigins)}
                       {renderFormGroup("Set: ", "number", "set", "set", this.handleOrigins)}
                       {renderFormGroup("Image: ", "text", "image", "image", this.handleOrigins)}
                       {renderFormGroupCheckbox("Must be exact: ", "checkbox", "exact", "exact", event => this.handleClick(event, 1), null)}
@@ -558,8 +566,8 @@ class Create extends Component {
                       {renderFormGroup("Bonus: ", "text", "bonus", "bonus", this.handleItems)}
                       {renderFormGroup("Depth: ", "number", "depth", "depth", this.handleItems)}
                       {renderFormGroup("Stats: ", "text", "stats", "stats", this.handleItems)}
-                      {renderFormGroup("Builds From: ", "text", "buildsFrom", "buildsFrom", this.handleItems)}
-                      {renderFormGroup("Builds Into: ", "text", "buildsInto", "buildsInto", this.handleItems)}
+                      {renderFormGroup("Builds From: ", "text", "buildsFromTempString", "buildsFromTempString", this.handleItems)}
+                      {renderFormGroup("Builds Into: ", "text", "buildsIntoTempString", "buildsIntoTempString", this.handleItems)}
                       {renderFormGroupCheckbox("Unique (one per champion): ", "checkbox", "unique", "unique", event => this.handleClick(event, 2), null)}
                       {renderFormGroup("Cannot Equip:", "text", "cannotEquip", "cannotEquip", this.handleItems)}
                       {renderFormGroup("Set: ", "number", "set", "set", this.handleItems)}

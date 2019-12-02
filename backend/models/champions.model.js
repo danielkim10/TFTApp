@@ -8,7 +8,7 @@ const championSchema = new Schema({
   name: {type: String},
   origin: [{type: String}],
   classe: [{type: String}],
-  cost: [{type: Number}],
+  cost: {type: Number},
   tier: {type: Number},
   ability: {
     name: {type: String},

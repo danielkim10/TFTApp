@@ -12,7 +12,6 @@ class Champion extends Component {
       tempStrings: {
           origin: "",
           classe: "",
-          cost: "",
           statsType: "",
           statsValue: "",
           damage: "",
@@ -26,7 +25,7 @@ class Champion extends Component {
         name: "",
         origin: [],
         classe: [],
-        cost: [],
+        cost: 0,
         tier: 0,
         ability: {
           name: "",
@@ -70,7 +69,7 @@ class Champion extends Component {
         abilityStatType.push(champion.ability.stats[i].type);
         abilityStatValue.push(champion.ability.stats[i].value);
       }
-      tempStrings.cost = champion.cost.join();
+      // tempStrings.cost = champion.cost.join();
       tempStrings.origin = champion.origin.join();
       tempStrings.classe = champion.classe.join();
       tempStrings.statsType = abilityStatType.join();
@@ -120,10 +119,10 @@ class Champion extends Component {
     e.preventDefault();
 
     let champion = Object.assign({}, this.state.champion);
-    let cost = this.state.tempStrings.cost.split(',');
-    for (let h in cost) {
-      cost[h] = parseInt(cost[h]);
-    }
+    // let cost = this.state.tempStrings.cost.split(',');
+    // for (let h in cost) {
+    //   cost[h] = parseInt(cost[h]);
+    // }
     let origin = this.state.tempStrings.origin.split(',');
     let classe = this.state.tempStrings.classe.split(',');
     let damage = this.state.tempStrings.damage.split(',');
@@ -147,7 +146,7 @@ class Champion extends Component {
       stats.push({type: statsType[k], value: statsValue[k]});
     }
 
-    champion.cost = cost;
+    // champion.cost = cost;
     champion.origin = origin;
     champion.classe = classe;
     champion.stats.offense.damage = damage;
@@ -214,7 +213,7 @@ class Champion extends Component {
                 {renderFormGroup("ID: ", "number", "id", "id", this.handleChampions, this.state.champion.id)}
                 {renderFormGroup("Key: ", "text", "key", "key", this.handleChampions, this.state.champion.key)}
                 {renderFormGroup("Name: ", "text", "name", "name", this.handleChampions, this.state.champion.name)}
-                {renderFormGroup("Cost: ", "text", "cost", "cost", this.handleChampions, this.state.tempStrings.cost)}
+                {renderFormGroup("Cost: ", "text", "cost", "cost", this.handleChampions, this.state.champion.cost)}
                 {renderFormGroup("Tier: ", "number", "tier", "tier", this.handleChampions, this.state.champion.tier)}
                 {renderFormGroup("Origin: ", "text", "origin", "origin", this.handleChampions, this.state.tempStrings.origin)}
                 {renderFormGroup("Class: ", "text", "classe", "classe", this.handleChampions, this.state.tempStrings.classe)}

@@ -5,6 +5,7 @@ import { HexGrid, Layout, Hexagon, Text, Pattern, Path, Hex } from 'react-hexgri
 import './hexgrid.css'
 import GameArena from './gamearena.component.js'
 import { getData } from '../api-helper/api.js'
+import Image from 'react-image-resizer';
 
 export default class Main extends Component {
   constructor(props) {
@@ -20,6 +21,7 @@ export default class Main extends Component {
       origins: [],
       activeClasses: [],
       activeOrigins: [],
+      championDataOpen: false,
     }
     this.clearButton = this.clearButton.bind(this);
     this.randomButton = this.randomButton.bind(this);
@@ -27,6 +29,7 @@ export default class Main extends Component {
     this.runSimulation = this.runSimulation.bind(this);
     this.createChampion = this.createChampion.bind(this);
     this.clearTeam = this.clearTeam.bind(this);
+    this.clicked = this.clicked.bind(this);
   }
 
   componentDidMount() {
@@ -298,6 +301,10 @@ export default class Main extends Component {
     this.setState({synergies: synergies});
   }
 
+  clicked(e) {
+    console.log("clicked");
+  }
+
   render() {
     const champions = [];
     const classes = [];
@@ -306,16 +313,16 @@ export default class Main extends Component {
     const synergies = [];
     const team = [];
 
-    for (let i = 0; i < champions.length; ++i) {
-      champions.push(this.state.champions[i].name)
+    for (let i = 0; i < this.state.champions.length; ++i) {
+      champions.push(<img src={this.state.champions[i].icon} width={60} height={60} onClick={() => this.clicked(this.state.champions[i])}/>);
     }
-    for (let i = 0; i < classes.length; ++i) {
+    for (let i = 0; i < this.state.classes.length; ++i) {
       classes.push(this.state.classes[i].name)
     }
-    for (let i = 0; i < items.length; ++i) {
-      items.push(this.state.items[i].name)
+    for (let i = 0; i < this.state.items.length; ++i) {
+      items.push(<img src={this.state.items[i].image} width={60} height={60} onClick={() => this.clicked(this.state.items[i])}/>);
     }
-    for (let i = 0; i < origins.length; ++i) {
+    for (let i = 0; i < this.state.origins.length; ++i) {
       origins.push(this.state.origins[i].name)
     }
 
@@ -342,7 +349,7 @@ export default class Main extends Component {
         <div>
         <Row>
         <Col sm={1}></Col>
-        <Col sm={7}>
+        <Col sm={6}>
           <Card name="activeTraits">
             <CardBody>
               <Row>{synergies}</Row>
@@ -394,20 +401,25 @@ export default class Main extends Component {
           <Row>
             <Card>
               <CardHeader>
+                <strong>Champions</strong>
               </CardHeader>
               <CardBody>
+                {champions}
               </CardBody>
             </Card>
           </Row>
           <Row>
             <Card>
               <CardHeader>
+                <strong>Items</strong>
               </CardHeader>
               <CardBody>
+                {items}
               </CardBody>
             </Card>
           </Row>
           </Col>
+          <Col sm={1}></Col>
           </Row>
           <Row>
           <Button type="button" color="primary" onClick={this.randomButton}>Random</Button>

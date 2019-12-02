@@ -47,6 +47,7 @@ class Item extends Component {
         let statsValue = [];
         let stats = "";
         for (let i = 0; i < item.stats.length; i++) {
+          statsName.push(item.stats[i].name);
           statsTitle.push(item.stats[i].label);
           statsValue.push(item.stats[i].value);
         }
