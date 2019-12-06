@@ -6,6 +6,10 @@ class GameArena extends Component {
   constructor(props) {
     super(props);
     const hexagons = GridGenerator.rectangle(7, 3);
+    for (let i = 0; i < props.data.length; ++i) {
+      hexagons[i].image = props.data[i].champion.icon;
+      hexagons[i].text = props.data[i].champion.name;
+    }
     this.state = { hexagons };
   }
 
@@ -67,8 +71,8 @@ class GameArena extends Component {
             onDrop={(e, h, t) => this.onDrop(e, h, t)}
             onDragOver={(e, h) => this.onDragOver(e, h)}
             >
-            <Text>{hex.text || HexUtils.getID(hex)}</Text>
-            { hex.image && <Pattern id={HexUtils.getID(hex)} link={hex.image} />}
+            <Text>{hex.text}</Text>
+            <img src={hex.image} />
           </Hexagon>
         ))
       }

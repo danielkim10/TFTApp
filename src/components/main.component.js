@@ -21,6 +21,7 @@ export default class Main extends Component {
       origins: [],
       activeClasses: [],
       activeOrigins: [],
+      boardData: [],
       championDataOpen: false,
     }
     this.clearButton = this.clearButton.bind(this);
@@ -29,7 +30,6 @@ export default class Main extends Component {
     this.runSimulation = this.runSimulation.bind(this);
     this.createChampion = this.createChampion.bind(this);
     this.clearTeam = this.clearTeam.bind(this);
-    this.clicked = this.clicked.bind(this);
   }
 
   componentDidMount() {
@@ -47,8 +47,19 @@ export default class Main extends Component {
     });
   }
 
-  addToTeam() {
+  addToTeam(data) {
 
+    let team = this.state.team;
+    let boardData = this.state.boardData;
+    let isDupe = false;
+    if (team.filter(c => c.champion.name === data.name).length > 0) {
+      isDupe = true;
+    }
+
+    team.push({champion: data, tier: 1, items: [], remainingSlots: 6, isDupe: isDupe});
+    boardData.push(data);
+    this.setState({team: team});
+    this.findSynergies(this.state.team);
   }
 
   removeFromTeam() {
@@ -59,7 +70,7 @@ export default class Main extends Component {
     this.setState({team: [], synergies: []});
   }
 
-  addItem() {
+  addItem(data) {
 
   }
 
@@ -191,9 +202,6 @@ export default class Main extends Component {
       teamMember = {};
       items = [];
       let itemCount = Math.floor(Math.random() * 12); // 0-6 = 1 item, 7-9 = 2 items, 10-11 = 3 items
-      // if (itemCount < 7) itemCount = 1;
-      // else if (itemCount > 6 && itemCount < 10) itemCount = 2;
-      // else itemCount = 3;
 
       if (itemCount >= 10 && teamItems >= 6) itemCount = 3;
       else if ((itemCount >= 7 && itemCount <= 9) || (itemCount >= 10 && teamItems <= 4)) itemCount = 2
@@ -267,7 +275,7 @@ export default class Main extends Component {
   }
 
   findSynergies(team) {
-    let synergies = this.state.synergies;
+    let synergies = [];
     for (let i = 0; i < team.length; ++i) {
       for (let j = 0; j < team[i].champion.origin.length; ++j) {
         if (synergies.length === 0) {
@@ -275,8 +283,11 @@ export default class Main extends Component {
         }
 
         for (let k = 0; k < synergies.length; ++k) {
-          if (synergies[k].name === team[i].champion.origin[j] && !team[i].isdupe) {
+          if (synergies[k].name === team[i].champion.origin[j] && !team[i].isDupe) {
             synergies[k].count++;
+            break;
+          }
+          else if (synergies[k].name === team[i].champion.origin[j] && team[i].isDupe) {
             break;
           }
           if (k === synergies.length -1) {
@@ -287,8 +298,11 @@ export default class Main extends Component {
       }
       for (let j = 0; j < team[i].champion.classe.length; ++j) {
         for (let k = 0; k < synergies.length; ++k) {
-          if (synergies[k].name === team[i].champion.classe[j] && !team[i].isdupe) {
+          if (synergies[k].name === team[i].champion.classe[j] && !team[i].isDupe) {
             synergies[k].count++;
+            break;
+          }
+          else if (synergies[k].name === team[i].champion.classe[j] && team[i].isDupe) {
             break;
           }
           if (k === synergies.length -1) {
@@ -301,10 +315,6 @@ export default class Main extends Component {
     this.setState({synergies: synergies});
   }
 
-  clicked(e) {
-    console.log("clicked");
-  }
-
   render() {
     const champions = [];
     const classes = [];
@@ -312,18 +322,19 @@ export default class Main extends Component {
     const origins = [];
     const synergies = [];
     const team = [];
+    const teamData = [];
 
     for (let i = 0; i < this.state.champions.length; ++i) {
-      champions.push(<img src={this.state.champions[i].icon} width={60} height={60} onClick={() => this.clicked(this.state.champions[i])}/>);
+      champions.push(<img src={this.state.champions[i].icon} width={60} height={60} onClick={() => this.addToTeam(this.state.champions[i])}/>);
     }
     for (let i = 0; i < this.state.classes.length; ++i) {
-      classes.push(this.state.classes[i].name)
+      classes.push(this.state.classes[i].name);
     }
     for (let i = 0; i < this.state.items.length; ++i) {
-      items.push(<img src={this.state.items[i].image} width={60} height={60} onClick={() => this.clicked(this.state.items[i])}/>);
+      items.push(<img src={this.state.items[i].image} width={60} height={60} onClick={() => this.addItem(this.state.items[i])}/>);
     }
     for (let i = 0; i < this.state.origins.length; ++i) {
-      origins.push(this.state.origins[i].name)
+      origins.push(this.state.origins[i].name);
     }
 
     for (let i = 0; i < this.state.team.length; ++i) {
@@ -339,10 +350,20 @@ export default class Main extends Component {
             (c.items.length === 1 ? c.items[0].name : "None")))}</Row>
           </CardBody>
         </Card>);
+        teamData.push({champion: c.champion, tier: c.tier, items: c.items});
     }
 
     for (let i = 0; i < this.state.synergies.length; ++i) {
       synergies.push(<Card><CardBody>{this.state.synergies[i].name + ": " + this.state.synergies[i].count}</CardBody></Card>);
+    }
+
+    let gameArena;
+    if (teamData.length > 0) {
+      gameArena = <GameArena data={teamData}/>
+    }
+    else {
+      //gameArena = null;
+      gameArena = null;
     }
 
       return (
@@ -357,37 +378,8 @@ export default class Main extends Component {
           </Card>
           <Card>
             <CardBody>
-            <HexGrid width={1400} height={600} viewBox="-50 -50 100 100">
-              <GameArena />
-                {/* Grid with manually inserted hexagons */}
-                {/* <Layout size={{ x: 10, y: 10 }} flat={false} spacing={1.0} origin={{ x: 0, y: 0 }}>
-                  <Hexagon q={0} r={0} s={0} />
-                  <Hexagon q={0} r={-1} s={1}/>
-                  <Hexagon q={-1} r={-1} s={1} />
-                  <Hexagon q={-2} r={-1} s={1} />
-                  <Hexagon q={-3} r={-1} s={1} />
-                  <Hexagon q={2} r={-1} s={1} />
-                  <Hexagon q={3} r={-1} s={1} />
-                  <Hexagon q={0} r={1} s={-1} />
-                  <Hexagon q={1} r={-1} s={0}>
-                  </Hexagon>
-                  <Hexagon q={1} r={0} s={-1}>
-                  </Hexagon>
-                  <Hexagon q={-1} r={1} s={0}>
-                  </Hexagon>
-                  <Hexagon q={1} r={1} s={0} />
-                  <Hexagon q={2} r={1} s={0} />
-                  <Hexagon q={-2} r={1} s={0} />
-                  <Hexagon q={-3} r={1} s={0} />
-                  <Hexagon q={-4} r={1} s={0} />
-                  <Hexagon q={-1} r={0} s={1} />
-                  <Hexagon q={-2} r={0} s={1} />
-                  <Hexagon q={-3} r={0} s={1} />
-                  <Hexagon q={2} r={0} s={1} />
-                  <Hexagon q={3} r={0} s={1} />
-                </Layout>
-                <Pattern id="pat-1" />
-                 <Pattern id="pat-2" /> */}
+              <HexGrid width={1400} height={600} viewBox="-50 -50 100 100">
+                {gameArena}
               </HexGrid>
             </CardBody>
           </Card>

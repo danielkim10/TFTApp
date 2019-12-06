@@ -2,9 +2,11 @@ import React from 'react';
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import Navbar from "./components/navbar.component";
+import Navigation from "./components/navbar.component";
 import Main from "./components/main.component";
-import CheatSheet from "./components/cheatsheet.component";
+import ChampionsCheatSheet from "./components/cheatsheet-pages/champions-cheatsheet.component";
+import ClassesOriginsCheatSheet from "./components/cheatsheet-pages/origins-and-classes-cheatsheet.component";
+import ItemsCheatSheet from "./components/cheatsheet-pages/items-cheatsheet.component";
 import MatchHistory from "./components/matchhistory.component";
 import SavedBuilds from "./components/savedbuilds.component";
 import Create from "./components/create.component";
@@ -19,10 +21,12 @@ function App() {
   return (
     <Router>
       <div className>
-        <Navbar />
+        <Navigation />
         <br/>
         <Route path="/" exact component={Main} />
-        <Route path="/cheatsheet" component={CheatSheet} />
+        <Route path="/cheatsheet/champions" component={ChampionsCheatSheet} />
+        <Route path="/cheatsheet/classesorigins" component={ClassesOriginsCheatSheet} />
+        <Route path="/cheatsheet/items" component={ItemsCheatSheet} />
         <Route path="/matchhistory" component={MatchHistory} />
         <Route path="/savedbuilds" component={SavedBuilds} />
         <Route path="/create" component={Create}/>
