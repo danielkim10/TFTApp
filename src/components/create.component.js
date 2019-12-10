@@ -57,6 +57,7 @@ class Create extends Component {
         set: 0,
         image: "",
         icon: "",
+        abilityIcon: "",
       },
       champTempStrings: {
         origin: "",
@@ -274,7 +275,8 @@ class Create extends Component {
        stats: this.state.champion.stats,
        set: this.state.champion.set,
        image: this.state.champion.image,
-       icon: this.state.champion.icon
+       icon: this.state.champion.icon,
+       abilityIcon: this.state.champion.abilityIcon,
       }
       postData('champions', champion, '/');
     });
@@ -493,6 +495,7 @@ class Create extends Component {
                     {renderFormGroup("Set: ", "number", "set", "set", this.handleChampions)}
                     {renderFormGroup("Image: ", "text", "image", "image", this.handleChampions)}
                     {renderFormGroup("Icon: ", "text", "icon", "icon", this.handleChampions)}
+                    {renderFormGroup("Ability Icon: ", "text", "abilityIcon", "abilityIcon", this.handleChampions)}
                   </Col>
                   </Row>
                 </CardBody>

@@ -53,6 +53,7 @@ class Champion extends Component {
         set: 0,
         image: "",
         icon: "",
+        abilityIcon: "",
     }
   }
   this.handleChampions = this.handleChampions.bind(this);
@@ -166,8 +167,9 @@ class Champion extends Component {
        set: this.state.champion.set,
        image: this.state.champion.image,
        icon: this.state.champion.icon,
+       abilityIcon: this.state.champion.abilityIcon
       }
-      updateData('champions', this.props.match.params.id, _champion, '/');
+      updateData('champions', this.props.match.params.id, _champion, '/edit');
     });
   }
 
@@ -238,6 +240,7 @@ class Champion extends Component {
                 {renderFormGroup("Set: ", "number", "set", "set", this.handleChampions, this.state.champion.set)}
                 {renderFormGroup("Image: ", "text", "image", "image", this.handleChampions, this.state.champion.image)}
                 {renderFormGroup("Icon: ", "text", "icon", "icon", this.handleChampions, this.state.champion.icon)}
+                {renderFormGroup("Ability Icon: ", "text", "abilityIcon", "abilityIcon", this.handleChampions, this.state.champion.abilityIcon)}
                 </Col>
                 </Row>
             </CardBody>

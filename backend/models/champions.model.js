@@ -38,6 +38,7 @@ const championSchema = new Schema({
   set: {type: Number},
   image: {type: String},
   icon: {type: String},
+  abilityIcon: {type: String},
 });
 
 const Champion = mongoose.model('Champion', championSchema);

@@ -1,7 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import {Button, Row, Col, Form, FormGroup, Card, CardHeader,
         CardBody, CardFooter, Label, Input} from 'reactstrap';
-import axios from 'axios';
 import { renderFormGroup, renderFormGroupCheckbox } from '../../sub-components/formgroup.js';
 import { getDataFromId, updateData } from '../../api-helper/api.js';
 
@@ -111,19 +110,8 @@ class Class extends Component {
         set: this.state.class.set,
         image: this.state.class.image,
       }
-      updateData('classes', this.props.match.params.id, _class, '/');
+      updateData('classes', this.props.match.params.id, _class, '/edit');
     });
-  }
-
-  renderFormGroup(label, type, id, name, handler, state) {
-    return (
-      <Fragment>
-        <FormGroup>
-          <Label>{label}</Label>
-          <Input type={type} id={id} name={name} onChange={handler} value={state}/>
-        </FormGroup>
-      </Fragment>
-    );
   }
 
   render() {

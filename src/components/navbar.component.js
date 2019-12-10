@@ -23,8 +23,8 @@ const Navigation = (props) => {
                   <DropdownItem href="/cheatsheet/champions">
                     Champions
                   </DropdownItem>
-                  <DropdownItem href="/cheatsheet/classesorigins">
-                    Classes and Origins
+                  <DropdownItem href="/cheatsheet/synergies">
+                    Synergies
                   </DropdownItem>
                   <DropdownItem href="/cheatsheet/items">
                     Items

@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Navigation from "./components/navbar.component";
 import Main from "./components/main.component";
 import ChampionsCheatSheet from "./components/cheatsheet-pages/champions-cheatsheet.component";
-import ClassesOriginsCheatSheet from "./components/cheatsheet-pages/origins-and-classes-cheatsheet.component";
+import SynergiesCheatSheet from "./components/cheatsheet-pages/synergies-cheatsheet.component";
 import ItemsCheatSheet from "./components/cheatsheet-pages/items-cheatsheet.component";
 import MatchHistory from "./components/matchhistory.component";
 import SavedBuilds from "./components/savedbuilds.component";
@@ -25,7 +25,7 @@ function App() {
         <br/>
         <Route path="/" exact component={Main} />
         <Route path="/cheatsheet/champions" component={ChampionsCheatSheet} />
-        <Route path="/cheatsheet/classesorigins" component={ClassesOriginsCheatSheet} />
+        <Route path="/cheatsheet/synergies" component={SynergiesCheatSheet} />
         <Route path="/cheatsheet/items" component={ItemsCheatSheet} />
         <Route path="/matchhistory" component={MatchHistory} />
         <Route path="/savedbuilds" component={SavedBuilds} />

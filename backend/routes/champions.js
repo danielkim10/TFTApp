@@ -46,6 +46,7 @@ router.route('/update/:id').post((req, res) => {
       champion.set = req.body.set;
       champion.image = req.body.image;
       champion.icon = req.body.icon;
+      champion.abilityIcon = req.body.abilityIcon;
 
       champion.save()
         .then(() => res.json('Champion updated'))
@@ -67,8 +68,9 @@ router.route('/add').post((req, res) => {
   const set = req.body.set;
   const image = req.body.image;
   const icon = req.body.icon;
+  const abilityIcon = req.body.abilityIcon;
   const newChampion = new Champion({id, key, name, origin, classe, cost, tier,
-                                    ability, stats, set, image, icon});
+                                    ability, stats, set, image, icon, abilityIcon});
 
   newChampion.save()
     .then(() => res.json('Champion added'))

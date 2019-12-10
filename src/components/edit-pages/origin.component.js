@@ -110,7 +110,7 @@ class Origin extends Component {
         set: this.state.origin.set,
         image: this.state.origin.image,
       }
-      updateData('origins', this.props.match.params.id, _origin, '/');
+      updateData('origins', this.props.match.params.id, _origin, '/edit');
     });
   }
 

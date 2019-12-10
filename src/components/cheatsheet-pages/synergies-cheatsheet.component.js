@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-class OriginsAndClassesCheatSheet extends Component {
+class SynergiesCheatSheet extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -12,10 +12,10 @@ class OriginsAndClassesCheatSheet extends Component {
   render() {
       return (
         <div>
-          <p>Origins And Classes Cheat Sheet</p>
+          <p>Synergies Cheat Sheet</p>
         </div>
       )
   }
 }
 
-export default OriginsAndClassesCheatSheet;
+export default SynergiesCheatSheet;

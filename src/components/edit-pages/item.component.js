@@ -118,7 +118,7 @@ class Item extends Component {
         set: this.state.item.set,
         image: this.state.item.image,
       }
-      updateData('items', this.props.match.params.id, item, '/');
+      updateData('items', this.props.match.params.id, item, '/edit');
     });
   }
 
