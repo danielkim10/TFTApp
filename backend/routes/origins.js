@@ -11,13 +11,19 @@ router.route('/:id').get((req, res) => {
   Origin.findById(req.params.id)
     .then(origin => res.json(origin))
     .catch(err => res.status(400).json('Error: ' + err));
-})
+});
+
+router.route('/name/:name').get((req, res) => {
+  Origin.find({name: req.params.name})
+    .then(origin => res.json(origin))
+    .catch(err => res.status(400).json('Error: ' + err));
+});
 
 router.route('/set/:set').get((req, res) => {
   Origin.find({set: req.params.set})
-    .then(champion => res.json(champion))
+    .then(origin => res.json(origin))
     .catch(err => res.status(400).json('Error: ' + err));
-})
+});
 
 router.route('/update/:id').post((req, res) => {
   Origin.findById(req.params.id)

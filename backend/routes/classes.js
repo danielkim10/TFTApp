@@ -13,9 +13,15 @@ router.route('/:id').get((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
+router.route('/name/:name').get((req, res) => {
+  Class.find({name: req.params.name})
+    .then(classe => res.json(classe))
+    .catch(err => res.status(400).json('Error: ' + err));
+});
+
 router.route('/set/:set').get((req, res) => {
   Class.find({set: req.params.set})
-    .then(champion => res.json(champion))
+    .then(classe => res.json(classe))
     .catch(err => res.status(400).json('Error: ' + err));
 })
 
