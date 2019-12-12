@@ -100,30 +100,31 @@ class ChampionsCheatSheet extends Component {
         matchingChampionsIcons.push(<img src={matchingChampions[j].icon} width={60} height={60}/>);
       }
 
+      let bonuses = [];
       for (let j = 0; j < this.state.origins[i].bonuses.length; ++j) {
-
+        bonuses.push(<Row>{this.state.origins[i].bonuses[j].needed}: {this.state.origins[i].bonuses[j].effect}</Row>)
       }
 
       cards.push(
         <Container>
         <Row>
-          <Col sm={4}>
-          <Row>
+          <Col sm={3}>
+            <Row>
               {this.state.origins[i].name}
-              </Row>
-              <Row></Row>
-              <Row></Row>
+            </Row>
+            <Row></Row>
+            <Row></Row>
           </Col>
           <Col>
-          <Row>
-          {matchingChampionsIcons}
-          </Row>
+            <Row>
+              {matchingChampionsIcons}
+            </Row>
             <Row>
               {this.state.origins[i].description}
             </Row>
-            <Row>
-
-            </Row>
+            <Container>
+              {bonuses}
+            </Container>
           </Col>
           </Row>
           </Container>);
@@ -137,16 +138,18 @@ class ChampionsCheatSheet extends Component {
         matchingChampionsIcons.push(<img src={matchingChampions[j].icon} width={60} height={60}/>);
       }
 
+      let bonuses = [];
       for (let j = 0; j < this.state.classes[i].bonuses.length; ++j) {
-
+        bonuses.push(<Row>{this.state.classes[i].bonuses[j].needed}: {this.state.classes[i].bonuses[j].effect}</Row>)
       }
 
       cards.push(
       <Container>
         <Row>
-          <Col sm={4}>
-          <Row>{this.state.classes[i].name}</Row>
-          <Row></Row>
+          <Col sm={3}>
+            <Row>{this.state.classes[i].name}</Row>
+            <Row></Row>
+            <Row></Row>
           </Col>
           <Col>
             <Row>
@@ -155,6 +158,9 @@ class ChampionsCheatSheet extends Component {
             <Row>
               {this.state.classes[i].description}
             </Row>
+            <Container>
+              {bonuses}
+            </Container>
           </Col>
           </Row>
         </Container>
@@ -170,7 +176,6 @@ class ChampionsCheatSheet extends Component {
     let abilityStats = [];
     let health = "";
     let damage = "";
-
 
     for (let i = 0; i < this.state.champions.length; ++i) {
       champions.push(<img src={this.state.champions[i].icon} width={60} height={60} onClick={() => this.loadChampionData(this.state.champions[i])}/>)
@@ -238,17 +243,18 @@ class ChampionsCheatSheet extends Component {
                       <Row>
                         <Col sm={4}>
                           <Row><img src={this.state.champion.image} /></Row>
-                          <Row></Row>
-                          <Row></Row>
                         </Col>
                         <Col sm={8}>
                           <Row>
-                            <Card>
+                            <Card style={{width: "100%"}}>
                               <CardHeader>
+                                <Container>
                                 <Row><strong> {this.state.champion.name}</strong></Row>
                                 <Row>Cost: {this.state.champion.cost}/{this.state.champion.cost + 2}/{this.state.champion.cost + 4}</Row>
+                                </Container>
                               </CardHeader>
                               <CardBody>
+                              <Container>
                               <Row>
                                 <Col>
                                   <Row>Health: {health}</Row>
@@ -269,15 +275,15 @@ class ChampionsCheatSheet extends Component {
                                   <Row>
                                     <Col sm={12}>{this.state.champion.ability.description}</Col><Col sm={0}></Col></Row>
                                   <Row>
-                                    <Col sm={12}>{abilityStats}</Col><Col sm={0}></Col></Row>
-
+                                    <Col sm={12}><Container>{abilityStats}</Container></Col><Col sm={0}></Col></Row>
                                 </Col>
                                 </Row>
+                                </Container>
                               </CardBody>
                             </Card>
                           </Row>
                           <Row>
-                            <Card>
+                            <Card style={{width: "100%"}}>
                               <CardHeader>
                                 <strong>Traits</strong>
                               </CardHeader>
