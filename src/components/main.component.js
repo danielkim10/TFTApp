@@ -40,11 +40,25 @@ export default class Main extends Component {
       this.setState({classes: data.filter(classe => classe)});
     });
     getData('items').then(data => {
-      this.setState({items: data.filter(champion => champion.set === 1)});
+      this.setState({items: data.filter(champion => champion.set === 1).sort(this.compare)});
     });
     getData('origins').then(data => {
       this.setState({origins: data.filter(origin => origin.set === 1)});
     });
+  }
+
+  compare(a, b) {
+    const idA = a.id;
+    const idB = b.id;
+
+    let comparison = 0;
+    if (idA > idB) {
+      comparison = 1;
+    }
+    else if (idA < idB) {
+      comparison = -1;
+    }
+    return comparison;
   }
 
   addToTeam(data) {

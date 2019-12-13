@@ -15,6 +15,7 @@ class Item extends Component {
         buildsInto: "",
       },
       item: {
+        id: 0,
         key: "",
         name: "",
         type: "",
@@ -105,6 +106,7 @@ class Item extends Component {
 
     this.setState({item: _item}, function() {
       const item = {
+        id: this.state.item.id,
         key: this.state.item.key,
         name: this.state.item.name,
         type: this.state.item.type,
@@ -133,6 +135,7 @@ class Item extends Component {
             <Form onSubmit={this.handleSubmit}>
               <Row>
                 <Col>
+                  {renderFormGroup("Id: ", "number", "id", "id", this.handleItems, this.state.item.id)}
                   {renderFormGroup("Key: ", "text", "key", "key", this.handleItems, this.state.item.key)}
                   {renderFormGroup("Name: ", "text", "name", "name", this.handleItems, this.state.item.name)}
                   {renderFormGroup("Type: ", "text", "type", "type", this.handleItems, this.state.item.type)}

@@ -22,6 +22,7 @@ router.route('/set/:set').get((req, res) => {
 router.route('/update/:id').post((req, res) => {
   Item.findById(req.params.id)
     .then(item => {
+      item.id = req.body.id
       item.key = req.body.key;
       item.name = req.body.name;
       item.type = req.body.type;
@@ -43,6 +44,7 @@ router.route('/update/:id').post((req, res) => {
 });
 
 router.route('/add').post((req, res) => {
+  const id = req.body.id;
   const key = req.body.key;
   const name = req.body.name;
   const type = req.body.type;
@@ -55,7 +57,7 @@ router.route('/add').post((req, res) => {
   const cannotEquip = req.body.cannotEquip;
   const set = req.body.set;
   const image = req.body.image;
-  const newItem = new Item({key, name, type, bonus, depth, stats, buildsFrom, buildsInto, unique, cannotEquip, set, image});
+  const newItem = new Item({id, key, name, type, bonus, depth, stats, buildsFrom, buildsInto, unique, cannotEquip, set, image});
 
   newItem.save()
     .then(() => res.json('Item added'))

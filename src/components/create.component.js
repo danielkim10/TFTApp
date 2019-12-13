@@ -82,6 +82,7 @@ class Create extends Component {
         bonuses: "",
       },
       item: {
+        id: 0,
         key: "",
         name: "",
         type: "",
@@ -347,6 +348,7 @@ class Create extends Component {
     this.setState({ item: _item }, function() {
       e.preventDefault();
       const item = {
+       id: this.state.item.id,
        key: this.state.item.key,
        name: this.state.item.name,
        type: this.state.item.type,
@@ -563,6 +565,7 @@ class Create extends Component {
                 <CardBody>
                   <Row>
                     <Col>
+                      {renderFormGroup("Id: ", "number", "id", "id", this.handleItems)}
                       {renderFormGroup("Key: ", "text", "key", "key", this.handleItems)}
                       {renderFormGroup("Name: ", "text", "name", "name", this.handleItems)}
                       {renderFormGroup("Type: ", "text", "type", "type", this.handleItems)}

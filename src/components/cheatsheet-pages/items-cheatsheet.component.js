@@ -12,14 +12,31 @@ class ItemsCheatSheet extends Component {
 
   componentDidMount() {
     getData('items').then(data => {
-      this.setState({items: data.map(item => item)});
+      this.setState({items: data.map(item => item).sort(this.compare)});
     });
+  }
+
+  compare(a, b) {
+    const idA = a.id;
+    const idB = b.id;
+
+    let comparison = 0;
+    if (idA > idB) {
+      comparison = 1;
+    }
+    else if (idA < idB) {
+      comparison = -1;
+    }
+    return comparison;
   }
 
   render() {
     const items = [];
     for (let i = 0; i < this.state.items.length; ++i) {
-      items.push(<img src={this.state.items[i].image}/>);
+
+      if (this.state.items[i].depth === 1) {
+        items.push(<img src={this.state.items[i].image}/>);
+      }
     }
 
       return (
@@ -29,7 +46,13 @@ class ItemsCheatSheet extends Component {
         <Col sm={10}>
           <Row>
             <Card>
-              <CardBody>{items}</CardBody>
+              <CardBody>
+                <Row>
+                </Row>
+                <Row>
+                  {items}
+                </Row>
+              </CardBody>
             </Card>
           </Row>
           <Row>
