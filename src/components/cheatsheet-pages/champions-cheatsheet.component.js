@@ -110,7 +110,7 @@ class ChampionsCheatSheet extends Component {
         <Row>
           <Col sm={3}>
             <Row>
-              {this.state.origins[i].name}
+              <img src={this.state.origins[i].image}/> {this.state.origins[i].name}
             </Row>
             <Row></Row>
             <Row></Row>
@@ -147,7 +147,7 @@ class ChampionsCheatSheet extends Component {
       <Container>
         <Row>
           <Col sm={3}>
-            <Row>{this.state.classes[i].name}</Row>
+            <Row><img src={this.state.classes[i].image}/> {this.state.classes[i].name}</Row>
             <Row></Row>
             <Row></Row>
           </Col>

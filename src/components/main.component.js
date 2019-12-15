@@ -293,7 +293,11 @@ export default class Main extends Component {
     for (let i = 0; i < team.length; ++i) {
       for (let j = 0; j < team[i].champion.origin.length; ++j) {
         if (synergies.length === 0) {
-          synergies.push({name: team[i].champion.origin[j], count: 0});
+          for (let m = 0; m < this.state.origins.length; ++m) {
+            if (this.state.origins[m].name === team[i].champion.origin[j]) {
+              synergies.push({name: this.state.origins[m].name, image: this.state.origins[m].image, count: 0});
+            }
+          }
         }
 
         for (let k = 0; k < synergies.length; ++k) {
@@ -305,8 +309,13 @@ export default class Main extends Component {
             break;
           }
           if (k === synergies.length -1) {
-            synergies.push({name: team[i].champion.origin[j], count: 1});
-            k++;
+            for (let m = 0; m < this.state.origins.length; ++m) {
+              if (this.state.origins[m].name === team[i].champion.origin[j]) {
+                synergies.push({name: this.state.origins[m].name, image: this.state.origins[m].image, count: 1});
+                k++;
+              }
+            }
+
           }
         }
       }
@@ -320,8 +329,12 @@ export default class Main extends Component {
             break;
           }
           if (k === synergies.length -1) {
-            synergies.push({name: team[i].champion.classe[j], count: 1});
-            k++;
+            for (let m = 0; m < this.state.classes.length; ++m) {
+              if (this.state.classes[m].name === team[i].champion.classe[j]) {
+                synergies.push({name: this.state.classes[m].name, image: this.state.classes[m].image, count: 1});
+                k++;
+              }
+            }
           }
         }
       }
@@ -368,7 +381,7 @@ export default class Main extends Component {
     }
 
     for (let i = 0; i < this.state.synergies.length; ++i) {
-      synergies.push(<Card><CardBody>{this.state.synergies[i].name + ": " + this.state.synergies[i].count}</CardBody></Card>);
+      synergies.push(<Card><CardBody><img src={this.state.synergies[i].image}/>{this.state.synergies[i].name + ": " + this.state.synergies[i].count}</CardBody></Card>);
     }
 
     let gameArena;

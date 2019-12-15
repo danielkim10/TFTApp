@@ -7,6 +7,18 @@ class ItemsCheatSheet extends Component {
     super(props);
     this.state = {
       items: [],
+      basicItem1: {
+        name: "",
+        image: "",
+      },
+      basicItem2: {
+        name: "",
+        image: "",
+      },
+      advancedItem: {
+        name: "",
+        image: "",
+      },
     };
   }
 
@@ -30,12 +42,50 @@ class ItemsCheatSheet extends Component {
     return comparison;
   }
 
+  addItem(item) {
+    if (item.depth === 1) {
+      if (this.state.basicItem1.name === "") {
+        this.setState({basicItem1: item}, function() {
+          this.itemCombination();
+        });
+      }
+      else if (this.state.basicItem2.name === "") {
+        this.setState({basicItem2: item}, function() {
+          this.itemCombination();
+        });
+      }
+    }
+    else {
+      this.setState({advancedItem: item});
+    }
+  }
+
+  itemCombination() {
+    if (this.state.basicItem1.name !== "" && this.state.basicItem2.name !== "") {
+      for (let i = 0; i < this.state.basicItem1.buildsInto.length; ++i) {
+        for (let j = 0; j < this.state.basicItem2.buildsInto.length; ++j) {
+          if (this.state.basicItem2.buildsInto[j] === this.state.basicItem1.buildsInto[i]) {
+            for (let k = 0; k < this.state.items.length; ++k) {
+              if (this.state.basicItem1.buildsInto[i] === this.state.items[k].key) {
+                this.setState({advancedItem: this.state.items[k]});
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   render() {
-    const items = [];
+    const basicItems = [];
+    const advancedItems = [];
     for (let i = 0; i < this.state.items.length; ++i) {
 
       if (this.state.items[i].depth === 1) {
-        items.push(<img src={this.state.items[i].image}/>);
+        basicItems.push(<img src={this.state.items[i].image} onClick={() => this.addItem(this.state.items[i])}/>);
+      }
+      else if (this.state.items[i].depth === 2) {
+        advancedItems.push(<img src={this.state.items[i].image} onClick={() => this.addItem(this.state.items[i])}/>);
       }
     }
 
@@ -47,17 +97,30 @@ class ItemsCheatSheet extends Component {
           <Row>
             <Card>
               <CardBody>
-                <Row>
-                </Row>
-                <Row>
-                  {items}
-                </Row>
+                <Card>
+                  <CardBody>
+                  <img src={this.state.basicItem1.image}/> + <img src={this.state.basicItem2.image}/> = <img src={this.state.advancedItem.image}/>
+                  </CardBody>
+                </Card>
+                  <Card>
+                    <CardHeader><strong>Basic</strong></CardHeader>
+                    <CardBody>
+                      {basicItems}
+                    </CardBody>
+                  </Card>
+                  <Card>
+                    <CardHeader><strong>Advanced</strong></CardHeader>
+                    <CardBody>
+                      {advancedItems}
+                    </CardBody>
+                  </Card>
               </CardBody>
             </Card>
           </Row>
           <Row>
             <Card>
-              <CardBody></CardBody>
+              <CardBody>
+              </CardBody>
             </Card>
           </Row>
 
