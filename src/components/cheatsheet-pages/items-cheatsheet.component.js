@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, CardHeader, CardBody, Row, Col } from 'reactstrap';
+import { Card, CardHeader, CardBody, Row, Col, Button } from 'reactstrap';
 import { getData } from '../../api-helper/api.js'
 
 class ItemsCheatSheet extends Component {
@@ -9,17 +9,24 @@ class ItemsCheatSheet extends Component {
       items: [],
       basicItem1: {
         name: "",
+        bonus: "",
         image: "",
+        stats: [],
       },
       basicItem2: {
         name: "",
+        bonus: "",
         image: "",
+        stats: [],
       },
       advancedItem: {
         name: "",
+        bonus: "",
         image: "",
+        stats: [],
       },
     };
+    this.clear = this.clear.bind(this);
   }
 
   componentDidMount() {
@@ -46,34 +53,57 @@ class ItemsCheatSheet extends Component {
     if (item.depth === 1) {
       if (this.state.basicItem1.name === "") {
         this.setState({basicItem1: item}, function() {
-          this.itemCombination();
+          this.itemCombination(item.depth);
         });
       }
       else if (this.state.basicItem2.name === "") {
         this.setState({basicItem2: item}, function() {
-          this.itemCombination();
+          this.itemCombination(item.depth);
         });
       }
     }
     else {
-      this.setState({advancedItem: item});
+      if (this.state.advancedItem.name === "") {
+        this.setState({advancedItem: item}, function() {
+          this.itemCombination(item.depth);
+        });
+      }
     }
   }
 
-  itemCombination() {
-    if (this.state.basicItem1.name !== "" && this.state.basicItem2.name !== "") {
-      for (let i = 0; i < this.state.basicItem1.buildsInto.length; ++i) {
-        for (let j = 0; j < this.state.basicItem2.buildsInto.length; ++j) {
-          if (this.state.basicItem2.buildsInto[j] === this.state.basicItem1.buildsInto[i]) {
-            for (let k = 0; k < this.state.items.length; ++k) {
-              if (this.state.basicItem1.buildsInto[i] === this.state.items[k].key) {
-                this.setState({advancedItem: this.state.items[k]});
+  itemCombination(depth) {
+    if (depth === 1) {
+      if (this.state.basicItem1.name !== "" && this.state.basicItem2.name !== "") {
+        for (let i = 0; i < this.state.basicItem1.buildsInto.length; ++i) {
+          for (let j = 0; j < this.state.basicItem2.buildsInto.length; ++j) {
+            if (this.state.basicItem2.buildsInto[j] === this.state.basicItem1.buildsInto[i]) {
+              for (let k = 0; k < this.state.items.length; ++k) {
+                if (this.state.basicItem1.buildsInto[i] === this.state.items[k].key) {
+                  this.setState({advancedItem: this.state.items[k]});
+                }
               }
             }
           }
         }
       }
     }
+    else if (depth === 2) {
+      if (this.state.basicItem1.name === "" || this.state.basicItem2.name === "") {
+        for (let k = 0; k < this.state.items.length; ++k) {
+          if (this.state.items[k].key === this.state.advancedItem.buildsFrom[0]) {
+            this.setState({basicItem1: this.state.items[k]});
+          }
+          if (this.state.items[k].key === this.state.advancedItem.buildsFrom[1]) {
+            this.setState({basicItem2: this.state.items[k]});
+          }
+        }
+      }
+    }
+  }
+
+  clear() {
+    let blankItem = {name: "", bonus: "", image: "", stats: []};
+    this.setState({ basicItem1: blankItem, basicItem2: blankItem, advancedItem: blankItem });
   }
 
   render() {
@@ -98,8 +128,15 @@ class ItemsCheatSheet extends Component {
             <Card>
               <CardBody>
                 <Card>
+                  <CardHeader><Row><strong>Builder</strong></Row><Row><Button type="button" color="primary" onClick={this.clear}>Clear</Button></Row></CardHeader>
                   <CardBody>
-                  <img src={this.state.basicItem1.image}/> + <img src={this.state.basicItem2.image}/> = <img src={this.state.advancedItem.image}/>
+                  <Row>
+                    <Col><Row><img src={this.state.basicItem1.image}/></Row><Row>{this.state.basicItem1.bonus}</Row></Col>
+                    <Col>+</Col>
+                    <Col><Row><img src={this.state.basicItem2.image}/></Row><Row>{this.state.basicItem2.bonus}</Row></Col>
+                    <Col>=</Col>
+                    <Col><Row><img src={this.state.advancedItem.image}/></Row><Row>{this.state.advancedItem.bonus}</Row></Col>
+                  </Row>
                   </CardBody>
                 </Card>
                   <Card>

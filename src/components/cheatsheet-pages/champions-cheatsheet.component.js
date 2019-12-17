@@ -56,7 +56,14 @@ class ChampionsCheatSheet extends Component {
   componentDidMount() {
       getData('champions').then(data => {
         this.setState({ champions: data.map(champion => champion) });
-        this.loadChampionData(this.state.champions[Math.floor(Math.random() * this.state.champions.length)]);
+
+        if (!this.props.location.data) {
+          this.loadChampionData(this.state.champions[Math.floor(Math.random() * this.state.champions.length)]);
+        }
+        else {
+          this.loadChampionData(this.state.champions.filter(champion => champion.key === this.props.location.data)[0]);
+        }
+
         //this.setState({ champion: this.state.champions[Math.floor(Math.random() * this.state.champions.length)] });
       });
   }
