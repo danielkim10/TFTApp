@@ -1,9 +1,8 @@
-import React, { Component, Fragment } from 'react';
-import {Button, Row, Col, Form, FormGroup, Card, CardHeader,
-        CardBody, CardFooter, Label, Input} from 'reactstrap';
-import axios from 'axios';
+import React, { Component } from 'react';
+import {Button, Row, Col, Card, CardHeader,
+        CardBody, CardFooter } from 'reactstrap';
 import { renderFormGroup, renderFormGroupCheckbox } from '../../sub-components/formgroup.js';
-import { getDataFromId, updateData } from '../../api-helper/api.js';
+import { updateData } from '../../api-helper/api.js';
 
 class Origin extends Component {
   constructor(props) {
@@ -122,7 +121,6 @@ class Origin extends Component {
             <i class="fa fa-align-justify"></i><strong>Origin</strong>
           </CardHeader>
           <CardBody>
-            <Form>
               <Row>
                 <Col>
                   {renderFormGroup("Id: ", "number", "id", "id", this.handleOrigins, this.state.origin.id)}
@@ -135,7 +133,6 @@ class Origin extends Component {
                   {renderFormGroupCheckbox("Must be exact: ", "checkbox", "exact", "exact", this.handleClick, this.state.origin.mustBeExact)}
                 </Col>
               </Row>
-            </Form>
           </CardBody>
           <CardFooter>
             <Button type="button" color="primary" onClick={this.handleSubmit}>Submit</Button>

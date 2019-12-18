@@ -1,6 +1,6 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { getData, getDataFromName } from '../../api-helper/api.js';
-import { Card, CardHeader, CardBody, Container, Row, Col, Input, Label } from 'reactstrap';
+import { Card, CardHeader, CardBody, Container, Row, Col, Input } from 'reactstrap';
 
 class ChampionsCheatSheet extends Component {
   constructor(props) {
@@ -109,7 +109,7 @@ class ChampionsCheatSheet extends Component {
 
       let bonuses = [];
       for (let j = 0; j < this.state.origins[i].bonuses.length; ++j) {
-        bonuses.push(<Row>{this.state.origins[i].bonuses[j].needed}: {this.state.origins[i].bonuses[j].effect}</Row>)
+        bonuses.push(<Row>({this.state.origins[i].bonuses[j].needed}) {this.state.origins[i].bonuses[j].effect}</Row>)
       }
 
       cards.push(
@@ -147,7 +147,7 @@ class ChampionsCheatSheet extends Component {
 
       let bonuses = [];
       for (let j = 0; j < this.state.classes[i].bonuses.length; ++j) {
-        bonuses.push(<Row>{this.state.classes[i].bonuses[j].needed}: {this.state.classes[i].bonuses[j].effect}</Row>)
+        bonuses.push(<Row>({this.state.classes[i].bonuses[j].needed}) {this.state.classes[i].bonuses[j].effect}</Row>)
       }
 
       cards.push(
@@ -178,13 +178,12 @@ class ChampionsCheatSheet extends Component {
 
   render() {
     const champions = [];
-    let origins = "";
-    let classes = "";
     let abilityStats = [];
     let health = "";
     let damage = "";
 
     for (let i = 0; i < this.state.champions.length; ++i) {
+      if (this.state.champions[i].key.includes(this.state.searchName.toLowerCase()) || this.state.champions[i].name.includes(this.state.searchName))
       champions.push(<img src={this.state.champions[i].icon} width={60} height={60} onClick={() => this.loadChampionData(this.state.champions[i])}/>)
     }
 
@@ -212,21 +211,6 @@ class ChampionsCheatSheet extends Component {
         health += ' / ';
       }
     }
-
-    for (let i = 0; i < this.state.origins.length; ++i) {
-      origins += this.state.origins[i].name;
-      if (i < this.state.origins.length - 1) {
-        origins += ', ';
-      }
-    }
-    for (let i = 0; i < this.state.classes.length; ++i) {
-      classes += this.state.classes[i].name;
-      if (i < this.state.classes.length - 1) {
-        classes += ', ';
-      }
-    }
-
-
       return (
       <div>
         <Row>

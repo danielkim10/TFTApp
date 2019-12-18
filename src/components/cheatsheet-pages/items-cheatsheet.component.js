@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Card, CardHeader, CardBody, Row, Col, Button } from 'reactstrap';
+import { Card, CardHeader, CardBody, Container, Row, Col, Button } from 'reactstrap';
 import { getData } from '../../api-helper/api.js'
+import { cardColumn } from '../../sub-components/prebuiltcard.js';
 
 class ItemsCheatSheet extends Component {
   constructor(props) {
@@ -10,19 +11,19 @@ class ItemsCheatSheet extends Component {
       basicItem1: {
         name: "",
         bonus: "",
-        image: "",
+        image: "http://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/maps/particles/tft/tft_item_emptyslot.tft916critcomponent.png",
         stats: [],
       },
       basicItem2: {
         name: "",
         bonus: "",
-        image: "",
+        image: "http://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/maps/particles/tft/tft_item_emptyslot.tft916critcomponent.png",
         stats: [],
       },
       advancedItem: {
         name: "",
         bonus: "",
-        image: "",
+        image: "http://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/maps/particles/tft/tft_item_emptyslot.tft916critcomponent.png",
         stats: [],
       },
     };
@@ -101,8 +102,17 @@ class ItemsCheatSheet extends Component {
     }
   }
 
+  itemStats(item) {
+    let stats = [];
+    for (let i = 0; i < item.stats.length; ++i) {
+      if (item.depth !== 1 && (item.stats[i].name !== 'class' && item.stats[i].name !== 'origin'))
+        stats.push(<Row>{item.stats[i].label}</Row>)
+    }
+    return stats;
+  }
+
   clear() {
-    let blankItem = {name: "", bonus: "", image: "", stats: []};
+    let blankItem = {name: "", bonus: "", image: "http://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/maps/particles/tft/tft_item_emptyslot.tft916critcomponent.png", stats: []};
     this.setState({ basicItem1: blankItem, basicItem2: blankItem, advancedItem: blankItem });
   }
 
@@ -131,26 +141,22 @@ class ItemsCheatSheet extends Component {
                   <CardHeader><Row><strong>Builder</strong></Row><Row><Button type="button" color="primary" onClick={this.clear}>Clear</Button></Row></CardHeader>
                   <CardBody>
                   <Row>
-                    <Col><Row><img src={this.state.basicItem1.image}/></Row><Row>{this.state.basicItem1.bonus}</Row></Col>
+                    <Col><Row><img src={this.state.basicItem1.image}/></Row>
+                         <Row><Container>{this.itemStats(this.state.basicItem1)}</Container></Row>
+                         <Row>{this.state.basicItem1.bonus}</Row></Col>
                     <Col>+</Col>
-                    <Col><Row><img src={this.state.basicItem2.image}/></Row><Row>{this.state.basicItem2.bonus}</Row></Col>
+                    <Col><Row><img src={this.state.basicItem2.image}/></Row>
+                         <Row><Container>{this.itemStats(this.state.basicItem2)}</Container></Row>
+                         <Row>{this.state.basicItem2.bonus}</Row></Col>
                     <Col>=</Col>
-                    <Col><Row><img src={this.state.advancedItem.image}/></Row><Row>{this.state.advancedItem.bonus}</Row></Col>
+                    <Col><Row><img src={this.state.advancedItem.image}/></Row>
+                         <Row><Container>{this.itemStats(this.state.advancedItem)}</Container></Row>
+                         <Row>{this.state.advancedItem.bonus}</Row></Col>
                   </Row>
                   </CardBody>
                 </Card>
-                  <Card>
-                    <CardHeader><strong>Basic</strong></CardHeader>
-                    <CardBody>
-                      {basicItems}
-                    </CardBody>
-                  </Card>
-                  <Card>
-                    <CardHeader><strong>Advanced</strong></CardHeader>
-                    <CardBody>
-                      {advancedItems}
-                    </CardBody>
-                  </Card>
+                  {cardColumn('Basic', basicItems)}
+                  {cardColumn('Advanced', advancedItems)}
               </CardBody>
             </Card>
           </Row>

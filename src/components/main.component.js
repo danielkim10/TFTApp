@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Card, CardHeader, CardBody, Col, Row} from 'reactstrap';
+import { Button, Card, CardHeader, CardBody, Col, Row, Input } from 'reactstrap';
 import axios from 'axios';
 import { HexGrid, Layout, Hexagon, Text, Pattern, Path, Hex } from 'react-hexgrid';
 import './hexgrid.css'
@@ -23,6 +23,8 @@ export default class Main extends Component {
       activeOrigins: [],
       boardData: [],
       championDataOpen: false,
+      searchNameChamps: "",
+      searchNameItems: "",
     }
     this.clearButton = this.clearButton.bind(this);
     this.randomButton = this.randomButton.bind(this);
@@ -30,6 +32,8 @@ export default class Main extends Component {
     this.runSimulation = this.runSimulation.bind(this);
     this.createChampion = this.createChampion.bind(this);
     this.clearTeam = this.clearTeam.bind(this);
+    this.handleSearchChamps = this.handleSearchChamps.bind(this);
+    this.handleSearchItems = this.handleSearchItems.bind(this);
   }
 
   componentDidMount() {
@@ -342,8 +346,15 @@ export default class Main extends Component {
     this.setState({synergies: synergies});
   }
 
+  handleSearchChamps(event) {
+    this.setState({searchNameChamps: event.target.value});
+  }
+  handleSearchItems(event) {
+    this.setState({searchNameItems: event.target.value});
+  }
+
   render() {
-    const champions = [];
+    let champions = [];
     const classes = [];
     const items = [];
     const origins = [];
@@ -352,12 +363,14 @@ export default class Main extends Component {
     const teamData = [];
 
     for (let i = 0; i < this.state.champions.length; ++i) {
+      if (this.state.champions[i].key.includes(this.state.searchNameChamps.toLowerCase()) || this.state.champions[i].name.includes(this.state.searchNameChamps))
       champions.push(<img src={this.state.champions[i].icon} width={60} height={60} onClick={() => this.addToTeam(this.state.champions[i])}/>);
     }
     for (let i = 0; i < this.state.classes.length; ++i) {
       classes.push(this.state.classes[i].name);
     }
     for (let i = 0; i < this.state.items.length; ++i) {
+      if (this.state.items[i].key.includes(this.state.searchNameItems.toLowerCase()) || this.state.items[i].name.includes(this.state.searchNameItems))
       items.push(<img src={this.state.items[i].image} width={60} height={60} onClick={() => this.addItem(this.state.items[i])}/>);
     }
     for (let i = 0; i < this.state.origins.length; ++i) {
@@ -423,6 +436,7 @@ export default class Main extends Component {
                 <strong>Champions</strong>
               </CardHeader>
               <CardBody>
+                <Input type="text" id="search" name="search" onChange={this.handleSearchChamps} placeholder="Champion Name" />
                 {champions}
               </CardBody>
             </Card>
@@ -433,6 +447,7 @@ export default class Main extends Component {
                 <strong>Items</strong>
               </CardHeader>
               <CardBody>
+              <Input type="text" id="search" name="search" onChange={this.handleSearchItems} placeholder="Item Name" />
                 {items}
               </CardBody>
             </Card>

@@ -1,9 +1,8 @@
-import React, { Component, Fragment } from 'react';
-import {Button, Row, Col, Form, FormGroup, Card, CardHeader,
-        CardBody, CardFooter, Label, Input} from 'reactstrap';
-import axios from 'axios';
+import React, { Component } from 'react';
+import {Button, Row, Col, Card, CardHeader,
+        CardBody, CardFooter } from 'reactstrap';
 import { renderFormGroup } from '../../sub-components/formgroup.js'
-import { getDataFromId, updateData } from '../../api-helper/api.js'
+import { updateData } from '../../api-helper/api.js'
 
 class Champion extends Component {
   constructor(props) {

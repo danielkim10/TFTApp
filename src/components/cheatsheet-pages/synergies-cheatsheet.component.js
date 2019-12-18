@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Card, CardHeader, CardBody, Row, Col, Container } from 'reactstrap';
 import { getData } from '../../api-helper/api.js';
-import { withRouter } from 'react-router-dom';
 
 class SynergiesCheatSheet extends Component {
   constructor(props) {
@@ -38,7 +37,7 @@ class SynergiesCheatSheet extends Component {
 
     let bonuses = [];
     for (let i = 0; i < data.bonuses.length; ++i) {
-      bonuses.push(<Row><Col sm={2}>{data.bonuses[i].needed}</Col><Col sm={10}>{data.bonuses[i].effect}</Col></Row>);
+      bonuses.push(<Row><Col sm={2}>({data.bonuses[i].needed})</Col><Col sm={10}>{data.bonuses[i].effect}</Col></Row>);
     }
 
     return (<Card style={{width: "90%"}}>

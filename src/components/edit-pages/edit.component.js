@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import { Row, Col, Card, CardHeader, CardBody } from 'reactstrap';
-import axios from 'axios';
+import { Row, Card } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import Image from 'react-image-resizer';
 import { getData } from '../../api-helper/api.js';
 import { cardColumn } from '../../sub-components/prebuiltcard.js';
 
@@ -25,11 +23,25 @@ class Edit extends Component {
       this.setState({classes: data.map(classe => classe)})
     });
     getData('items').then(data => {
-      this.setState({items: data.map(item => item)})
+      this.setState({items: data.map(item => item).sort(this.compare)})
     });
     getData('origins').then(data => {
       this.setState({origins: data.map(origin => origin)})
     });
+  }
+
+  compare(a, b) {
+    const idA = a.id;
+    const idB = b.id;
+
+    let comparison = 0;
+    if (idA > idB) {
+      comparison = 1;
+    }
+    else if (idA < idB) {
+      comparison = -1;
+    }
+    return comparison;
   }
 
   render() {
@@ -55,13 +67,13 @@ class Edit extends Component {
     }
       return (
         <div>
-        <Card>
-          <Row>
-          {cardColumn('Champions', champions)}
-          {cardColumn('Classes', classes)}
-          {cardColumn('Items', items)}
-          {cardColumn('Origins', origins)}
-          </Row>
+          <Card>
+            <Row>
+              {cardColumn('Champions', champions)}
+              {cardColumn('Classes', classes)}
+              {cardColumn('Items', items)}
+              {cardColumn('Origins', origins)}
+            </Row>
           </Card>
         </div>
       )
