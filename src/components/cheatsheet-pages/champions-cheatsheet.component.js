@@ -97,6 +97,73 @@ class ChampionsCheatSheet extends Component {
     this.setState({searchName: event.target.value});
   }
 
+  statsCard() {
+    let abilityStats = [];
+    let health = "";
+    let damage = "";
+    for (let i = 0; i < this.state.champion.ability.stats.length; ++i) {
+      let partString1 = "";
+      for (let j = 0; j < this.state.champion.ability.stats[i].value.length; ++j) {
+        partString1 += this.state.champion.ability.stats[i].value[j];
+        if (j < this.state.champion.ability.stats[i].value.length - 1) {
+          partString1 += '/';
+        }
+      }
+      abilityStats.push(<Row>{this.state.champion.ability.stats[i].type}: {partString1}</Row>)
+    }
+
+    for (let i = 0; i < this.state.champion.stats.offense.damage.length; ++i) {
+      damage += this.state.champion.stats.offense.damage[i];
+      if (i < this.state.champion.stats.offense.damage.length - 1) {
+        damage += ' / ';
+      }
+    }
+
+    for (let i = 0; i < this.state.champion.stats.defense.health.length; ++i) {
+      health += this.state.champion.stats.defense.health[i];
+      if (i < this.state.champion.stats.defense.health.length - 1) {
+        health += ' / ';
+      }
+    }
+
+
+    return (<Card style={{width: "100%"}}>
+      <CardHeader>
+        <Container>
+        <Row><strong> {this.state.champion.name}</strong></Row>
+        <Row>Cost: {this.state.champion.cost}/{this.state.champion.cost + 2}/{this.state.champion.cost + 4}</Row>
+        </Container>
+      </CardHeader>
+      <CardBody>
+      <Container>
+      <Row>
+        <Col>
+          <Row>Health: {health}</Row>
+          <Row>Attack Damage: {damage}</Row>
+          <Row>Attack Speed: {this.state.champion.stats.offense.attackSpeed}</Row>
+          <Row>Attack Range: {this.state.champion.stats.offense.range === 1 ? 125 : (this.state.champion.stats.offense.range === 2) ? 420 : (this.state.champion.stats.offense.range === 3) ? 680 : 890}</Row>
+          <Row>Armor: {this.state.champion.stats.defense.armor}</Row>
+          <Row>Magic Resist: {this.state.champion.stats.defense.magicResist}</Row>
+        </Col>
+        </Row>
+        <Row>
+        <Col sm={2}><img src={this.state.champion.abilityIcon} /></Col>
+        <Col sm={10}>
+          <Row>
+            <Col><strong>{this.state.champion.ability.name}</strong></Col>
+            <Col>Mana: {this.state.champion.ability.manaStart}/{this.state.champion.ability.manaCost}</Col>
+          </Row>
+          <Row>
+            <Col sm={12}>{this.state.champion.ability.description}</Col><Col sm={0}></Col></Row>
+          <Row>
+            <Col sm={12}><Container>{abilityStats}</Container></Col><Col sm={0}></Col></Row>
+        </Col>
+        </Row>
+        </Container>
+      </CardBody>
+    </Card>);
+  }
+
   synergyCard() {
     let cards = [];
     for (let i = 0; i < this.state.origins.length; ++i) {
@@ -178,39 +245,14 @@ class ChampionsCheatSheet extends Component {
 
   render() {
     const champions = [];
-    let abilityStats = [];
-    let health = "";
-    let damage = "";
+
 
     for (let i = 0; i < this.state.champions.length; ++i) {
       if (this.state.champions[i].key.includes(this.state.searchName.toLowerCase()) || this.state.champions[i].name.includes(this.state.searchName))
       champions.push(<img src={this.state.champions[i].icon} width={60} height={60} onClick={() => this.loadChampionData(this.state.champions[i])}/>)
     }
 
-    for (let i = 0; i < this.state.champion.ability.stats.length; ++i) {
-      let partString1 = "";
-      for (let j = 0; j < this.state.champion.ability.stats[i].value.length; ++j) {
-        partString1 += this.state.champion.ability.stats[i].value[j];
-        if (j < this.state.champion.ability.stats[i].value.length - 1) {
-          partString1 += '/';
-        }
-      }
-      abilityStats.push(<Row>{this.state.champion.ability.stats[i].type}: {partString1}</Row>)
-    }
 
-    for (let i = 0; i < this.state.champion.stats.offense.damage.length; ++i) {
-      damage += this.state.champion.stats.offense.damage[i];
-      if (i < this.state.champion.stats.offense.damage.length - 1) {
-        damage += ' / ';
-      }
-    }
-
-    for (let i = 0; i < this.state.champion.stats.defense.health.length; ++i) {
-      health += this.state.champion.stats.defense.health[i];
-      if (i < this.state.champion.stats.defense.health.length - 1) {
-        health += ' / ';
-      }
-    }
       return (
       <div>
         <Row>
@@ -237,41 +279,7 @@ class ChampionsCheatSheet extends Component {
                         </Col>
                         <Col sm={8}>
                           <Row>
-                            <Card style={{width: "100%"}}>
-                              <CardHeader>
-                                <Container>
-                                <Row><strong> {this.state.champion.name}</strong></Row>
-                                <Row>Cost: {this.state.champion.cost}/{this.state.champion.cost + 2}/{this.state.champion.cost + 4}</Row>
-                                </Container>
-                              </CardHeader>
-                              <CardBody>
-                              <Container>
-                              <Row>
-                                <Col>
-                                  <Row>Health: {health}</Row>
-                                  <Row>Attack Damage: {damage}</Row>
-                                  <Row>Attack Speed: {this.state.champion.stats.offense.attackSpeed}</Row>
-                                  <Row>Attack Range: {this.state.champion.stats.offense.range === 1 ? 125 : (this.state.champion.stats.offense.range === 2) ? 420 : (this.state.champion.stats.offense.range === 3) ? 680 : 890}</Row>
-                                  <Row>Armor: {this.state.champion.stats.defense.armor}</Row>
-                                  <Row>Magic Resist: {this.state.champion.stats.defense.magicResist}</Row>
-                                </Col>
-                                </Row>
-                                <Row>
-                                <Col sm={2}><img src={this.state.champion.abilityIcon} /></Col>
-                                <Col sm={10}>
-                                  <Row>
-                                    <Col><strong>{this.state.champion.ability.name}</strong></Col>
-                                    <Col>Mana: {this.state.champion.ability.manaStart}/{this.state.champion.ability.manaCost}</Col>
-                                  </Row>
-                                  <Row>
-                                    <Col sm={12}>{this.state.champion.ability.description}</Col><Col sm={0}></Col></Row>
-                                  <Row>
-                                    <Col sm={12}><Container>{abilityStats}</Container></Col><Col sm={0}></Col></Row>
-                                </Col>
-                                </Row>
-                                </Container>
-                              </CardBody>
-                            </Card>
+                            {this.statsCard()}
                           </Row>
                           <Row>
                             <Card style={{width: "100%"}}>

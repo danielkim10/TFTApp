@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { GridGenerator, Layout, Hexagon, Text, Pattern, HexUtils } from 'react-hexgrid';
 import './hexgrid.css';
+import Image from 'react-image-resizer';
 
 class GameArena extends Component {
   constructor(props) {
