@@ -319,20 +319,12 @@ class Create extends Component {
   handleItemSubmit(e) {
     let _item = Object.assign({}, this.state.item);
     let stats = [];
-    let statsName = [];
-    let statsLabel = [];
-    let statsValue = [];
     let buildsFrom = [];
     let buildsInto = [];
     let statsString = this.state.item.statsTempString.split('/');
     for (let subString in statsString) {
       let _subString = statsString[subString].split(',');
-      statsName.push(_subString[0]);
-      statsLabel.push(_subString[1]);
-      statsValue.push(_subString[2]);
-    }
-    for (let i = 0; i < statsName.length; i++) {
-      stats.push({ name: statsName[i], label: statsLabel[i], value: statsValue[i] });
+      stats.push({ name: _subString[0], label: _subString[1], value: _subString[2] });
     }
 
     if (_item.depth === "1") {

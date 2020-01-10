@@ -7,7 +7,8 @@ import Main from "./components/main.component";
 import ChampionsCheatSheet from "./components/cheatsheet-pages/champions-cheatsheet.component";
 import SynergiesCheatSheet from "./components/cheatsheet-pages/synergies-cheatsheet.component";
 import ItemsCheatSheet from "./components/cheatsheet-pages/items-cheatsheet.component";
-import MatchHistory from "./components/matchhistory.component";
+import MatchHistory from "./components/match-history/matchhistory.component";
+import Match from "./components/match-history/match.component.js";
 import SavedBuilds from "./components/savedbuilds.component";
 import Create from "./components/create.component";
 import Edit from "./components/edit-pages/edit.component";
@@ -28,6 +29,7 @@ function App() {
         <Route path="/cheatsheet/synergies" component={SynergiesCheatSheet} />
         <Route path="/cheatsheet/items" component={ItemsCheatSheet} />
         <Route path="/matchhistory" component={MatchHistory} />
+        <Route path="/matchhistory/:id" component={Match} />
         <Route path="/savedbuilds" component={SavedBuilds} />
         <Route path="/create" component={Create}/>
         <Route path="/edit" component={Edit} />

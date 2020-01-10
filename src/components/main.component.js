@@ -4,7 +4,7 @@ import axios from 'axios';
 import { HexGrid, Layout, Hexagon, Text, Pattern, Path, Hex } from 'react-hexgrid';
 import './hexgrid.css'
 import GameArena from './gamearena.component.js'
-import { getData } from '../api-helper/api.js'
+import { getData, postData } from '../api-helper/api.js'
 import Image from 'react-image-resizer';
 
 export default class Main extends Component {
@@ -34,6 +34,7 @@ export default class Main extends Component {
     this.clearTeam = this.clearTeam.bind(this);
     this.handleSearchChamps = this.handleSearchChamps.bind(this);
     this.handleSearchItems = this.handleSearchItems.bind(this);
+    this.handleSave = this.handleSave.bind(this);
   }
 
   componentDidMount() {
@@ -367,6 +368,9 @@ export default class Main extends Component {
   }
   handleSearchItems(event) {
     this.setState({searchNameItems: event.target.value});
+  }
+  handleSave(event) {
+    postData('teams', this.state.team, "");
   }
 
   createGameArea() {

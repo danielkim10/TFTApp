@@ -1,11 +1,36 @@
 import React, { Component } from 'react';
+import { Card, CardHeader, CardBody, Row, Col } from 'reactstrap';
+import { getData } from '../api-helper/api.js';
 
-export default class SavedBuilds extends Component {
+class SavedBuilds extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+
+    }
+  }
+
+  componentDidMount() {
+    getData("savedBuilds")
+  }
+
   render() {
       return (
+
         <div>
-          <p>Saved Builds</p>
+          <Card>
+            <CardHeader>
+
+            </CardHeader>
+
+            <CardBody>
+
+            </CardBody>
+          </Card>
+
         </div>
       )
   }
 }
+
+export default SavedBuilds
