@@ -2,7 +2,7 @@ Use 'nodemon server' in TFTApp/tft-app/backend to start the server and connect t
 
 Use 'npm start in TFTApp/tft-app to start the frontend.
 
-
+A .env file with two keys is required. The first one, ATLAS_URI, is required for champion data. The second one, RIOT_KEY, is required to access player data.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
