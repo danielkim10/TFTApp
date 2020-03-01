@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Card, CardHeader, CardBody, Row, Col, Container } from 'reactstrap';
 import { getData } from '../../api-helper/api.js';
+import '../../css/colors.css';
 
 class SynergiesCheatSheet extends Component {
   constructor(props) {
@@ -41,7 +42,7 @@ class SynergiesCheatSheet extends Component {
     }
 
     return (<Card style={{width: "90%"}}>
-        <CardHeader><img src={data.image}/> {data.name}</CardHeader>
+        <CardHeader><img src={data.image} class='black-icon'/> {data.name}</CardHeader>
         <CardBody>
           <Container>{data.description}</Container>
           <Container>{championDesc}</Container>

@@ -233,8 +233,8 @@ class Create extends Component {
     // let costString = this.state.champTempStrings.cost.split(',');
     let origin = this.state.champion.originTempString.split(',');
     let classe = this.state.champion.classeTempString.split(',');
-    let damageString = this.state.champion.offense.damageTempString.split(',');
-    let healthString = this.state.champion.defense.healthTempString.split(',');
+    let damageString = this.state.champion.stats.offense.damageTempString.split(',');
+    let healthString = this.state.champion.stats.defense.healthTempString.split(',');
     let statsType = this.state.champion.ability.statsTypeTempString.split(',');
     let statsValueString = this.state.champion.ability.statsValueTempString.split('/');
 

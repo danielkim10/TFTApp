@@ -6,6 +6,7 @@ import './hexgrid.css'
 import GameArena from './gamearena.component.js'
 import { getData, postData } from '../api-helper/api.js'
 import Image from 'react-image-resizer';
+import '../css/colors.css';
 
 export default class Main extends Component {
   constructor(props) {
@@ -466,7 +467,7 @@ export default class Main extends Component {
       else {
         color = BLACK_COLOR;
       }
-      synergies_.push(<Card inverse={color === BLACK_COLOR} style={{ backgroundColor: color, borderColor: color }}><CardBody><img src={synergies[i].synergy.image}/>{synergies[i].synergy.name + ": " + synergies[i].count}</CardBody></Card>);
+      synergies_.push(<Card inverse={color === BLACK_COLOR} style={{ backgroundColor: color, borderColor: color }}><CardBody><img src={synergies[i].synergy.image} class='black-icon'/>{synergies[i].synergy.name + ": " + synergies[i].count}</CardBody></Card>);
     }
 
     // let gameArena = null;

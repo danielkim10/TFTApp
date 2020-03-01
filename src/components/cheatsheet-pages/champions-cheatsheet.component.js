@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { getData, getDataFromName } from '../../api-helper/api.js';
 import { Card, CardHeader, CardBody, Container, Row, Col, Input } from 'reactstrap';
+import '../../css/colors.css'
 
 class ChampionsCheatSheet extends Component {
   constructor(props) {
@@ -184,7 +185,7 @@ class ChampionsCheatSheet extends Component {
         <Row>
           <Col sm={3}>
             <Row>
-              <img src={this.state.origins[i].image}/> {this.state.origins[i].name}
+              <img src={this.state.origins[i].image} class='black-icon'/> {this.state.origins[i].name}
             </Row>
             <Row></Row>
             <Row></Row>
@@ -221,7 +222,7 @@ class ChampionsCheatSheet extends Component {
       <Container>
         <Row>
           <Col sm={3}>
-            <Row><img src={this.state.classes[i].image}/> {this.state.classes[i].name}</Row>
+            <Row><img src={this.state.classes[i].image} class='black-icon'/> {this.state.classes[i].name}</Row>
             <Row></Row>
             <Row></Row>
           </Col>
@@ -274,10 +275,10 @@ class ChampionsCheatSheet extends Component {
                   <Card>
                     <CardBody>
                       <Row>
-                        <Col sm={4}>
-                          <Row><img src={this.state.champion.image} /></Row>
+                        <Col>
+                          <Row><img src={this.state.champion.image} width='40%' height='40%'/></Row>
                         </Col>
-                        <Col sm={8}>
+                        <Col>
                           <Row>
                             {this.statsCard()}
                           </Row>
