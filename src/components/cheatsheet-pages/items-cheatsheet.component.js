@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Card, CardHeader, CardBody, Container, Row, Col, Button } from 'reactstrap';
 import { getData } from '../../api-helper/api.js'
 import { cardColumn } from '../../sub-components/prebuiltcard.js';
+import '../../css/colors.css';
 
 class ItemsCheatSheet extends Component {
   constructor(props) {
@@ -141,15 +142,18 @@ class ItemsCheatSheet extends Component {
                   <CardHeader><Row><strong>Builder</strong></Row><Row><Button type="button" color="primary" onClick={this.clear}>Clear</Button></Row></CardHeader>
                   <CardBody>
                   <Row>
-                    <Col><Row><img src={this.state.basicItem1.image}/></Row>
+                    <Col><Row><img src={this.state.basicItem1.image} class='grayscale'/></Row>
+                          <Row>{this.state.basicItem1.name}</Row>
                          <Row><Container>{this.itemStats(this.state.basicItem1)}</Container></Row>
                          <Row>{this.state.basicItem1.bonus}</Row></Col>
                     <Col>+</Col>
-                    <Col><Row><img src={this.state.basicItem2.image}/></Row>
+                    <Col><Row><img src={this.state.basicItem2.image} class='grayscale'/></Row>
+                        <Row>{this.state.basicItem2.name}</Row>
                          <Row><Container>{this.itemStats(this.state.basicItem2)}</Container></Row>
                          <Row>{this.state.basicItem2.bonus}</Row></Col>
                     <Col>=</Col>
                     <Col><Row><img src={this.state.advancedItem.image}/></Row>
+                        <Row>{this.state.advancedItem.name}</Row>
                          <Row><Container>{this.itemStats(this.state.advancedItem)}</Container></Row>
                          <Row>{this.state.advancedItem.bonus}</Row></Col>
                   </Row>
