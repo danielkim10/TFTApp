@@ -74,6 +74,7 @@ class Create extends Component {
         name: "",
         description: "",
         bonuses: [],
+        bonusesTempString: "",
         mustBeExact: false,
         set: 0,
         image: "",
@@ -185,7 +186,7 @@ class Create extends Component {
     //     this.setState({ classTempStrings: classTempStrings });
     // }
     // else {
-    let classe = Object.assign({}, this.state.class);
+    let classe = Object.assign({}, this.state.classe);
     classe[event.target.id] = event.target.value;
     this.setState({ classe: classe });
     // }
@@ -298,7 +299,7 @@ class Create extends Component {
       effect.push(subString);
     }
     for (let i = 0; i < neededString.length; i++) {
-      _classe.bonuses.push({ needed: needed[1], effect: effect[1] });
+      _classe.bonuses.push({ needed: needed[i], effect: effect[i] });
     }
     this.setState({ classe: _classe }, function() {
       e.preventDefault();

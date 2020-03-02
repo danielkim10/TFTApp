@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { getData, getDataFromName } from '../../api-helper/api.js';
+import { getSetData, getDataFromName } from '../../api-helper/api.js';
 import { Card, CardHeader, CardBody, Container, Row, Col, Input } from 'reactstrap';
 import '../../css/colors.css'
 
@@ -55,7 +55,7 @@ class ChampionsCheatSheet extends Component {
   }
 
   componentDidMount() {
-      getData('champions').then(data => {
+      getSetData('champions', 1).then(data => {
         this.setState({ champions: data.map(champion => champion) });
 
         if (!this.props.location.data) {
@@ -172,7 +172,7 @@ class ChampionsCheatSheet extends Component {
 
       let matchingChampionsIcons = [];
       for (let j = 0; j < matchingChampions.length; ++j) {
-        matchingChampionsIcons.push(<img src={matchingChampions[j].icon} width={60} height={60}/>);
+        matchingChampionsIcons.push(<img src={matchingChampions[j].icon} width={60} height={60} onClick={() => this.loadChampionData(matchingChampions[j])}/>);
       }
 
       let bonuses = [];
@@ -210,7 +210,7 @@ class ChampionsCheatSheet extends Component {
 
       let matchingChampionsIcons = [];
       for (let j = 0; j < matchingChampions.length; ++j) {
-        matchingChampionsIcons.push(<img src={matchingChampions[j].icon} width={60} height={60}/>);
+        matchingChampionsIcons.push(<img src={matchingChampions[j].icon} width={60} height={60} onClick={() => this.loadChampionData(matchingChampions[j])}/>);
       }
 
       let bonuses = [];

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Card, CardHeader, CardBody, Row, Col, Container } from 'reactstrap';
-import { getData } from '../../api-helper/api.js';
+import { getSetData } from '../../api-helper/api.js';
 import '../../css/colors.css';
 
 class SynergiesCheatSheet extends Component {
@@ -15,13 +15,13 @@ class SynergiesCheatSheet extends Component {
   }
 
   componentDidMount() {
-    getData('origins').then(data => {
+    getSetData('origins', 1).then(data => {
       this.setState({origins: data.map(origin => origin)});
     });
-    getData('classes').then(data => {
+    getSetData('classes', 1).then(data => {
       this.setState({classes: data.map(classe => classe)});
     });
-    getData('champions').then(data => {
+    getSetData('champions', 1).then(data => {
       this.setState({champions: data.map(champion => champion)});
     })
   }

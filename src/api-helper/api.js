@@ -12,6 +12,10 @@ export function getDataFromName(db, name) {
   return axios.get('http://localhost:5000/' + db + '/name/' + name)
     .then(res => res.data[0]);
 }
+export function getSetData(db, set) {
+  return axios.get('http://localhost:5000/' + db + '/set/' + set)
+    .then(res => res.data);
+}
 
 export function postData(db, postObject, windowUrl) {
   axios.post('http://localhost:5000/' + db + '/add', postObject)
