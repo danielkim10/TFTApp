@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Button, Card, CardHeader, CardBody, Col, Row, Input, Popover, PopoverHeader, PopoverBody } from 'reactstrap';
+import { Button, Card, CardHeader, CardBody, Col, Row, Input, Popover, PopoverHeader, PopoverBody, Tooltip } from 'reactstrap';
 import axios from 'axios';
-import { HexGrid, Layout, Hexagon, Text, Pattern, Path, Hex } from 'react-hexgrid';
+//import { HexGrid, Layout, Hexagon, Text, Pattern, Path, Hex } from 'react-hexgrid';
 import './hexgrid.css'
 import GameArena from './gamearena.component.js'
 import { getData, postData } from '../api-helper/api.js'
@@ -14,8 +14,8 @@ export default class Main extends Component {
 
     this.state = {
       name: '',
-      team: [],
-      synergies: [],
+      team: {},
+      synergies: {},
       champions: [],
       classes: [],
       items: [],
@@ -36,6 +36,7 @@ export default class Main extends Component {
     this.handleSearchChamps = this.handleSearchChamps.bind(this);
     this.handleSearchItems = this.handleSearchItems.bind(this);
     this.handleSave = this.handleSave.bind(this);
+    this.toggle = this.toggle.bind(this);
   }
 
   componentDidMount() {
@@ -43,10 +44,10 @@ export default class Main extends Component {
       this.setState({champions: data.filter(champion => champion.set === 1)});
     });
     getData('classes').then(data => {
-      this.setState({classes: data.filter(classe => classe)});
+      this.setState({classes: data.filter(classe => classe.set === 1)});
     });
     getData('items').then(data => {
-      this.setState({items: data.filter(champion => champion.set === 1).sort(this.compare)});
+      this.setState({items: data.filter(item => item.set === 1)});
     });
     getData('origins').then(data => {
       this.setState({origins: data.filter(origin => origin.set === 1)});
@@ -68,8 +69,8 @@ export default class Main extends Component {
   }
 
   compareSynergy(a, b) {
-    const idA = a.tier;
-    const idB = b.tier;
+    const idA = a.synergy1.tier;
+    const idB = b.synergy1.tier;
 
     let comparison = 0;
     if (idA < idB) {
@@ -86,11 +87,11 @@ export default class Main extends Component {
     let team = this.state.team;
     let boardData = this.state.boardData;
     let isDupe = false;
-    if (team.filter(c => c.champion.name === data.name).length > 0) {
-      isDupe = true;
+    if (team[data.name] === data.name) {
+        isDupe = true;
     }
-
-    team.push({champion: data, tier: 1, items: [], remainingSlots: 6, isDupe: isDupe});
+    team[data.name] = {champion: data, tier: 1, items: [], remainingSlots: 6, isDupe: isDupe}
+    //team.push({champion: data, tier: 1, items: [], remainingSlots: 6, isDupe: isDupe});
     boardData.push(data);
     this.setState({team: team});
     this.findSynergies(this.state.team);
@@ -101,7 +102,7 @@ export default class Main extends Component {
   }
 
   clearTeam() {
-    this.setState({team: [], synergies: []});
+    this.setState({team: {}, synergies: {}});
   }
 
   addItem(data) {
@@ -147,6 +148,7 @@ export default class Main extends Component {
       lowTierChamps -= t2;
       t1 = lowTierChamps;
     }
+
     let t5Champs = this.state.champions.filter(champion => champion.tier === 5);
     let t4Champs = this.state.champions.filter(champion => champion.tier === 4);
     let t3Champs = this.state.champions.filter(champion => champion.tier === 3);
@@ -309,58 +311,26 @@ export default class Main extends Component {
   }
 
   findSynergies(team) {
-    let synergies = [];
-    for (let i = 0; i < team.length; ++i) {
-      for (let j = 0; j < team[i].champion.origin.length; ++j) {
-        if (synergies.length === 0) {
-          for (let m = 0; m < this.state.origins.length; ++m) {
-            if (this.state.origins[m].name === team[i].champion.origin[j]) {
-              synergies.push({synergy: this.state.origins[m], count: 0, tier: 0});
-            }
-          }
+    let synergies = {};
+    Object.keys(this.state.team).forEach((key, index) => {
+      for (let j = 0; j < team[key].champion.origin.length; ++j) {
+
+        if (synergies[team[key].champion.origin[j]] === undefined) {
+          synergies[team[key].champion.origin[j]] = {synergy: team[key].champion.origin[j], count: 1, tier: 0};
         }
-
-        for (let k = 0; k < synergies.length; ++k) {
-          if (synergies[k].synergy.name === team[i].champion.origin[j] && !team[i].isDupe) {
-            synergies[k].count++;
-            break;
-          }
-          else if (synergies[k].synergy.name === team[i].champion.origin[j] && team[i].isDupe) {
-            break;
-          }
-          if (k === synergies.length -1) {
-            for (let m = 0; m < this.state.origins.length; ++m) {
-              if (this.state.origins[m].name === team[i].champion.origin[j]) {
-                //synergies.push({name: this.state.origins[m].name, image: this.state.origins[m].image, count: 1});
-                synergies.push({synergy: this.state.origins[m], count: 1, tier: 0});
-                k++;
-              }
-            }
-
-          }
+        else {
+          synergies[team[key].champion.origin[j]].count++;
         }
       }
-      for (let j = 0; j < team[i].champion.classe.length; ++j) {
-        for (let k = 0; k < synergies.length; ++k) {
-          if (synergies[k].synergy.name === team[i].champion.classe[j] && !team[i].isDupe) {
-            synergies[k].count++;
-            break;
-          }
-          else if (synergies[k].synergy.name === team[i].champion.classe[j] && team[i].isDupe) {
-            break;
-          }
-          if (k === synergies.length -1) {
-            for (let m = 0; m < this.state.classes.length; ++m) {
-              if (this.state.classes[m].name === team[i].champion.classe[j]) {
-                //synergies.push({name: this.state.classes[m].name, image: this.state.classes[m].image, count: 1, bonuses: this.state.classes[m].bonuses});
-                synergies.push({synergy: this.state.classes[m], count: 1, tier: 0});
-                k++;
-              }
-            }
-          }
+      for (let j = 0; j < team[key].champion.classe.length; ++j) {
+        if (synergies[team[key].champion.classe[j]] === undefined) {
+          synergies[team[key].champion.classe[j]] = {synergy: team[key].champion.classe[j], count: 1, tier: 0};
+        }
+        else {
+          synergies[team[key].champion.classe[j]].count++;
         }
       }
-    }
+    })
     this.setState({synergies: synergies});
   }
 
@@ -373,6 +343,26 @@ export default class Main extends Component {
   handleSave(event) {
     postData('teams', this.state.team, "");
   }
+  toggle(target) {
+    if (!this.state[target]) {
+      this.setState({
+        ...this.state,
+        [target]: {
+          tooltipOpen: true
+        }
+      });
+    } else {
+      this.setState({
+        ...this.state,
+        [target]: {
+          tooltipOpen: !this.state[target].tooltipOpen
+        }
+      });
+    }
+  }
+  isToolTipOpen(target) {
+    return this.state[target] ? this.state[target].tooltipOpen : false;
+  }
 
   createGameArea() {
     let gameArea = <GameArena data={this.state.team}/>
@@ -384,8 +374,9 @@ export default class Main extends Component {
     const classes = [];
     const items = [];
     const origins = [];
-    let synergies = [];
-    const synergies_ = [];
+    let synergies = {};
+    let synergiesUnsorted = [];
+    const synergiesSorted = [];
     const team = [];
     const teamData = [];
 
@@ -394,24 +385,26 @@ export default class Main extends Component {
     const SILVER_COLOR = '#acacac';
     const BRONZE_COLOR = '#cd7f32';
     let color = BLACK_COLOR;
+    let iconColor = '';
 
     for (let i = 0; i < this.state.champions.length; ++i) {
       if (this.state.champions[i].key.includes(this.state.searchNameChamps.toLowerCase()) || this.state.champions[i].name.includes(this.state.searchNameChamps))
-      champions.push(<img src={this.state.champions[i].icon} width={60} height={60} onClick={() => this.addToTeam(this.state.champions[i])}/>);
+      champions.push(<img src={this.state.champions[i].icon} width={50} height={50} onClick={() => this.addToTeam(this.state.champions[i])}/>);
     }
     for (let i = 0; i < this.state.classes.length; ++i) {
       classes.push(this.state.classes[i].name);
+      synergies[this.state.classes[i].key] = this.state.classes[i];
     }
     for (let i = 0; i < this.state.items.length; ++i) {
       if (this.state.items[i].key.includes(this.state.searchNameItems.toLowerCase()) || this.state.items[i].name.includes(this.state.searchNameItems))
-      items.push(<img src={this.state.items[i].image} width={60} height={60} onClick={() => this.addItem(this.state.items[i])}/>);
+      items.push(<img src={this.state.items[i].image} width={50} height={50} onClick={() => this.addItem(this.state.items[i])}/>);
     }
     for (let i = 0; i < this.state.origins.length; ++i) {
       origins.push(this.state.origins[i].name);
+      synergies[this.state.origins[i].key] = this.state.origins[i];
     }
-
-    for (let i = 0; i < this.state.team.length; ++i) {
-      let c = this.state.team[i];
+    Object.keys(this.state.team).forEach((key, index) => {
+      let c = this.state.team[key];
       team.push(
         <Card>
           <CardBody>
@@ -424,52 +417,68 @@ export default class Main extends Component {
           </CardBody>
         </Card>);
         teamData.push({champion: c.champion, tier: c.tier, items: c.items});
-    }
+    })
 
-    synergies = this.state.synergies.map(synergy => synergy);
-
-    for (let i = 0; i < this.state.synergies.length; ++i) {
+    Object.keys(this.state.synergies).forEach((key, index) => {
       color = BLACK_COLOR;
-      let synergyTiers = synergies[i].synergy.bonuses.length;
+      let synergyTiers = synergies[key.toLowerCase()].bonuses.length;
 
-      for (let j = 0; j < synergyTiers; ++j) {
-        if (synergies[i].count >= synergies[i].synergy.bonuses[j].needed) {
+      for (let j = synergyTiers-1; j >= 0; --j) {
+        if (this.state.synergies[key].count >= synergies[key.toLowerCase()].bonuses[j].needed) {
           if (j === synergyTiers - 1) {
             color = GOLD_COLOR;
-            synergies[i].tier = 3;
+            iconColor = 'black-icon';
+            this.state.synergies[key].tier = 3;
+            break;
           }
           else if (j === synergyTiers - 2 && synergyTiers === 3) {
-            color = SILVER_COLOR;
-            synergies[i].tier = 2;
+            color =  SILVER_COLOR;
+            iconColor = 'black-icon';
+            this.state.synergies[key].tier = 2;
+            break;
           }
           else {
-            if ((synergies[i].synergy.mustBeExact && synergies[i].count === synergies[i].synergy.bonuses[j].needed) || !synergies[i].synergy.mustBeExact) {
+            if ((synergies[key.toLowerCase()].mustBeExact && this.state.synergies[key].count === synergies[key.toLowerCase()].bonuses[j].needed) || !synergies[key.toLowerCase()].mustBeExact) {
               color = BRONZE_COLOR;
-              synergies[i].tier = 1;
+              iconColor = 'black-icon';
+              this.state.synergies[key].tier = 1;
+              break;
             }
           }
         }
+        else {
+          color = BLACK_COLOR;
+          iconColor = '';
+          this.state.synergies[key].tier = 0;
+        }
       }
-      //synergies_.push(<Card inverse={color === '#404040'} style={{ backgroundColor: color, borderColor: color }}><CardBody><img src={synergies[i].synergy.image}/>{synergies[i].synergy.name + ": " + synergies[i].count}</CardBody></Card>);
-    }
-    synergies = synergies.sort(this.compareSynergy);
+      synergiesUnsorted.push({synergy1: this.state.synergies[key], synergy2: synergies[key.toLowerCase()], color: color, iconcolor: iconColor});
+    })
 
-    for (let i = 0; i < synergies.length; ++i) {
-      if (synergies[i].tier === 3) {
-        color = GOLD_COLOR;
-      }
-      else if (synergies[i].tier === 2) {
-        color = SILVER_COLOR;
-      }
-      else if (synergies[i].tier === 1) {
-        color = BRONZE_COLOR;
-      }
-      else {
-        color = BLACK_COLOR;
-      }
-      synergies_.push(<Card inverse={color === BLACK_COLOR} style={{ backgroundColor: color, borderColor: color }}><CardBody><img src={synergies[i].synergy.image} class='black-icon'/>{synergies[i].synergy.name + ": " + synergies[i].count}</CardBody></Card>);
+    synergiesUnsorted.sort(this.compareSynergy);
+    for (let i = 0; i < synergiesUnsorted.length; i++) {
+      synergiesSorted.push(<div><Card id={synergiesUnsorted[i].synergy2.key}
+        inverse={synergiesUnsorted[i].color === '#404040'}
+        style={{ backgroundColor: synergiesUnsorted[i].color, borderColor: synergiesUnsorted[i].color }}>
+        <CardBody><img src={synergiesUnsorted[i].synergy2.image} class={synergiesUnsorted[i].iconcolor}/>{synergiesUnsorted[i].synergy2.name + ": " + synergiesUnsorted[i].synergy1.count} / {synergiesUnsorted[i].synergy1.tier >= synergiesUnsorted[i].synergy2.bonuses.length ? synergiesUnsorted[i].synergy2.bonuses[synergiesUnsorted[i].synergy2.bonuses.length - 1].needed : synergiesUnsorted[i].synergy2.bonuses[synergiesUnsorted[i].synergy1.tier].needed}</CardBody>
+        </Card>
+        <Tooltip placement="right" isOpen={this.isToolTipOpen(synergiesUnsorted[i].synergy2.key)} target={synergiesUnsorted[i].synergy2.key} toggle={() => this.toggle(synergiesUnsorted[i].synergy2.key)}>
+          <div>
+          {synergiesUnsorted[i].synergy2.name}
+          <br/>
+          {synergiesUnsorted[i].synergy2.description ? synergiesUnsorted[i].synergy2.description : ""}
+          {synergiesUnsorted[i].synergy2.description ? <br/> : ""}
+          {synergiesUnsorted[i].synergy2.bonuses[0].needed + ": " + synergiesUnsorted[i].synergy2.bonuses[0].effect}
+          {synergiesUnsorted[i].synergy2.bonuses.length > 0 ? <br/> : ""}
+          {synergiesUnsorted[i].synergy2.bonuses.length > 1 ? synergiesUnsorted[i].synergy2.bonuses[1].needed + ": " + synergiesUnsorted[i].synergy2.bonuses[1].effect : ""}
+          {synergiesUnsorted[i].synergy2.bonuses.length > 1 ? <br/> : ""}
+          {synergiesUnsorted[i].synergy2.bonuses.length > 2 ? synergiesUnsorted[i].synergy2.bonuses[2].needed + ": " + synergiesUnsorted[i].synergy2.bonuses[2].effect : ""}
+          {synergiesUnsorted[i].synergy2.bonuses.length > 2 ? <br/> : ""}
+          {synergiesUnsorted[i].synergy2.bonuses.length > 3 ? synergiesUnsorted[i].synergy2.bonuses[3].needed + ": " + synergiesUnsorted[i].synergy2.bonuses[3].effect : ""}
+          </div>
+        </Tooltip>
+        </div>);
     }
-
     // let gameArena = null;
     // if (teamData.length > 0) {
     //   gameArena = <GameArena data={teamData}/>
@@ -483,7 +492,7 @@ export default class Main extends Component {
         <Row>
         <Col sm={1}></Col>
         <Col sm={2}>
-              <Col>{synergies_}</Col>
+              <Col>{synergiesSorted}</Col>
         </Col>
         <Col sm={4}>
           {/*<Card name="activeTraits">
@@ -491,13 +500,13 @@ export default class Main extends Component {
               <Row>{synergies}</Row>
             </CardBody>
           </Card>*/}
-          <Card>
+          {/*<Card>
             <CardBody>
               <HexGrid width={1400} height={600} viewBox="-50 -50 100 100">
                 {this.createGameArea()}
               </HexGrid>
             </CardBody>
-          </Card>
+          </Card>*/}
           <Card name="pool">
             <CardBody>
               <Row>{team}</Row>
@@ -507,7 +516,7 @@ export default class Main extends Component {
           <Col sm={4}>
           <Row>
             <Card>
-              <CardHeader>
+              <CardHeader style={{backgroundColor: '#ffffff'}}>
                 <strong>Champions</strong>
               </CardHeader>
               <CardBody>
@@ -518,7 +527,7 @@ export default class Main extends Component {
           </Row>
           <Row>
             <Card>
-              <CardHeader>
+              <CardHeader style={{backgroundColor: '#ffffff'}}>
                 <strong>Items</strong>
               </CardHeader>
               <CardBody>

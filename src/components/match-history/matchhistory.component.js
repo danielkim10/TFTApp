@@ -31,6 +31,7 @@ class MatchHistory extends Component {
     const EUW1 = 'https://euw1.api.riotgames.com';
     const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
     const summonerUrl = `${NA1}/tft/summoner/v1/summoners/by-name/${this.state.summonerName}?api_key=${process.env.REACT_APP_RIOT_KEY}`;
+    let matchesId;
     let data = fetch(proxyUrl + summonerUrl)
       .then(res => res.json())
       .then(async data => {
@@ -38,7 +39,7 @@ class MatchHistory extends Component {
         let data2 = await fetch(proxyUrl + matchesUrl)
           .then(res2 => res2.json())
 
-          this.setState({matchesId: data2});
+          matchesId = data2;
       })
     //this.generate();
   }

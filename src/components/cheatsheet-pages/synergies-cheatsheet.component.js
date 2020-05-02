@@ -42,7 +42,7 @@ class SynergiesCheatSheet extends Component {
     }
 
     return (<Card style={{width: "90%"}}>
-        <CardHeader><img src={data.image} class='black-icon'/> {data.name}</CardHeader>
+        <CardHeader style={{backgroundColor: '#ffffff'}}><img src={data.image} class='black-icon'/> {data.name}</CardHeader>
         <CardBody>
           <Container>{data.description}</Container>
           <Container>{championDesc}</Container>

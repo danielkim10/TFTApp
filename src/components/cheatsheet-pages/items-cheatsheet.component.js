@@ -8,7 +8,7 @@ class ItemsCheatSheet extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      items: [],
+      items: {},
       basicItem1: {
         name: "",
         bonus: "",
@@ -33,7 +33,12 @@ class ItemsCheatSheet extends Component {
 
   componentDidMount() {
     getData('items').then(data => {
-      this.setState({items: data.map(item => item).sort(this.compare)});
+      let itemsA = data.map(item => item).sort(this.compare);
+      let items = Object.assign({}, this.state.items);
+      for (let i = 0; i < itemsA.length; ++i) {
+        items[itemsA[i].key] = itemsA[i];
+      }
+      this.setState({items: items});
     });
   }
 
@@ -79,11 +84,11 @@ class ItemsCheatSheet extends Component {
         for (let i = 0; i < this.state.basicItem1.buildsInto.length; ++i) {
           for (let j = 0; j < this.state.basicItem2.buildsInto.length; ++j) {
             if (this.state.basicItem2.buildsInto[j] === this.state.basicItem1.buildsInto[i]) {
-              for (let k = 0; k < this.state.items.length; ++k) {
-                if (this.state.basicItem1.buildsInto[i] === this.state.items[k].key) {
-                  this.setState({advancedItem: this.state.items[k]});
+              Object.keys(this.state.items).forEach((key, index) => {
+                if (this.state.basicItem1.buildsInto[i] === key) {
+                  this.setState({advancedItem: this.state.items[key]});
                 }
-              }
+              })
             }
           }
         }
@@ -91,14 +96,14 @@ class ItemsCheatSheet extends Component {
     }
     else if (depth === 2) {
       if (this.state.basicItem1.name === "" || this.state.basicItem2.name === "") {
-        for (let k = 0; k < this.state.items.length; ++k) {
-          if (this.state.items[k].key === this.state.advancedItem.buildsFrom[0]) {
-            this.setState({basicItem1: this.state.items[k]});
+        Object.keys(this.state.items).forEach((key, index) => {
+          if (key === this.state.advancedItem.buildsFrom[0]) {
+            this.setState({basicItem1: this.state.items[key]});
           }
-          if (this.state.items[k].key === this.state.advancedItem.buildsFrom[1]) {
-            this.setState({basicItem2: this.state.items[k]});
+          if (key === this.state.advancedItem.buildsFrom[1]) {
+            this.setState({basicItem2: this.state.items[key]});
           }
-        }
+        })
       }
     }
   }
@@ -120,15 +125,14 @@ class ItemsCheatSheet extends Component {
   render() {
     const basicItems = [];
     const advancedItems = [];
-    for (let i = 0; i < this.state.items.length; ++i) {
-
-      if (this.state.items[i].depth === 1) {
-        basicItems.push(<img src={this.state.items[i].image} onClick={() => this.addItem(this.state.items[i])}/>);
+    Object.keys(this.state.items).forEach((key, index) => {
+      if (this.state.items[key].depth === 1) {
+        basicItems.push(<img src={this.state.items[key].image} onClick={() => this.addItem(this.state.items[key])}/>);
       }
-      else if (this.state.items[i].depth === 2) {
-        advancedItems.push(<img src={this.state.items[i].image} onClick={() => this.addItem(this.state.items[i])}/>);
+      else if (this.state.items[key].depth === 2) {
+        advancedItems.push(<img src={this.state.items[key].image} onClick={() => this.addItem(this.state.items[key])}/>);
       }
-    }
+    })
 
       return (
         <div>
@@ -137,9 +141,8 @@ class ItemsCheatSheet extends Component {
         <Col sm={10}>
           <Row>
             <Card>
-              <CardBody>
                 <Card>
-                  <CardHeader><Row><strong>Builder</strong></Row><Row><Button type="button" color="primary" onClick={this.clear}>Clear</Button></Row></CardHeader>
+                  <CardHeader style={{backgroundColor: '#ffffff'}}><Row><strong>Builder</strong></Row><Row><Button type="button" color="primary" onClick={this.clear}>Clear</Button></Row></CardHeader>
                   <CardBody>
                   <Row>
                     <Col><Row><img src={this.state.basicItem1.image} class='grayscale'/></Row>
@@ -159,18 +162,20 @@ class ItemsCheatSheet extends Component {
                   </Row>
                   </CardBody>
                 </Card>
-                  {cardColumn('Basic', basicItems)}
-                  {cardColumn('Advanced', advancedItems)}
-              </CardBody>
+                <Card>
+                  <CardHeader style={{backgroundColor: '#ffffff'}}><strong>Basic</strong></CardHeader>
+                  <CardBody>
+                    {basicItems}
+                  </CardBody>
+                </Card>
+                <Card>
+                  <CardHeader style={{backgroundColor: '#ffffff'}}><strong>Advanced</strong></CardHeader>
+                  <CardBody>
+                    {advancedItems}
+                  </CardBody>
+                </Card>
             </Card>
           </Row>
-          <Row>
-            <Card>
-              <CardBody>
-              </CardBody>
-            </Card>
-          </Row>
-
         </Col>
           <Col sm={1}></Col>
           </Row>
