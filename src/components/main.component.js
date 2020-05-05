@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Card, CardHeader, CardBody, Col, Row, Input, Popover, PopoverHeader, PopoverBody, Tooltip } from 'reactstrap';
+import { Button, Card, CardHeader, CardBody, Col, Collapse, Row, Input, Popover, PopoverHeader, PopoverBody, Tooltip } from 'reactstrap';
 import axios from 'axios';
 //import { HexGrid, Layout, Hexagon, Text, Pattern, Path, Hex } from 'react-hexgrid';
 import './hexgrid.css'
@@ -95,6 +95,10 @@ export default class Main extends Component {
     boardData.push(data);
     this.setState({team: team});
     this.findSynergies(this.state.team);
+  }
+
+  addItem(dst, data) {
+
   }
 
   removeFromTeam() {
@@ -360,13 +364,48 @@ export default class Main extends Component {
       });
     }
   }
+  toggleCollapse(target) {
+    if (!this.state[target]) {
+      this.setState({
+        ...this.state,
+        [target]: {
+          collapseOpen: true
+        }
+      });
+    } else {
+      this.setState({
+        ...this.state,
+        [target]: {
+          collapseOpen: !this.state[target].collapseOpen
+        }
+      });
+    }
+  }
   isToolTipOpen(target) {
     return this.state[target] ? this.state[target].tooltipOpen : false;
+  }
+  isCollapseOpen(target) {
+    return this.state[target] ? this.state[target].collapseOpen : false;
   }
 
   createGameArea() {
     let gameArea = <GameArena data={this.state.team}/>
     return gameArea;
+  }
+
+  allowDrop(e) {
+    e.preventDefault();
+  }
+  drag(e) {
+    e.dataTransfer.setData("text", e.target.id);
+  }
+  drop(e) {
+    e.preventDefault();
+    let data = e.dataTransfer.getData("text");
+    let copy = document.getElementById(data).cloneNode(true);
+    copy.id = "newId";
+    this.addItem(e.currentTarget.id);
+    e.target.appendChild(copy);
   }
 
   render() {
@@ -389,7 +428,14 @@ export default class Main extends Component {
 
     for (let i = 0; i < this.state.champions.length; ++i) {
       if (this.state.champions[i].key.includes(this.state.searchNameChamps.toLowerCase()) || this.state.champions[i].name.includes(this.state.searchNameChamps))
-      champions.push(<img src={this.state.champions[i].icon} width={50} height={50} onClick={() => this.addToTeam(this.state.champions[i])}/>);
+      champions.push(<div style={{display: 'inline-block'}}>
+      <img src={this.state.champions[i].icon} draggable="true" onDragStart={this.drag} width={50} height={50} onClick={() => this.addToTeam(this.state.champions[i])} id={this.state.champions[i].key}/>
+      <Tooltip placement="top" isOpen={this.isToolTipOpen(this.state.champions[i].key)} target={this.state.champions[i].key} toggle={() => this.toggle(this.state.champions[i].key)}>
+        <p className='smallTitle'>{this.state.champions[i].name}</p>
+        <p>{this.state.champions[i].origin[0]}{this.state.champions[i].origin.length === 2 ? ' / ' + this.state.champions[i].origin[1] : ""}</p>
+        <p>{this.state.champions[i].classe[0]}{this.state.champions[i].classe.length === 2 ? ' / ' + this.state.champions[i].classe[1] : ""}</p>
+      </Tooltip>
+      </div>);
     }
     for (let i = 0; i < this.state.classes.length; ++i) {
       classes.push(this.state.classes[i].name);
@@ -397,7 +443,13 @@ export default class Main extends Component {
     }
     for (let i = 0; i < this.state.items.length; ++i) {
       if (this.state.items[i].key.includes(this.state.searchNameItems.toLowerCase()) || this.state.items[i].name.includes(this.state.searchNameItems))
-      items.push(<img src={this.state.items[i].image} width={50} height={50} onClick={() => this.addItem(this.state.items[i])}/>);
+      items.push(<div style={{display: 'inline-block'}}>
+      <img src={this.state.items[i].image} draggable="true" onDragStart={this.drag} width={50} height={50} onClick={() => this.addItem(this.state.items[i])} id={this.state.items[i].key}/>
+      <Tooltip placement="top" isOpen={this.isToolTipOpen(this.state.items[i].key)} target={this.state.items[i].key} toggle={() => this.toggle(this.state.items[i].key)}>
+        <p className='smallTitle'>{this.state.items[i].name}</p>
+        <p>{this.state.items[i].bonus}</p>
+      </Tooltip>
+      </div>);
     }
     for (let i = 0; i < this.state.origins.length; ++i) {
       origins.push(this.state.origins[i].name);
@@ -406,14 +458,52 @@ export default class Main extends Component {
     Object.keys(this.state.team).forEach((key, index) => {
       let c = this.state.team[key];
       team.push(
-        <Card>
-          <CardBody>
-            <Row>{"Name: " + c.champion.name}</Row>
-            <Row>{"Tier: " + c.tier}</Row>
-            <Row>{"Items: " + (c.items.length === 3 ?
+        <Card onDrop={this.drop} onDragOver={this.allowDrop} id="hello" inverse='#404040' style={{backgroundColor: '#404040', borderColor: 'black'}}>
+          <CardBody style={{marginLeft: '14px'}}>
+            <Row>{c.champion.name}</Row>
+            <Row><img src={c.champion.icon} width={60} height={60}/>
+              <Button type="button" color="primary" onClick={() => this.toggleCollapse(`team-${c.champion.name}`)}>Expand</Button>
+            </Row>
+            <Row>{(c.items.length === 3 ?
             (c.items[0].name + ", " + c.items[1].name + ", " + c.items[2].name) :
             (c.items.length === 2 ? (c.items[0].name + ", " + c.items[1].name) :
             (c.items.length === 1 ? c.items[0].name : "None")))}</Row>
+            <Collapse isOpen={this.isCollapseOpen(`team-${c.champion.name}`)}>
+              <Row>
+                <Col>
+                  <p style={{fontSize: '14px'}}>Health: {c.champion.stats.defense.health[0]}/{c.champion.stats.defense.health[1]}/{c.champion.stats.defense.health[2]}</p>
+                  <p style={{fontSize: '14px'}}>Attack Damage: {c.champion.stats.offense.damage[0]}/{c.champion.stats.offense.damage[1]}/{c.champion.stats.offense.damage[2]}</p>
+                  <p style={{fontSize: '14px'}}>Attack Speed: {c.champion.stats.offense.attackSpeed}</p>
+                  <p style={{fontSize: '14px'}}>Attack Range: {c.champion.stats.offense.range === 1 ? 125 : (c.champion.stats.offense.range === 2 ? 420 : (c.champion.stats.offense.range === 3 ? 680 : (c.champion.stats.offense.range === 4 ? 890 : 1130)))}</p>
+                  <p style={{fontSize: '14px'}}>Armor: {c.champion.stats.defense.armor}</p>
+                  <p style={{fontSize: '14px'}}>Magic Resist: {c.champion.stats.defense.magicResist}</p>
+                </Col>
+                <Col>
+                  <p style={{fontSize: '14px'}}>Spell Power: {c.champion.stats.offense.spellPower}</p>
+                  <p style={{fontSize: '14px'}}>Crit Chance: {c.champion.stats.offense.critChance}</p>
+                  <p style={{fontSize: '14px'}}>Crit Damage: {c.champion.stats.offense.critDamage}</p>
+                  <p style={{fontSize: '14px'}}>Dodge Chance: {c.champion.stats.defense.dodgeChance}</p>
+                </Col>
+              </Row>
+              <Row style={{marginTop: '10px'}}>
+                <Col sm={1}>
+                  <img src={c.champion.abilityIcon} width={40} height={40}/>
+                </Col>
+                <Col>
+                  <p style={{fontSize: '14px'}}>{c.champion.ability.name}</p>
+                  <p style={{fontSize: '14px'}}>Mana: {c.champion.ability.manaStart}/{c.champion.ability.manaCost}</p>
+                </Col>
+              </Row>
+              <Row>
+                <p style={{fontSize: '14px', marginLeft: '14px', marginRight: '14px'}}>{c.champion.ability.description}</p>
+              </Row>
+              <Row>
+                <p style={{fontSize: '14px', marginLeft: '14px', marginTop: '14px'}}>{c.champion.ability.stats[0].type}: {c.champion.ability.stats[0].value[0]} / {c.champion.ability.stats[0].value[1]} / {c.champion.ability.stats[0].value[2]}</p>
+              </Row>
+              <Row>
+                <p style={{fontSize: '14px', marginLeft: '14px', marginTop: '14px'}}>{c.champion.ability.stats.length > 1 ? c.champion.ability.stats[1].type + ':' : ""}</p>
+              </Row>
+            </Collapse>
           </CardBody>
         </Card>);
         teamData.push({champion: c.champion, tier: c.tier, items: c.items});
@@ -460,21 +550,16 @@ export default class Main extends Component {
       synergiesSorted.push(<div><Card id={synergiesUnsorted[i].synergy2.key}
         inverse={synergiesUnsorted[i].color === '#404040'}
         style={{ backgroundColor: synergiesUnsorted[i].color, borderColor: synergiesUnsorted[i].color }}>
-        <CardBody><img src={synergiesUnsorted[i].synergy2.image} class={synergiesUnsorted[i].iconcolor}/>{synergiesUnsorted[i].synergy2.name + ": " + synergiesUnsorted[i].synergy1.count} / {synergiesUnsorted[i].synergy1.tier >= synergiesUnsorted[i].synergy2.bonuses.length ? synergiesUnsorted[i].synergy2.bonuses[synergiesUnsorted[i].synergy2.bonuses.length - 1].needed : synergiesUnsorted[i].synergy2.bonuses[synergiesUnsorted[i].synergy1.tier].needed}</CardBody>
+        <CardBody><img src={synergiesUnsorted[i].synergy2.image} className={synergiesUnsorted[i].iconcolor}/>{synergiesUnsorted[i].synergy2.name + ": " + synergiesUnsorted[i].synergy1.count} / {synergiesUnsorted[i].synergy1.tier >= synergiesUnsorted[i].synergy2.bonuses.length ? synergiesUnsorted[i].synergy2.bonuses[synergiesUnsorted[i].synergy2.bonuses.length - 1].needed : synergiesUnsorted[i].synergy2.bonuses[synergiesUnsorted[i].synergy1.tier].needed}</CardBody>
         </Card>
         <Tooltip placement="right" isOpen={this.isToolTipOpen(synergiesUnsorted[i].synergy2.key)} target={synergiesUnsorted[i].synergy2.key} toggle={() => this.toggle(synergiesUnsorted[i].synergy2.key)}>
           <div>
-          {synergiesUnsorted[i].synergy2.name}
-          <br/>
-          {synergiesUnsorted[i].synergy2.description ? synergiesUnsorted[i].synergy2.description : ""}
-          {synergiesUnsorted[i].synergy2.description ? <br/> : ""}
-          {synergiesUnsorted[i].synergy2.bonuses[0].needed + ": " + synergiesUnsorted[i].synergy2.bonuses[0].effect}
-          {synergiesUnsorted[i].synergy2.bonuses.length > 0 ? <br/> : ""}
-          {synergiesUnsorted[i].synergy2.bonuses.length > 1 ? synergiesUnsorted[i].synergy2.bonuses[1].needed + ": " + synergiesUnsorted[i].synergy2.bonuses[1].effect : ""}
-          {synergiesUnsorted[i].synergy2.bonuses.length > 1 ? <br/> : ""}
-          {synergiesUnsorted[i].synergy2.bonuses.length > 2 ? synergiesUnsorted[i].synergy2.bonuses[2].needed + ": " + synergiesUnsorted[i].synergy2.bonuses[2].effect : ""}
-          {synergiesUnsorted[i].synergy2.bonuses.length > 2 ? <br/> : ""}
-          {synergiesUnsorted[i].synergy2.bonuses.length > 3 ? synergiesUnsorted[i].synergy2.bonuses[3].needed + ": " + synergiesUnsorted[i].synergy2.bonuses[3].effect : ""}
+            <p className='tooltipTitle'>{synergiesUnsorted[i].synergy2.name}</p>
+            <p>{synergiesUnsorted[i].synergy2.description ? synergiesUnsorted[i].synergy2.description : ""}</p>
+            <p className={synergiesUnsorted[i].synergy1.tier < 1 ? 'tooltipLocked' : ''}>{synergiesUnsorted[i].synergy2.bonuses[0].needed + ": " + synergiesUnsorted[i].synergy2.bonuses[0].effect}</p>
+            <p className={synergiesUnsorted[i].synergy1.tier < 2 ? 'tooltipLocked' : ''}>{synergiesUnsorted[i].synergy2.bonuses.length > 1 ? synergiesUnsorted[i].synergy2.bonuses[1].needed + ": " + synergiesUnsorted[i].synergy2.bonuses[1].effect : ""}</p>
+            <p className={synergiesUnsorted[i].synergy1.tier < 3 ? 'tooltipLocked' : ''}>{synergiesUnsorted[i].synergy2.bonuses.length > 2 ? synergiesUnsorted[i].synergy2.bonuses[2].needed + ": " + synergiesUnsorted[i].synergy2.bonuses[2].effect : ""}</p>
+            <p className={synergiesUnsorted[i].synergy1.tier < 4 ? 'tooltipLocked' : ''}>{synergiesUnsorted[i].synergy2.bonuses.length > 3 ? synergiesUnsorted[i].synergy2.bonuses[3].needed + ": " + synergiesUnsorted[i].synergy2.bonuses[3].effect : ""}</p>
           </div>
         </Tooltip>
         </div>);
@@ -495,11 +580,6 @@ export default class Main extends Component {
               <Col>{synergiesSorted}</Col>
         </Col>
         <Col sm={4}>
-          {/*<Card name="activeTraits">
-            <CardBody>
-              <Row>{synergies}</Row>
-            </CardBody>
-          </Card>*/}
           {/*<Card>
             <CardBody>
               <HexGrid width={1400} height={600} viewBox="-50 -50 100 100">
@@ -507,9 +587,9 @@ export default class Main extends Component {
               </HexGrid>
             </CardBody>
           </Card>*/}
-          <Card name="pool">
+          <Card name="pool" style={{borderColor: 'white'}}>
             <CardBody>
-              <Row>{team}</Row>
+              {team}
             </CardBody>
           </Card>
           </Col>

@@ -5,3 +5,20 @@
 .grayscale{
   filter: grayscale(100%);
 }
+
+.tooltipTitle{
+  color: yellow;
+  font-size: 120%;
+}
+
+.smallTitle{
+  color: yellow;
+}
+
+.tooltipLocked{
+  color: gray;
+}
+p{
+  margin: 0;
+  padding: 0;
+}

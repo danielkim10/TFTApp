@@ -142,7 +142,7 @@ class ChampionsCheatSheet extends Component {
           <Row>Health: {health}</Row>
           <Row>Attack Damage: {damage}</Row>
           <Row>Attack Speed: {this.state.champion.stats.offense.attackSpeed}</Row>
-          <Row>Attack Range: {this.state.champion.stats.offense.range === 1 ? 125 : (this.state.champion.stats.offense.range === 2) ? 420 : (this.state.champion.stats.offense.range === 3) ? 680 : 890}</Row>
+          <Row>Attack Range: {this.state.champion.stats.offense.range === 1 ? 125 : (this.state.champion.stats.offense.range === 2) ? 420 : (this.state.champion.stats.offense.range === 3) ? 680 : (this.state.champion.stats.offense.range === 4) ? 890 : 1130}</Row>
           <Row>Armor: {this.state.champion.stats.defense.armor}</Row>
           <Row>Magic Resist: {this.state.champion.stats.defense.magicResist}</Row>
         </Col>
