@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import { Button, Card, CardHeader, CardBody, Col, Collapse, Row, Input, Popover, PopoverHeader, PopoverBody, Tooltip } from 'reactstrap';
-import axios from 'axios';
 //import { HexGrid, Layout, Hexagon, Text, Pattern, Path, Hex } from 'react-hexgrid';
 import './hexgrid.css'
 import GameArena from './gamearena.component.js'
 import { getData, postData } from '../api-helper/api.js'
 import Image from 'react-image-resizer';
 import '../css/colors.css';
+import '../css/fonts.css';
+import '../css/margins.css';
+import '../css/main.css';
 
 export default class Main extends Component {
   constructor(props) {
@@ -26,6 +28,7 @@ export default class Main extends Component {
       championDataOpen: false,
       searchNameChamps: "",
       searchNameItems: "",
+      draggedItem: {},
     }
     this.clearButton = this.clearButton.bind(this);
     this.randomButton = this.randomButton.bind(this);
@@ -97,24 +100,12 @@ export default class Main extends Component {
     this.findSynergies(this.state.team);
   }
 
-  addItem(dst, data) {
-
-  }
-
   removeFromTeam() {
 
   }
 
   clearTeam() {
     this.setState({team: {}, synergies: {}});
-  }
-
-  addItem(data) {
-
-  }
-
-  removeItem() {
-
   }
 
   clearButton() {
@@ -344,6 +335,7 @@ export default class Main extends Component {
   handleSearchItems(event) {
     this.setState({searchNameItems: event.target.value});
   }
+
   handleSave(event) {
     postData('teams', this.state.team, "");
   }
@@ -396,16 +388,87 @@ export default class Main extends Component {
   allowDrop(e) {
     e.preventDefault();
   }
-  drag(e) {
+  drag(e, item) {
     e.dataTransfer.setData("text", e.target.id);
+    this.setState({draggedItem: item});
   }
-  drop(e) {
+  drop(e, key) {
     e.preventDefault();
     let data = e.dataTransfer.getData("text");
-    let copy = document.getElementById(data).cloneNode(true);
-    copy.id = "newId";
-    this.addItem(e.currentTarget.id);
-    e.target.appendChild(copy);
+
+    if (this.state.team[key].items.length === 0) {
+      this.state.team[key].items[0] = this.state.draggedItem;
+      this.applyItemEffects(this.state.draggedItem, key);
+    }
+    else if (this.state.team[key].items.length === 1) {
+      this.state.team[key].items[1] = this.state.draggedItem;
+      this.applyItemEffects(this.state.draggedItem, key);
+    }
+    else if (this.state.team[key].items.length === 2) {
+      this.state.team[key].items[2] = this.state.draggedItem;
+      this.applyItemEffects(this.state.draggedItem, key);
+    }
+    else {
+    }
+    this.setState({draggedItem: {}});
+  }
+
+  applyItemEffects(item, key) {
+    for (let i = 0; i < item.stats.length; ++i) {
+      if (item.stats[i].name === 'attackdamage') {
+        this.state.team[key].champion.stats.offense.damage[0] += item.stats[i].value;
+        this.state.team[key].champion.stats.offense.damage[1] += item.stats[i].value;
+        this.state.team[key].champion.stats.offense.damage[2] += item.stats[i].value;
+      }
+      else if (item.stats[i].name === 'abilitypower') {
+        this.state.team[key].champion.stats.offense.spellPower += item.stats[i].value;
+      }
+      else if (item.stats[i].name === 'critchance') {
+        this.state.team[key].champion.stats.offense.critChance += item.stats[i].value;
+      }
+      else if (item.stats[i].name === 'dodgechance') {
+        this.state.team[key].champion.stats.defense.dodgeChance += item.stats[i].value;
+      }
+      else if (item.stats[i].name === 'attackspeed') {
+        this.state.team[key].champion.stats.offense.attackSpeed += item.stats[i].value * this.state.team[key].champion.stats.offense.attackSpeed / 100;
+      }
+      else if (item.stats[i].name === 'armor') {
+        this.state.team[key].champion.stats.defense.armor += item.stats[i].value;
+      }
+      else if (item.stats[i].name === 'magicresist') {
+        this.state.team[key].champion.stats.defense.magicResist += item.stats[i].value;
+      }
+      else if (item.stats[i].name === 'startingmana') {
+        if (this.state.team[key].champion.ability.manaCost != 0) {
+          this.state.team[key].champion.ability.manaStart += item.stats[i].value;
+          if (this.state.team[key].champion.ability.manaStart > this.state.team[key].champion.ability.manaCost) {
+            this.state.team[key].champion.ability.manaStart = this.state.team[key].champion.ability.manaCost
+          }
+        }
+      }
+      else if (item.stats[i].name === 'health') {
+        this.state.team[key].champion.stats.defense.health[0] += item.stats[i].value;
+        this.state.team[key].champion.stats.defense.health[1] += item.stats[i].value;
+        this.state.team[key].champion.stats.defense.health[2] += item.stats[i].value;
+      }
+      else if (item.stats[i].name === 'class') {
+        if (!this.state.team[key].champion.classe.includes(item.stats[i].label)) {
+          this.state.team[key].champion.classe.push(item.stats[i].label);
+        }
+      }
+      else if (item.stats[i].name === 'origin') {
+        if (!this.state.team[key].champion.origin.includes(item.stats[i].label)) {
+          this.state.team[key].champion.origin.push(item.stats[i].label);
+        }
+      }
+    }
+  }
+
+  /*
+    Relevant synergies: Sorcerer, assassin, Cybernetic, Brawler, Warden, Mystic
+  */
+  applySynergyEffects(key) {
+
   }
 
   render() {
@@ -429,9 +492,10 @@ export default class Main extends Component {
     for (let i = 0; i < this.state.champions.length; ++i) {
       if (this.state.champions[i].key.includes(this.state.searchNameChamps.toLowerCase()) || this.state.champions[i].name.includes(this.state.searchNameChamps))
       champions.push(<div style={{display: 'inline-block'}}>
-      <img src={this.state.champions[i].icon} draggable="true" onDragStart={this.drag} width={50} height={50} onClick={() => this.addToTeam(this.state.champions[i])} id={this.state.champions[i].key}/>
+      <img src={this.state.champions[i].icon} draggable="true" onDragStart={this.drag} className='icon50 cost3border' onClick={() => this.addToTeam(this.state.champions[i])} id={this.state.champions[i].key} />
       <Tooltip placement="top" isOpen={this.isToolTipOpen(this.state.champions[i].key)} target={this.state.champions[i].key} toggle={() => this.toggle(this.state.champions[i].key)}>
-        <p className='smallTitle'>{this.state.champions[i].name}</p>
+        <p className='tooltipTitle'>{this.state.champions[i].name}</p>
+        <p>{this.state.champions[i].cost} cost unit</p>
         <p>{this.state.champions[i].origin[0]}{this.state.champions[i].origin.length === 2 ? ' / ' + this.state.champions[i].origin[1] : ""}</p>
         <p>{this.state.champions[i].classe[0]}{this.state.champions[i].classe.length === 2 ? ' / ' + this.state.champions[i].classe[1] : ""}</p>
       </Tooltip>
@@ -442,14 +506,25 @@ export default class Main extends Component {
       synergies[this.state.classes[i].key] = this.state.classes[i];
     }
     for (let i = 0; i < this.state.items.length; ++i) {
-      if (this.state.items[i].key.includes(this.state.searchNameItems.toLowerCase()) || this.state.items[i].name.includes(this.state.searchNameItems))
-      items.push(<div style={{display: 'inline-block'}}>
-      <img src={this.state.items[i].image} draggable="true" onDragStart={this.drag} width={50} height={50} onClick={() => this.addItem(this.state.items[i])} id={this.state.items[i].key}/>
-      <Tooltip placement="top" isOpen={this.isToolTipOpen(this.state.items[i].key)} target={this.state.items[i].key} toggle={() => this.toggle(this.state.items[i].key)}>
-        <p className='smallTitle'>{this.state.items[i].name}</p>
-        <p>{this.state.items[i].bonus}</p>
-      </Tooltip>
-      </div>);
+      if (this.state.items[i].key.includes(this.state.searchNameItems.toLowerCase()) || this.state.items[i].name.includes(this.state.searchNameItems)) {
+        let str = "";
+        for (let j = 0; j < this.state.items[i].stats.length; ++j) {
+          if (this.state.items[i].depth !== 1 && (this.state.items[i].stats[j].name !== 'class' && this.state.items[i].stats[j].name !== 'origin') && this.state.items[i].key != 'forceofnature') {
+            if (j != 0)
+              str += ', '
+            str += this.state.items[i].stats[j].label;
+          }
+        }
+
+        items.push(<div style={{display: 'inline-block'}}>
+        <img src={this.state.items[i].image} draggable="true" onDragStart={(e) => this.drag(e, this.state.items[i])} className='icon50' onClick={() => this.addItem(this.state.items[i])} id={this.state.items[i].key}/>
+        <Tooltip placement="top" isOpen={this.isToolTipOpen(this.state.items[i].key)} target={this.state.items[i].key} toggle={() => this.toggle(this.state.items[i].key)}>
+          <p className='tooltipTitle'>{this.state.items[i].name}</p>
+          <p>{this.state.items[i].bonus}</p>
+          <p>{str}</p>
+          </Tooltip>
+        </div>);
+      }
     }
     for (let i = 0; i < this.state.origins.length; ++i) {
       origins.push(this.state.origins[i].name);
@@ -458,50 +533,57 @@ export default class Main extends Component {
     Object.keys(this.state.team).forEach((key, index) => {
       let c = this.state.team[key];
       team.push(
-        <Card onDrop={this.drop} onDragOver={this.allowDrop} id="hello" inverse='#404040' style={{backgroundColor: '#404040', borderColor: 'black'}}>
-          <CardBody style={{marginLeft: '14px'}}>
+        <Card onDrop={(e) => this.drop(e, key)} onDragOver={this.allowDrop} id="hello" inverse='#404040' style={{backgroundColor: '#404040', borderColor: 'black'}}>
+          <CardBody className='marginLeft14'>
             <Row>{c.champion.name}</Row>
-            <Row><img src={c.champion.icon} width={60} height={60}/>
-              <Button type="button" color="primary" onClick={() => this.toggleCollapse(`team-${c.champion.name}`)}>Expand</Button>
+            <Row>
+              <img src={c.champion.icon} className='icon60'/>
+              <p>{c.champion.origin[0]}</p>
+              <p>{c.champion.origin.length > 1 ? c.champion.origin[1] : ""}</p>
+              <p>{c.champion.classe[0]}</p>
+              <p>{c.champion.classe.length > 1 ? c.champion.classe[1] : ""}</p>
+              <img src={c.items.length > 0 ? c.items[0].image : ""} className='itemMargins'/>
+              <img src={c.items.length > 1 ? c.items[1].image : ""} className='itemMargins'/>
+              <img src={c.items.length > 2 ? c.items[2].image : ""} className='itemMargins'/>
+              <Button type="button" color="primary" style={{marginLeft: '90px'}} onClick={() => this.toggleCollapse(`team-${c.champion.name}`)}>Expand</Button>
             </Row>
-            <Row>{(c.items.length === 3 ?
-            (c.items[0].name + ", " + c.items[1].name + ", " + c.items[2].name) :
-            (c.items.length === 2 ? (c.items[0].name + ", " + c.items[1].name) :
-            (c.items.length === 1 ? c.items[0].name : "None")))}</Row>
             <Collapse isOpen={this.isCollapseOpen(`team-${c.champion.name}`)}>
-              <Row>
+              <Row style={{marginTop: '10px'}}>
                 <Col>
-                  <p style={{fontSize: '14px'}}>Health: {c.champion.stats.defense.health[0]}/{c.champion.stats.defense.health[1]}/{c.champion.stats.defense.health[2]}</p>
-                  <p style={{fontSize: '14px'}}>Attack Damage: {c.champion.stats.offense.damage[0]}/{c.champion.stats.offense.damage[1]}/{c.champion.stats.offense.damage[2]}</p>
-                  <p style={{fontSize: '14px'}}>Attack Speed: {c.champion.stats.offense.attackSpeed}</p>
-                  <p style={{fontSize: '14px'}}>Attack Range: {c.champion.stats.offense.range === 1 ? 125 : (c.champion.stats.offense.range === 2 ? 420 : (c.champion.stats.offense.range === 3 ? 680 : (c.champion.stats.offense.range === 4 ? 890 : 1130)))}</p>
-                  <p style={{fontSize: '14px'}}>Armor: {c.champion.stats.defense.armor}</p>
-                  <p style={{fontSize: '14px'}}>Magic Resist: {c.champion.stats.defense.magicResist}</p>
+                  <p className='statText'>Health: {c.champion.stats.defense.health[0]}/{c.champion.stats.defense.health[1]}/{c.champion.stats.defense.health[2]}</p>
+                  <p className='statText'>Attack Damage: {c.champion.stats.offense.damage[0]}/{c.champion.stats.offense.damage[1]}/{c.champion.stats.offense.damage[2]}</p>
+                  <p className='statText'>Attack Speed: {c.champion.stats.offense.attackSpeed}</p>
+                  <p className='statText'>Attack Range: {c.champion.stats.offense.range === 1 ? 125 : (c.champion.stats.offense.range === 2 ? 420 : (c.champion.stats.offense.range === 3 ? 680 : (c.champion.stats.offense.range === 4 ? 890 : 1130)))}</p>
+                  <p className='statText'>Armor: {c.champion.stats.defense.armor}</p>
+                  <p className='statText'>Magic Resist: {c.champion.stats.defense.magicResist}</p>
                 </Col>
                 <Col>
-                  <p style={{fontSize: '14px'}}>Spell Power: {c.champion.stats.offense.spellPower}</p>
-                  <p style={{fontSize: '14px'}}>Crit Chance: {c.champion.stats.offense.critChance}</p>
-                  <p style={{fontSize: '14px'}}>Crit Damage: {c.champion.stats.offense.critDamage}</p>
-                  <p style={{fontSize: '14px'}}>Dodge Chance: {c.champion.stats.defense.dodgeChance}</p>
+                  <p className='statText'>Spell Power: {c.champion.stats.offense.spellPower} %</p>
+                  <p className='statText'>Crit Chance: {c.champion.stats.offense.critChance} %</p>
+                  <p className='statText'>Crit Damage: {c.champion.stats.offense.critDamage} %</p>
+                  <p className='statText'>Dodge Chance: {c.champion.stats.defense.dodgeChance} %</p>
                 </Col>
               </Row>
               <Row style={{marginTop: '10px'}}>
                 <Col sm={1}>
-                  <img src={c.champion.abilityIcon} width={40} height={40}/>
+                  <img src={c.champion.abilityIcon} className='icon40'/>
                 </Col>
                 <Col>
-                  <p style={{fontSize: '14px'}}>{c.champion.ability.name}</p>
-                  <p style={{fontSize: '14px'}}>Mana: {c.champion.ability.manaStart}/{c.champion.ability.manaCost}</p>
+                  <p className='statText'>{c.champion.ability.name}</p>
+                  <p className='statText'>Mana: {c.champion.ability.manaStart}/{c.champion.ability.manaCost}</p>
                 </Col>
               </Row>
               <Row>
-                <p style={{fontSize: '14px', marginLeft: '14px', marginRight: '14px'}}>{c.champion.ability.description}</p>
+                <p className='abilityMargin1'>{c.champion.ability.description}</p>
               </Row>
               <Row>
-                <p style={{fontSize: '14px', marginLeft: '14px', marginTop: '14px'}}>{c.champion.ability.stats[0].type}: {c.champion.ability.stats[0].value[0]} / {c.champion.ability.stats[0].value[1]} / {c.champion.ability.stats[0].value[2]}</p>
+                <p className='abilityMargin2'>{c.champion.ability.stats[0].type}: {c.champion.ability.stats[0].value[0]} / {c.champion.ability.stats[0].value[1]} / {c.champion.ability.stats[0].value[2]}</p>
               </Row>
               <Row>
-                <p style={{fontSize: '14px', marginLeft: '14px', marginTop: '14px'}}>{c.champion.ability.stats.length > 1 ? c.champion.ability.stats[1].type + ':' : ""}</p>
+                <p className='abilityMargin2'>{c.champion.ability.stats.length > 1 ? c.champion.ability.stats[1].type + ': ' + c.champion.ability.stats[1].value[0] + ' / ' + c.champion.ability.stats[1].value[1] + ' / ' + c.champion.ability.stats[1].value[2] : ""}</p>
+              </Row>
+              <Row>
+                <p className='abilityMargin2'>{c.champion.ability.stats.length > 2 ? c.champion.ability.stats[2].type + ': ' + c.champion.ability.stats[2].value[0] + ' / ' + c.champion.ability.stats[2].value[1] + ' / ' + c.champion.ability.stats[2].value[2] : ""}</p>
               </Row>
             </Collapse>
           </CardBody>
@@ -596,7 +678,7 @@ export default class Main extends Component {
           <Col sm={4}>
           <Row>
             <Card>
-              <CardHeader style={{backgroundColor: '#ffffff'}}>
+              <CardHeader className='whitebg'>
                 <strong>Champions</strong>
               </CardHeader>
               <CardBody>
@@ -607,7 +689,7 @@ export default class Main extends Component {
           </Row>
           <Row>
             <Card>
-              <CardHeader style={{backgroundColor: '#ffffff'}}>
+              <CardHeader className='whitebg'>
                 <strong>Items</strong>
               </CardHeader>
               <CardBody>
@@ -622,6 +704,7 @@ export default class Main extends Component {
           <Row>
           <Button type="button" color="primary" onClick={this.randomButton}>Random</Button>
           <Button type="button" color="primary" onClick={this.clearTeam}>Clear</Button>
+          <Button type="button" color="primary" onClick={this.handleSave}>Save</Button>
           </Row>
         </div>
       )

@@ -5,7 +5,9 @@ import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem, NavLink,
 
 const Navigation = (props) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isSetOpen, setIsSetOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
+  const toggle2 = () => setIsSetOpen(!isSetOpen);
 
 
     return (
@@ -43,6 +45,22 @@ const Navigation = (props) => {
               <NavItem>
                 <NavLink href="/edit">Edit</NavLink>
               </NavItem>
+              <UncontrolledDropdown nav inNavbar>
+                <DropdownToggle nav caret>
+                  Set 1
+                </DropdownToggle>
+                <DropdownMenu right>
+                  <DropdownItem>
+                    Set 1
+                  </DropdownItem>
+                  <DropdownItem>
+                    Set 2
+                  </DropdownItem>
+                  <DropdownItem>
+                    Set 3
+                  </DropdownItem>
+                </DropdownMenu>
+              </UncontrolledDropdown>
               {/*<NavItem>
                 <NavLink href="/guides">Guides</NavLink>
               </NavItem>*/}

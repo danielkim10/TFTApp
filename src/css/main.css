@@ -1,0 +1,67 @@
+.tooltipTitle{
+  color: yellow;
+}
+.enhancedStat{
+  color: green;
+}
+.statText{
+  font-size: 14px;
+}
+.tooltipLocked{
+  color: gray;
+}
+.whitebg{
+  background-color: white;
+}
+.icon40{
+  width: 40px;
+  height: 40px;
+}
+.icon50{
+  width: 50px;
+  height: 50px;
+}
+.icon60{
+  width: 60px;
+  height: 60px;
+}
+.itemMargins{
+  margin-left: 10px;
+  margin-top: 10px;
+  width: 40px;
+  height: 40px;
+}
+.abilityMargin1{
+  font-size: 14px;
+  margin-left: 14px;
+  margin-right: 14px;
+}
+.abilityMargin2{
+  font-size: 14px;
+  margin-left: 14px;
+  margin-top: 14px;
+}
+.cost1border{
+  border-width: 2px;
+  border-color: gray;
+}
+.cost2border{
+  border-width: 2px;
+  border-color: green;
+}
+.cost3border{
+  border-width: 2px;
+  border-color: blue;
+}
+.cost4border{
+  border-width: 2px;
+  border-color: magenta;
+}
+.cost5border{
+  border-width: 2px;
+  border-color: orange;
+}
+p{
+  margin: 0;
+  padding: 0;
+}

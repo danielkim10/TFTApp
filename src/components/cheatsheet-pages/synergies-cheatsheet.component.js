@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, CardHeader, CardBody, Row, Col, Container } from 'reactstrap';
+import { Card, CardHeader, CardBody, Row, Col, Container, Tooltip } from 'reactstrap';
 import { getSetData } from '../../api-helper/api.js';
 import '../../css/colors.css';
 
@@ -33,7 +33,10 @@ class SynergiesCheatSheet extends Component {
 
     let championDesc = [];
     for (let i = 0; i < champions.length; ++i) {
-      championDesc.push(<img src={champions[i].icon} width={60} height={60} onClick={() => this.championRedirect(champions[i].key)}/>);
+      championDesc.push(<div style={{display: 'inline-block'}}>
+        <img src={champions[i].icon} width={60} height={60} onClick={() => this.championRedirect(champions[i].key)} id={champions[i].key}/>
+        <Tooltip placement="top" isOpen={this.isToolTipOpen(champions[i].key)} target={champions[i].key} toggle={() => this.toggle(champions[i].key)}>{champions[i].name}</Tooltip>
+      </div>);
     }
 
     let bonuses = [];
@@ -54,6 +57,27 @@ class SynergiesCheatSheet extends Component {
   championRedirect(key) {
     let path = '/cheatsheet/champions';
     this.props.history.push({pathname: path, data: key});
+  }
+
+  toggle(target) {
+    if (!this.state[target]) {
+      this.setState({
+        ...this.state,
+        [target]: {
+          tooltipOpen: true
+        }
+      });
+    } else {
+      this.setState({
+        ...this.state,
+        [target]: {
+          tooltipOpen: !this.state[target].tooltipOpen
+        }
+      });
+    }
+  }
+  isToolTipOpen(target) {
+    return this.state[target] ? this.state[target].tooltipOpen : false;
   }
 
   render() {

@@ -6,18 +6,18 @@
   filter: grayscale(100%);
 }
 
-.tooltipTitle{
-  color: yellow;
-  font-size: 120%;
-}
-
 .smallTitle{
   color: yellow;
 }
 
-.tooltipLocked{
-  color: gray;
+.green{
+  color: green;
 }
+
+.whitebg{
+  background-color: white;
+}
+
 p{
   margin: 0;
   padding: 0;
