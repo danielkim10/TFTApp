@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, CardHeader, CardBody, Container, Row, Col, Button } from 'reactstrap';
+import { Card, CardHeader, CardBody, Container, Row, Col, Button, Tooltip } from 'reactstrap';
 import { getData } from '../../api-helper/api.js'
 import { cardColumn } from '../../sub-components/prebuiltcard.js';
 import '../../css/colors.css';
@@ -122,6 +122,27 @@ class ItemsCheatSheet extends Component {
     this.setState({ basicItem1: blankItem, basicItem2: blankItem, advancedItem: blankItem });
   }
 
+  toggle(target) {
+    if (!this.state[target]) {
+      this.setState({
+        ...this.state,
+        [target]: {
+          tooltipOpen: true
+        }
+      });
+    } else {
+      this.setState({
+        ...this.state,
+        [target]: {
+          tooltipOpen: !this.state[target].tooltipOpen
+        }
+      });
+    }
+  }
+  isToolTipOpen(target) {
+    return this.state[target] ? this.state[target].tooltipOpen : false;
+  }
+
   render() {
     const basicItems = [];
     const advancedItems = [];
@@ -145,12 +166,12 @@ class ItemsCheatSheet extends Component {
                   <CardHeader style={{backgroundColor: '#ffffff'}}><Row><strong>Builder</strong></Row><Row><Button type="button" color="primary" onClick={this.clear}>Clear</Button></Row></CardHeader>
                   <CardBody>
                   <Row>
-                    <Col><Row><img src={this.state.basicItem1.image} class='grayscale'/></Row>
+                    <Col><Row><img src={this.state.basicItem1.image}/></Row>
                           <Row>{this.state.basicItem1.name}</Row>
                          <Row><Container>{this.itemStats(this.state.basicItem1)}</Container></Row>
                          <Row>{this.state.basicItem1.bonus}</Row></Col>
                     <Col>+</Col>
-                    <Col><Row><img src={this.state.basicItem2.image} class='grayscale'/></Row>
+                    <Col><Row><img src={this.state.basicItem2.image}/></Row>
                         <Row>{this.state.basicItem2.name}</Row>
                          <Row><Container>{this.itemStats(this.state.basicItem2)}</Container></Row>
                          <Row>{this.state.basicItem2.bonus}</Row></Col>
