@@ -22,11 +22,13 @@ const championsRouter = require('./routes/champions');
 const classesRouter = require('./routes/classes');
 const itemsRouter = require('./routes/items');
 const originsRouter = require('./routes/origins');
+const teamsRouter = require('./routes/teams');
 
 app.use('/champions', championsRouter);
 app.use('/classes', classesRouter);
 app.use('/items', itemsRouter);
 app.use('/origins', originsRouter);
+app.use('/teams', teamsRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);

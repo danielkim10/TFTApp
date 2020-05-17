@@ -7,7 +7,7 @@ const itemSchema = new Schema({
   key: {type: String},
   name: {type: String},
   type: {type: String},
-  bonus: {type: String},
+  bonus: [{type: String}],
   depth: {type: Number},
   stats: [{
     name: {type: String},
@@ -18,7 +18,7 @@ const itemSchema = new Schema({
   buildsInto: [{type: String}],
   unique: {type: Boolean},
   cannotEquip: {type: String},
-  set: {type: Number},
+  set: [{type: Number}],
   image: {type: String},
 });
 

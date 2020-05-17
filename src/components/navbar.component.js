@@ -36,9 +36,9 @@ const Navigation = (props) => {
               <NavItem>
                 <NavLink href="/matchhistory">Match History</NavLink>
               </NavItem>
-              {/*<NavItem>
-                <NavLink href="/savedbuilds">Saved Builds</NavLink>
-              </NavItem>*/}
+              <NavItem>
+                <NavLink href="/teams">Teams</NavLink>
+              </NavItem>
               <NavItem>
                 <NavLink href="/create">Create</NavLink>
               </NavItem>

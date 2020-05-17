@@ -33,7 +33,7 @@ class ItemsCheatSheet extends Component {
 
   componentDidMount() {
     getData('items').then(data => {
-      let itemsA = data.map(item => item).sort(this.compare);
+      let itemsA = data.filter(item => item.set.includes(1)).sort(this.compare);
       let items = Object.assign({}, this.state.items);
       for (let i = 0; i < itemsA.length; ++i) {
         items[itemsA[i].key] = itemsA[i];

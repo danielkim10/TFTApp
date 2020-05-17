@@ -9,7 +9,6 @@ const championSchema = new Schema({
   origin: [{type: String}],
   classe: [{type: String}],
   cost: {type: Number},
-  tier: {type: Number},
   ability: {
     name: {type: String},
     description: {type: String},
@@ -19,6 +18,7 @@ const championSchema = new Schema({
     stats: [{
       type: {type: String},
       value: [{type: Number}],
+      unit: {type: String},
     }]
   },
   stats: {
@@ -27,12 +27,14 @@ const championSchema = new Schema({
       attackSpeed: {type: Number},
       spellPower: {type: Number},
       critChance: {type: Number},
+      critDamage: {type: Number},
       range: {type: Number},
     },
     defense: {
       health: [{type: Number}],
       armor: {type: Number},
       magicResist: {type: Number},
+      dodgeChance: {type: Number},
     },
   },
   set: {type: Number},

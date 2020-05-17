@@ -3,13 +3,13 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Navigation from "./components/navbar.component";
-import Main from "./components/main.component";
+import Main from "./components/main-page/main.component";
 import ChampionsCheatSheet from "./components/cheatsheet-pages/champions-cheatsheet.component";
 import SynergiesCheatSheet from "./components/cheatsheet-pages/synergies-cheatsheet.component";
 import ItemsCheatSheet from "./components/cheatsheet-pages/items-cheatsheet.component";
 import MatchHistory from "./components/match-history/matchhistory.component";
 import Match from "./components/match-history/match.component.js";
-import SavedBuilds from "./components/savedbuilds.component";
+import Teams from "./components/teams.component";
 import Create from "./components/create.component";
 import Edit from "./components/edit-pages/edit.component";
 import Champion from "./components/edit-pages/champion.component";
@@ -30,7 +30,7 @@ function App() {
         <Route path="/cheatsheet/items" component={ItemsCheatSheet} />
         <Route path="/matchhistory" component={MatchHistory} />
         <Route path="/matchhistory/:id" component={Match} />
-        <Route path="/savedbuilds" component={SavedBuilds} />
+        <Route path="/teams" component={Teams} />
         <Route path="/create" component={Create}/>
         <Route path="/edit" component={Edit} />
         <Route path="/champion/:id" component={Champion}/>

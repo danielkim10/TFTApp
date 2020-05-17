@@ -1,35 +1,41 @@
 import React, { Component } from 'react';
-import { Button, Card, CardHeader, CardBody, Col, Collapse, Row, Input, Tooltip } from 'reactstrap';
-import { getData, postData } from '../api-helper/api.js'
-import '../css/colors.css';
-import '../css/fonts.css';
-import '../css/margins.css';
-import '../css/main.css';
+import { Alert, Button, Card, CardHeader, CardBody, Col, Collapse, Row, Input, Tooltip } from 'reactstrap';
+import { getData, postData } from '../../api-helper/api.js'
+import { toggle, isToolTipOpen } from '../../sub-components/tooltips.js'
+import '../../css/colors.css';
+import '../../css/fonts.css';
+import '../../css/margins.css';
+import '../../css/main.css';
 
 export default class Main extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      name: '',
       team: {},
+      teamString: "",
       synergies: {},
       champions: {},
       classes: [],
       items: {},
       origins: [],
-      searchNameChamps: "",
-      searchNameItems: "",
       draggedItem: {},
+      showAlert: false,
+      alertVariant: "danger",
+      alertMessage: "",
+      text: {
+        teamName: "",
+        searchNameChamps: "",
+        searchNameItems: "",
+      },
     }
-    this.clearButton = this.clearButton.bind(this);
     this.randomButton = this.randomButton.bind(this);
     this.findSynergies = this.findSynergies.bind(this);
     this.createChampion = this.createChampion.bind(this);
     this.clearTeam = this.clearTeam.bind(this);
-    this.handleSearchChamps = this.handleSearchChamps.bind(this);
-    this.handleSearchItems = this.handleSearchItems.bind(this);
+    this.handleChanges = this.handleChanges.bind(this);
     this.handleSave = this.handleSave.bind(this);
+    this.copy = this.copy.bind(this);
     this.toggle = this.toggle.bind(this);
   }
 
@@ -46,7 +52,7 @@ export default class Main extends Component {
       this.setState({classes: data.filter(classe => classe.set === 1)});
     });
     getData('items').then(data => {
-      let itemsA = data.filter(item => item.set === 1);
+      let itemsA = data.filter(item => item.set.includes(1));
       let items = Object.assign({}, this.state.items);
       for (let i = 0; i < itemsA.length; i++) {
         items[itemsA[i].key] = itemsA[i];
@@ -89,10 +95,7 @@ export default class Main extends Component {
   addToTeam(data) {
 
     let team = this.state.team;
-    let isDupe = false;
-    if (team[data.name] === data.name) {
-        isDupe = true;
-    }
+    let isDupe = team[data.name] === data.name;
     team[data.name] = {champion: data, tier: 1, items: [], remainingSlots: 6, isDupe: isDupe}
     //team.push({champion: data, tier: 1, items: [], remainingSlots: 6, isDupe: isDupe});
     this.setState({team: team});
@@ -105,10 +108,6 @@ export default class Main extends Component {
 
   clearTeam() {
     this.setState({team: {}, synergies: {}, draggedItem: {}});
-  }
-
-  clearButton() {
-    this.clearTeam();
   }
 
   randomButton(e) {
@@ -324,15 +323,18 @@ export default class Main extends Component {
     this.setState({synergies: synergies});
   }
 
-  handleSearchChamps(event) {
-    this.setState({searchNameChamps: event.target.value});
+  handleChanges(e) {
+    let text = Object.assign({}, this.state.text);
+    text[e.target.name] = e.target.value;
+    this.setState({text: text});
   }
-  handleSearchItems(event) {
-    this.setState({searchNameItems: event.target.value});
-  }
+  copy(event) {
 
+  }
   handleSave(event) {
-    postData('teams', this.state.team, "");
+    let teamObj = {name: this.state.text.teamName, team: this.state.team, synergies: this.state.synergies, teamString: this.state.teamString, set: 1, patch: "10.10"};
+    postData('teams', teamObj, "");
+    this.setState({showAlert: true, alertVariant: 'success', alertMessage: `Successfully saved team ${this.state.text.teamName}`})
   }
   toggle(target) {
     if (!this.state[target]) {
@@ -407,6 +409,14 @@ export default class Main extends Component {
   }
 
   applyItemEffects(item, key) {
+    if (this.state.team[key].items.includes(item) && item.unique) {
+      this.setState({showAlert: true, alertVariant: 'danger', alertMessage: `${item.name} is a unique item - only one can be equipped per champion`});
+      window.setTimeout(() => {
+        this.setState({showAlert: false, alertMessage: ""});
+      }, 5000);
+      return false;
+    }
+
     for (let i = 0; i < item.stats.length; ++i) {
       if (item.stats[i].name === 'class') {
         if (!this.state.team[key].champion.classe.includes(item.stats[i].label)) {
@@ -414,6 +424,10 @@ export default class Main extends Component {
           this.findSynergies(this.state.team);
         }
         else {
+          this.setState({showAlert: true, alertVariant: 'danger', alertMessage: `${item.stats[i].label} units cannot equip ${item.name}`});
+          window.setTimeout(() => {
+            this.setState({showAlert: false, alertMessage: ""});
+          }, 5000);
           return false;
         }
       }
@@ -423,6 +437,10 @@ export default class Main extends Component {
           this.findSynergies(this.state.team);
         }
         else {
+          this.setState({showAlert: true, alertVariant: 'danger', alertMessage: `${item.stats[i].label} units cannot equip ${item.name}`});
+          window.setTimeout(() => {
+            this.setState({showAlert: false, alertMessage: ""});
+          }, 5000);
           return false;
         }
       }
@@ -493,7 +511,7 @@ export default class Main extends Component {
     let iconColor = '';
 
     Object.keys(this.state.champions).forEach((key, index) => {
-      if (key.includes(this.state.searchNameChamps.toLowerCase()) || this.state.champions[key].name.includes(this.state.searchNameChamps)) {
+      if (key.includes(this.state.text.searchNameChamps.toLowerCase()) || this.state.champions[key].name.includes(this.state.text.searchNameChamps)) {
         champions.push(<div style={{display: 'inline-block'}}>
         <img src={this.state.champions[key].icon} draggable="true" onDragStart={this.drag} className='icon50 cost3border' onClick={() => this.addToTeam(this.state.champions[key])} id={key} />
         <Tooltip placement="top" isOpen={this.isToolTipOpen(key)} target={key} toggle={() => this.toggle(key)}>
@@ -524,7 +542,7 @@ export default class Main extends Component {
     }
 
     Object.keys(this.state.items).forEach((key, index) => {
-      if (key.includes(this.state.searchNameItems.toLowerCase()) || this.state.items[key].name.includes(this.searchNameItems)) {
+      if (key.includes(this.state.text.searchNameItems.toLowerCase()) || this.state.items[key].name.includes(this.state.text.searchNameItems)) {
         let str = "";
         for (let j = 0; j < this.state.items[key].stats.length; ++j) {
           if (this.state.items[key].depth !== 1 && (this.state.items[key].stats[j].name !== 'class' && this.state.items[key].stats[j].name !== 'origin') && key !== 'forceofnature') {
@@ -539,9 +557,11 @@ export default class Main extends Component {
           <p className='tooltipTitle'>{this.state.items[key].name}</p>
           <p>{this.state.items[key].bonus}</p>
           <p>{str}</p>
+          <Row>
           <img src={this.state.items[key].depth !== 1 ? this.state.items[this.state.items[key].buildsFrom[0]].image : ""} width={40} height={40}/>
-          <p>+</p>
+          <p style={{fontSize: '28px'}}>+</p>
           <img src={this.state.items[key].depth !== 1 ? this.state.items[this.state.items[key].buildsFrom[1]].image : ""} width={40} height={40}/>
+          </Row>
           </Tooltip>
         </div>);
       }
@@ -582,7 +602,9 @@ export default class Main extends Component {
             <Row>{c.champion.name}</Row>
             <Row>
               <img src={c.champion.icon} className='icon60'/>
+              <div style={{display: 'block'}}>
               <p>{c.champion.origin[0]}</p>
+              </div>
               <p>{c.champion.origin.length > 1 ? c.champion.origin[1] : ""}</p>
               <p>{c.champion.classe[0]}</p>
               <p>{c.champion.classe.length > 1 ? c.champion.classe[1] : ""}</p>
@@ -595,7 +617,7 @@ export default class Main extends Component {
               <Row style={{marginTop: '10px'}}>
                 <Col>
                   <p className={c.champion.stats.defense.health[0] === this.state.champions[c.champion.key].stats.defense.health[0] ? 'statText' : 'enhancedStat'}>Health: {c.champion.stats.defense.health[0]}/{c.champion.stats.defense.health[1]}/{c.champion.stats.defense.health[2]}</p>
-                  <p className='enhancedStat'>Attack Damage: {c.champion.stats.offense.damage[0]}/{c.champion.stats.offense.damage[1]}/{c.champion.stats.offense.damage[2]}</p>
+                  <p className='statText'>Attack Damage: {c.champion.stats.offense.damage[0]}/{c.champion.stats.offense.damage[1]}/{c.champion.stats.offense.damage[2]}</p>
                   <p className='statText'>Attack Speed: {c.champion.stats.offense.attackSpeed}</p>
                   <p className='statText'>Attack Range: {c.champion.stats.offense.range === 1 ? 125 : (c.champion.stats.offense.range === 2 ? 420 : (c.champion.stats.offense.range === 3 ? 680 : (c.champion.stats.offense.range === 4 ? 890 : 1130)))}</p>
                   <p className='statText'>Armor: {c.champion.stats.defense.armor}</p>
@@ -700,7 +722,17 @@ export default class Main extends Component {
               <Col>{synergiesSorted}</Col>
         </Col>
         <Col sm={4}>
-          <Card name="pool" style={{borderColor: 'white'}}>
+        <div>
+          <Alert color={this.state.alertVariant} isOpen={this.state.showAlert}>{this.state.alertMessage}</Alert>
+        </div>
+          <Row>
+            <Button type="button" color="primary" style={{width: '23%', height: '5%', marginLeft: '22px'}} onClick={this.randomButton}>Random</Button>
+            <Button type="button" color="primary" style={{width: '23%', height: '5%'}} onClick={this.clearTeam}>Clear</Button>
+            <Button type="button" color="primary" style={{width: '23%', height: '5%'}} onClick={this.copy}>Copy</Button>
+            <Button type="button" color="primary" style={{width: '23%', height: '5%'}} onClick={this.handleSave}>Save</Button>
+          </Row>
+          <Input type="text" id="search" name="teamName" style={{height: '5%'}} onChange={this.handleChanges} placeholder="Team Name"/>
+          <Card name="pool" style={{height: '90%'}}>
             <CardBody>
               {team}
             </CardBody>
@@ -713,7 +745,7 @@ export default class Main extends Component {
                 <strong>Champions</strong>
               </CardHeader>
               <CardBody>
-                <Input type="text" id="search" name="search" onChange={this.handleSearchChamps} placeholder="Champion Name" />
+                <Input type="text" id="search" name="searchNameChamps" onChange={this.handleChanges} placeholder="Champion Name" />
                 {champions}
               </CardBody>
             </Card>
@@ -724,18 +756,13 @@ export default class Main extends Component {
                 <strong>Items</strong>
               </CardHeader>
               <CardBody>
-              <Input type="text" id="search" name="search" onChange={this.handleSearchItems} placeholder="Item Name" />
+              <Input type="text" id="search" name="searchNameItems" onChange={this.handleChanges} placeholder="Item Name" />
                 {items}
               </CardBody>
             </Card>
           </Row>
           </Col>
           <Col sm={1}></Col>
-          </Row>
-          <Row>
-          <Button type="button" color="primary" onClick={this.randomButton}>Random</Button>
-          <Button type="button" color="primary" onClick={this.clearTeam}>Clear</Button>
-          <Button type="button" color="primary" onClick={this.handleSave}>Save</Button>
           </Row>
         </div>
       )

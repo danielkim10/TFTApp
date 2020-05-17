@@ -13,6 +13,7 @@ class Champion extends Component {
           classe: "",
           statsType: "",
           statsValue: "",
+          statsUnit: "",
           damage: "",
           health: "",
       },
@@ -25,7 +26,6 @@ class Champion extends Component {
         origin: [],
         classe: [],
         cost: 0,
-        tier: 0,
         ability: {
           name: "",
           description: "",
@@ -40,6 +40,7 @@ class Champion extends Component {
             attackSpeed: 0,
             spellPower: 0,
             critChance: 0,
+            critDamage: 0,
             range: 0,
           },
           defense: {
@@ -65,9 +66,11 @@ class Champion extends Component {
       let abilityStatType = [];
       let abilityStatValue = [];
       let _abilityStatValue = "";
+      let abilityStatUnit = [];
       for (let i = 0; i < champion.ability.stats.length; i++) {
         abilityStatType.push(champion.ability.stats[i].type);
         abilityStatValue.push(champion.ability.stats[i].value);
+        abilityStatUnit.push(champion.ability.stats[i].unit);
       }
       // tempStrings.cost = champion.cost.join();
       tempStrings.origin = champion.origin.join();
@@ -80,6 +83,7 @@ class Champion extends Component {
         }
       }
       tempStrings.statsValue = _abilityStatValue;
+      tempStrings.statsUnit = abilityStatUnit.join();
       tempStrings.damage = champion.stats.offense.damage.join();
       tempStrings.health = champion.stats.defense.health.join();
       champion.ability.statsType = abilityStatType;
@@ -92,7 +96,7 @@ class Champion extends Component {
 
   handleChampions(event) {
     if (event.target.name === "cost" || event.target.name === "damage" || event.target.name === "health" ||
-        event.target.name === "origin" || event.target.name === "classe" || event.target.name === "statsType" || event.target.name === "statsValue") {
+        event.target.name === "origin" || event.target.name === "classe" || event.target.name === "statsType" || event.target.name === "statsValue" || event.target.name === "statsUnit") {
         let tempStrings = Object.assign({}, this.state.tempStrings);
         tempStrings[event.target.name] = event.target.value;
         this.setState({tempStrings: tempStrings});
@@ -135,6 +139,7 @@ class Champion extends Component {
     }
     let stats = [];
     let statsType = this.state.tempStrings.statsType.split(',');
+    let statsUnit = this.state.tempStrings.statsUnit.split(',');
     let _statsValue = this.state.tempStrings.statsValue.split('/');
     let statsValue = [];
     for (let k in _statsValue) {
@@ -143,7 +148,7 @@ class Champion extends Component {
           __statsValue[l] = parseFloat(__statsValue[l]);
       }
       statsValue.push(__statsValue);
-      stats.push({type: statsType[k], value: statsValue[k]});
+      stats.push({type: statsType[k], value: statsValue[k], unit: statsUnit[k]});
     }
 
     // champion.cost = cost;
@@ -160,7 +165,6 @@ class Champion extends Component {
        origin: this.state.champion.origin,
        classe: this.state.champion.classe,
        cost: this.state.champion.cost,
-       tier: this.state.champion.tier,
        ability: this.state.champion.ability,
        stats: this.state.champion.stats,
        set: this.state.champion.set,
@@ -215,7 +219,6 @@ class Champion extends Component {
                 {renderFormGroup("Key: ", "text", "key", "key", this.handleChampions, this.state.champion.key)}
                 {renderFormGroup("Name: ", "text", "name", "name", this.handleChampions, this.state.champion.name)}
                 {renderFormGroup("Cost: ", "text", "cost", "cost", this.handleChampions, this.state.champion.cost)}
-                {renderFormGroup("Tier: ", "number", "tier", "tier", this.handleChampions, this.state.champion.tier)}
                 {renderFormGroup("Origin: ", "text", "origin", "origin", this.handleChampions, this.state.tempStrings.origin)}
                 {renderFormGroup("Class: ", "text", "classe", "classe", this.handleChampions, this.state.tempStrings.classe)}
                 {renderFormGroup("Ability Name: ", "text", "ability", "name", this.handleChampions, this.state.champion.ability.name)}
@@ -225,12 +228,14 @@ class Champion extends Component {
                 {renderFormGroup("Mana Start: ", "number", "ability", "manaStart", this.handleChampions, this.state.champion.ability.manaStart)}
                 {renderFormGroup("Ability Stat Type: ", "text", "abilityStats", "statsType", this.handleChampions, this.state.tempStrings.statsType)}
                 {renderFormGroup("Ability Stat Value: ", "text", "abilityStats", "statsValue", this.handleChampions, this.state.tempStrings.statsValue)}
+                {renderFormGroup("Ability Stat Unit: ", "text", "abilityStats", "statsUnit", this.handleChampions, this.state.tempStrings.statsUnit)}
                 </Col>
                 <Col md={6}>
                 {renderFormGroup("Damage: ", "text", "offense", "damage", this.handleChampions, this.state.tempStrings.damage)}
                 {renderFormGroup("Attack Speed: ", "number", "offense", "attackSpeed", this.handleChampions, this.state.champion.stats.offense.attackSpeed)}
                 {renderFormGroup("Spell Power: ", "number", "offense", "spellPower", this.handleChampions, this.state.champion.stats.offense.spellPower)}
                 {renderFormGroup("Crit Chance: ", "number", "offense", "critChance", this.handleChampions, this.state.champion.stats.offense.critChance)}
+                {renderFormGroup("Crit Damage: ", "number", "offense", "critDamage", this.handleChampions, this.state.champion.stats.offense.critDamage)}
                 {renderFormGroup("Dodge Chance: ", "number", "defense", "dodgeChance", this.handleChampions, this.state.champion.stats.defense.dodgeChance)}
                 {renderFormGroup("Range: ", "number", "offense", "range", this.handleChampions, this.state.champion.stats.offense.range)}
                 {renderFormGroup("Health: ", "text", "defense", "health", this.handleChampions, this.state.tempStrings.health)}

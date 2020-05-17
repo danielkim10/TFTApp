@@ -26,7 +26,6 @@ class Create extends Component {
         classeTempString: "",
         cost: 0,
         costTempString: "",
-        tier: 0,
         ability: {
           name: "",
           description: "",
@@ -36,6 +35,7 @@ class Create extends Component {
           stats: [],
           statsTypeTempString: "",
           statsValueTempString: "",
+          statsUnitTempString: "",
         },
         stats: {
           offense: {
@@ -44,6 +44,7 @@ class Create extends Component {
             attackSpeed: 0,
             spellPower: 0,
             critChance: 0,
+            critDamage: 0,
             range: 0,
           },
           defense: {
@@ -65,6 +66,7 @@ class Create extends Component {
         cost: "",
         statsType: "",
         statsValue: "",
+        statsUnit: "",
         damage: "",
         health: "",
       },
@@ -238,6 +240,7 @@ class Create extends Component {
     let healthString = this.state.champion.stats.defense.healthTempString.split(',');
     let statsType = this.state.champion.ability.statsTypeTempString.split(',');
     let statsValueString = this.state.champion.ability.statsValueTempString.split('/');
+    let statsUnit = this.state.champion.ability.statsUnitTempString.split(',');
 
     // for (let subString in costString) {
     //   cost.push(parseInt(costString[subString]));
@@ -254,7 +257,7 @@ class Create extends Component {
           _statsValue[l] = parseFloat(_statsValue[l]);
       }
       statsValue.push(_statsValue);
-      stats.push({type: statsType[k], value: statsValue[k]});
+      stats.push({type: statsType[k], value: statsValue[k], unit: statsUnit[k]});
     }
     // _champion.cost = cost;
     _champion.origin = origin;
@@ -272,7 +275,6 @@ class Create extends Component {
        origin: this.state.champion.origin,
        classe: this.state.champion.classe,
        cost: this.state.champion.cost,
-       tier: this.state.champion.tier,
        ability: this.state.champion.ability,
        stats: this.state.champion.stats,
        set: this.state.champion.set,
@@ -466,7 +468,6 @@ class Create extends Component {
                     {renderFormGroup("Key: ", "text", "key", "key", this.handleChampions)}
                     {renderFormGroup("Name: ", "text", "name", "name", this.handleChampions)}
                     {renderFormGroup("Cost: ", "text", "cost", "cost", this.handleChampions)}
-                    {renderFormGroup("Tier: ", "number", "tier", "tier", this.handleChampions)}
                     {renderFormGroup("Origin: ", "text", "originTempString", "originTempString", this.handleChampions)}
                     {renderFormGroup("Class: ", "text", "classeTempString", "classeTempString", this.handleChampions)}
                     {renderFormGroup("Ability Name: ", "text", "ability", "name", this.handleChampions)}
@@ -476,12 +477,14 @@ class Create extends Component {
                     {renderFormGroup("Mana Start: ", "number", "ability", "manaStart", this.handleChampions)}
                     {renderFormGroup("Ability Stat Type: ", "text", "abilityStats", "statsTypeTempString", this.handleChampions)}
                     {renderFormGroup("Ability Stat Value: ", "text", "abilityStats", "statsValueTempString", this.handleChampions)}
+                    {renderFormGroup("Ability Stat Unit: ", "text", "abilityStats", "statsUnitTempString", this.handleChampions)}
                   </Col>
                   <Col md={6}>
                     {renderFormGroup("Damage: ", "text", "offense", "damageTempString", this.handleChampions)}
                     {renderFormGroup("Attack Speed: ", "number", "offense", "attackSpeed", this.handleChampions)}
                     {renderFormGroup("Spell Power: ", "number", "offense", "spellPower", this.handleChampions)}
                     {renderFormGroup("Crit Chance: ", "number", "offense", "critChance", this.handleChampions)}
+                    {renderFormGroup("Crit Damage: ", "number", "offense", "critDamage", this.handleChampions)}
                     {renderFormGroup("Dodge Chance: ", "number", "defense", "dodgeChance", this.handleChampions)}
                     {renderFormGroup("Range: ", "number", "offense", "range", this.handleChampions)}
                     {renderFormGroup("Health: ", "text", "defense", "healthTempString", this.handleChampions)}

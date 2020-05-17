@@ -9,23 +9,25 @@ class Item extends Component {
     super(props);
     this.state = {
       tempStrings: {
+        bonus: "",
         stats: "",
         buildsFrom: "",
         buildsInto: "",
+        set: "",
       },
       item: {
         id: 0,
         key: "",
         name: "",
         type: "",
-        bonus: "",
+        bonus: [],
         depth: 0,
         stats: [],
         buildsFrom: [],
         buildsInto: [],
         unique: false,
         cannotEquip: "",
-        set: 0,
+        set: [],
         image: "",
       },
     }
@@ -40,8 +42,6 @@ class Item extends Component {
         let item = Object.assign({}, this.props.location.state.data);
         let tempStrings = Object.assign({}, this.state.tempStrings);
         // item = data;
-        let buildsFrom = item.buildsFrom.join();
-        let buildsInto = item.buildsInto.join();
         let statsName = [];
         let statsTitle = [];
         let statsValue = [];
@@ -58,8 +58,10 @@ class Item extends Component {
           }
         }
         tempStrings.stats = stats;
-        tempStrings.buildsFrom = buildsFrom;
-        tempStrings.buildsInto = buildsInto;
+        tempStrings.bonus = item.bonus.join();
+        tempStrings.buildsFrom = item.buildsFrom.join();
+        tempStrings.buildsInto = item.buildsInto.join();
+        tempStrings.set = item.set.join();
         this.setState({
           item: item, tempStrings: tempStrings
         });
@@ -96,12 +98,10 @@ class Item extends Component {
       stats.push({name: __stats[0], label: __stats[1], value: __stats[2]});
     }
 
-    let buildsFrom = this.state.tempStrings.buildsFrom.split(',');
-    let buildsInto = this.state.tempStrings.buildsInto.split(',');
-
     _item.stats = stats;
-    _item.buildsFrom = buildsFrom;
-    _item.buildsInto = buildsInto;
+    _item.buildsFrom = this.state.tempStrings.buildsFrom.split(',');
+    _item.buildsInto = this.state.tempStrings.buildsInto.split(',');
+    _item.set = this.state.tempStrings.split(',');
 
     this.setState({item: _item}, function() {
       const item = {
@@ -137,14 +137,14 @@ class Item extends Component {
                   {renderFormGroup("Key: ", "text", "key", "key", this.handleItems, this.state.item.key)}
                   {renderFormGroup("Name: ", "text", "name", "name", this.handleItems, this.state.item.name)}
                   {renderFormGroup("Type: ", "text", "type", "type", this.handleItems, this.state.item.type)}
-                  {renderFormGroup("Bonus: ", "text", "bonus", "bonus", this.handleItems, this.state.item.bonus)}
+                  {renderFormGroup("Bonus: ", "text", "bonus", "bonus", this.handleItems, this.state.tempStrings.bonus)}
                   {renderFormGroup("Depth: ", "number", "depth", "depth", this.handleItems, this.state.item.depth)}
                   {renderFormGroup("Stats: ", "text", "stats", "stats", this.handleItems, this.state.tempStrings.stats)}
                   {renderFormGroup("Builds From: ", "text", "buildsFrom", "buildsFrom", this.handleItems, this.state.tempStrings.buildsFrom)}
                   {renderFormGroup("Builds Into: ", "text", "buildsInto", "buildsInto", this.handleItems, this.state.tempStrings.buildsInto)}
                   {renderFormGroupCheckbox("Unique (one per champion): ", "checkbox", "unique", "unique", this.handleClick, this.state.item.unique)}
                   {renderFormGroup("Cannot Equip: ", "text", "cannotEquip", "cannotEquip", this.handleItems, this.state.item.cannotEquip)}
-                  {renderFormGroup("Set: ", "number", "set", "set", this.handleItems, this.state.item.set)}
+                  {renderFormGroup("Set: ", "number", "set", "set", this.handleItems, this.state.tempStrings.set)}
                   {renderFormGroup("Image: ", "text", "image", "image", this.handleItems, this.state.item.image)}
                 </Col>
               </Row>
