@@ -9,7 +9,7 @@ import SynergiesCheatSheet from "./components/cheatsheet-pages/synergies-cheatsh
 import ItemsCheatSheet from "./components/cheatsheet-pages/items-cheatsheet.component";
 import MatchHistory from "./components/match-history/matchhistory.component";
 import Match from "./components/match-history/match.component.js";
-import Teams from "./components/teams.component";
+import Teams from "./components/teams/teams.component";
 import Create from "./components/create.component";
 import Edit from "./components/edit-pages/edit.component";
 import Champion from "./components/edit-pages/champion.component";

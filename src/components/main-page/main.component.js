@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import { Alert, Button, Card, CardHeader, CardBody, Col, Collapse, Row, Input, Tooltip } from 'reactstrap';
-import { getData, postData } from '../../api-helper/api.js'
-import { toggle, isToolTipOpen } from '../../sub-components/tooltips.js'
+import { getData, postData } from '../../api-helper/api.js';
+import ChampionPanel from './champion-panel.js';
+import ItemPanel from './item-panel.js';
+import SynergiesPanel from './synergies-panel.js';
+import TeamPanel from './team-panel.js';
 import '../../css/colors.css';
 import '../../css/fonts.css';
 import '../../css/margins.css';
@@ -37,6 +40,9 @@ export default class Main extends Component {
     this.handleSave = this.handleSave.bind(this);
     this.copy = this.copy.bind(this);
     this.toggle = this.toggle.bind(this);
+    this.addToTeam = this.addToTeam.bind(this);
+    this.drag = this.drag.bind(this);
+    this.drop = this.drop.bind(this);
   }
 
   componentDidMount() {
@@ -73,20 +79,6 @@ export default class Main extends Component {
       comparison = 1;
     }
     else if (idA < idB) {
-      comparison = -1;
-    }
-    return comparison;
-  }
-
-  compareSynergy(a, b) {
-    const idA = a.synergy1.tier;
-    const idB = b.synergy1.tier;
-
-    let comparison = 0;
-    if (idA < idB) {
-      comparison = 1;
-    }
-    else if (idA > idB) {
       comparison = -1;
     }
     return comparison;
@@ -353,33 +345,11 @@ export default class Main extends Component {
       });
     }
   }
-  toggleCollapse(target) {
-    if (!this.state[target]) {
-      this.setState({
-        ...this.state,
-        [target]: {
-          collapseOpen: true
-        }
-      });
-    } else {
-      this.setState({
-        ...this.state,
-        [target]: {
-          collapseOpen: !this.state[target].collapseOpen
-        }
-      });
-    }
-  }
+
   isToolTipOpen(target) {
     return this.state[target] ? this.state[target].tooltipOpen : false;
   }
-  isCollapseOpen(target) {
-    return this.state[target] ? this.state[target].collapseOpen : false;
-  }
 
-  allowDrop(e) {
-    e.preventDefault();
-  }
   drag(e, item) {
     e.dataTransfer.setData("text", e.target.id);
     this.setState({draggedItem: item});
@@ -492,277 +462,35 @@ export default class Main extends Component {
   }
 
   render() {
-    let champions = [];
-    const classes = [];
-    const items = [];
-    const origins = [];
-    let synergies = {};
-    let synergiesUnsorted = [];
-    const synergiesSorted = [];
-    const team = [];
-    const teamData = [];
-
-    const BLACK_COLOR = '#404040';
-    const GOLD_COLOR = '#ffd700';
-    const SILVER_COLOR = '#acacac';
-    const BRONZE_COLOR = '#cd7f32';
-    const DIAMOND_COLOR = '#425af5'; // used for things like 8 sorcs
-    let color = BLACK_COLOR;
-    let iconColor = '';
-
-    Object.keys(this.state.champions).forEach((key, index) => {
-      if (key.includes(this.state.text.searchNameChamps.toLowerCase()) || this.state.champions[key].name.includes(this.state.text.searchNameChamps)) {
-        champions.push(<div style={{display: 'inline-block'}}>
-        <img src={this.state.champions[key].icon} draggable="true" onDragStart={this.drag} className='icon50 cost3border' onClick={() => this.addToTeam(this.state.champions[key])} id={key} />
-        <Tooltip placement="top" isOpen={this.isToolTipOpen(key)} target={key} toggle={() => this.toggle(key)}>
-          <p className='tooltipTitle'>{this.state.champions[key].name}</p>
-          <p>{this.state.champions[key].cost} cost unit</p>
-          <p>{this.state.champions[key].origin[0]}{this.state.champions[key].origin.length === 2 ? ' / ' + this.state.champions[key].origin[1] : ""}</p>
-          <p>{this.state.champions[key].classe[0]}{this.state.champions[key].classe.length === 2 ? ' / ' + this.state.champions[key].classe[1] : ""}</p>
-        </Tooltip>
-        </div>);
-      }
-    });
-
-    // for (let i = 0; i < this.state.champions.length; ++i) {
-    //   if (this.state.champions[i].key.includes(this.state.searchNameChamps.toLowerCase()) || this.state.champions[i].name.includes(this.state.searchNameChamps))
-    //   champions.push(<div style={{display: 'inline-block'}}>
-    //   <img src={this.state.champions[i].icon} draggable="true" onDragStart={this.drag} className='icon50 cost3border' onClick={() => this.addToTeam(this.state.champions[i])} id={this.state.champions[i].key} />
-    //   <Tooltip placement="top" isOpen={this.isToolTipOpen(this.state.champions[i].key)} target={this.state.champions[i].key} toggle={() => this.toggle(this.state.champions[i].key)}>
-    //     <p className='tooltipTitle'>{this.state.champions[i].name}</p>
-    //     <p>{this.state.champions[i].cost} cost unit</p>
-    //     <p>{this.state.champions[i].origin[0]}{this.state.champions[i].origin.length === 2 ? ' / ' + this.state.champions[i].origin[1] : ""}</p>
-    //     <p>{this.state.champions[i].classe[0]}{this.state.champions[i].classe.length === 2 ? ' / ' + this.state.champions[i].classe[1] : ""}</p>
-    //   </Tooltip>
-    //   </div>);
-    // }
-    for (let i = 0; i < this.state.classes.length; ++i) {
-      classes.push(this.state.classes[i].name);
-      synergies[this.state.classes[i].key] = this.state.classes[i];
-    }
-
-    Object.keys(this.state.items).forEach((key, index) => {
-      if (key.includes(this.state.text.searchNameItems.toLowerCase()) || this.state.items[key].name.includes(this.state.text.searchNameItems)) {
-        let str = "";
-        for (let j = 0; j < this.state.items[key].stats.length; ++j) {
-          if (this.state.items[key].depth !== 1 && (this.state.items[key].stats[j].name !== 'class' && this.state.items[key].stats[j].name !== 'origin') && key !== 'forceofnature') {
-            if (j != 0)
-              str += ', '
-            str += this.state.items[key].stats[j].label;
-          }
-        }
-        items.push(<div style={{display: 'inline-block'}}>
-        <img src={this.state.items[key].image} draggable="true" onDragStart={(e) => this.drag(e, this.state.items[key])} className='icon50' id={key}/>
-        <Tooltip placement="top" isOpen={this.isToolTipOpen(key)} target={key} toggle={() => this.toggle(key)}>
-          <p className='tooltipTitle'>{this.state.items[key].name}</p>
-          <p>{this.state.items[key].bonus}</p>
-          <p>{str}</p>
-          <Row>
-          <img src={this.state.items[key].depth !== 1 ? this.state.items[this.state.items[key].buildsFrom[0]].image : ""} width={40} height={40}/>
-          <p style={{fontSize: '28px'}}>+</p>
-          <img src={this.state.items[key].depth !== 1 ? this.state.items[this.state.items[key].buildsFrom[1]].image : ""} width={40} height={40}/>
-          </Row>
-          </Tooltip>
-        </div>);
-      }
-    });
-
-    // for (let i = 0; i < this.state.items.length; ++i) {
-    //   if (this.state.items[i].key.includes(this.state.searchNameItems.toLowerCase()) || this.state.items[i].name.includes(this.state.searchNameItems)) {
-    //     let str = "";
-    //     for (let j = 0; j < this.state.items[i].stats.length; ++j) {
-    //       if (this.state.items[i].depth !== 1 && (this.state.items[i].stats[j].name !== 'class' && this.state.items[i].stats[j].name !== 'origin') && this.state.items[i].key != 'forceofnature') {
-    //         if (j != 0)
-    //           str += ', '
-    //         str += this.state.items[i].stats[j].label;
-    //       }
-    //     }
-    //
-    //     items.push(<div style={{display: 'inline-block'}}>
-    //     <img src={this.state.items[i].image} draggable="true" onDragStart={(e) => this.drag(e, this.state.items[i])} className='icon50' id={this.state.items[i].key}/>
-    //     <Tooltip placement="top" isOpen={this.isToolTipOpen(this.state.items[i].key)} target={this.state.items[i].key} toggle={() => this.toggle(this.state.items[i].key)}>
-    //       <p className='tooltipTitle'>{this.state.items[i].name}</p>
-    //       <p>{this.state.items[i].bonus}</p>
-    //       <p>{str}</p>
-    //       <p>{this.state.items[i].buildsFrom[0]}</p>
-    //       <p>{this.state.items[i].buildsFrom[1]}</p>
-    //       </Tooltip>
-    //     </div>);
-    //   }
-    // }
-    for (let i = 0; i < this.state.origins.length; ++i) {
-      origins.push(this.state.origins[i].name);
-      synergies[this.state.origins[i].key] = this.state.origins[i];
-    }
-    Object.keys(this.state.team).forEach((key, index) => {
-      let c = this.state.team[key];
-      team.push(
-        <Card onDrop={(e) => this.drop(e, key)} onDragOver={this.allowDrop} id="hello" inverse='#404040' style={{backgroundColor: '#404040', borderColor: 'black'}}>
-          <CardBody className='marginLeft14'>
-            <Row>{c.champion.name}</Row>
-            <Row>
-              <img src={c.champion.icon} className='icon60'/>
-              <div style={{display: 'block'}}>
-              <p>{c.champion.origin[0]}</p>
-              </div>
-              <p>{c.champion.origin.length > 1 ? c.champion.origin[1] : ""}</p>
-              <p>{c.champion.classe[0]}</p>
-              <p>{c.champion.classe.length > 1 ? c.champion.classe[1] : ""}</p>
-              <img src={c.items.length > 0 ? c.items[0].image : ""} className='itemMargins'/>
-              <img src={c.items.length > 1 ? c.items[1].image : ""} className='itemMargins'/>
-              <img src={c.items.length > 2 ? c.items[2].image : ""} className='itemMargins'/>
-              <Button type="button" color="primary" style={{marginLeft: '90px'}} onClick={() => this.toggleCollapse(`team-${c.champion.name}`)}>Expand</Button>
-            </Row>
-            <Collapse isOpen={this.isCollapseOpen(`team-${c.champion.name}`)}>
-              <Row style={{marginTop: '10px'}}>
-                <Col>
-                  <p className={c.champion.stats.defense.health[0] === this.state.champions[c.champion.key].stats.defense.health[0] ? 'statText' : 'enhancedStat'}>Health: {c.champion.stats.defense.health[0]}/{c.champion.stats.defense.health[1]}/{c.champion.stats.defense.health[2]}</p>
-                  <p className='statText'>Attack Damage: {c.champion.stats.offense.damage[0]}/{c.champion.stats.offense.damage[1]}/{c.champion.stats.offense.damage[2]}</p>
-                  <p className='statText'>Attack Speed: {c.champion.stats.offense.attackSpeed}</p>
-                  <p className='statText'>Attack Range: {c.champion.stats.offense.range === 1 ? 125 : (c.champion.stats.offense.range === 2 ? 420 : (c.champion.stats.offense.range === 3 ? 680 : (c.champion.stats.offense.range === 4 ? 890 : 1130)))}</p>
-                  <p className='statText'>Armor: {c.champion.stats.defense.armor}</p>
-                  <p className='statText'>Magic Resist: {c.champion.stats.defense.magicResist}</p>
-                </Col>
-                <Col>
-                  <p className='statText'>Spell Power: {c.champion.stats.offense.spellPower} %</p>
-                  <p className='statText'>Crit Chance: {c.champion.stats.offense.critChance} %</p>
-                  <p className='statText'>Crit Damage: {c.champion.stats.offense.critDamage} %</p>
-                  <p className='statText'>Dodge Chance: {c.champion.stats.defense.dodgeChance} %</p>
-                </Col>
-              </Row>
-              <Row style={{marginTop: '10px'}}>
-                <Col sm={1}>
-                  <img src={c.champion.abilityIcon} className='icon40'/>
-                </Col>
-                <Col>
-                  <p className='statText'>{c.champion.ability.name}</p>
-                  <p className='statText'>Mana: {c.champion.ability.manaStart}/{c.champion.ability.manaCost}</p>
-                </Col>
-              </Row>
-              <Row>
-                <p className='abilityMargin1'>{c.champion.ability.description}</p>
-              </Row>
-              <Row>
-                <p className='abilityMargin2'>{c.champion.ability.stats[0].type}: {c.champion.ability.stats[0].value[0]} / {c.champion.ability.stats[0].value[1]} / {c.champion.ability.stats[0].value[2]}</p>
-              </Row>
-              <Row>
-                <p className='abilityMargin2'>{c.champion.ability.stats.length > 1 ? c.champion.ability.stats[1].type + ': ' + c.champion.ability.stats[1].value[0] + ' / ' + c.champion.ability.stats[1].value[1] + ' / ' + c.champion.ability.stats[1].value[2] : ""}</p>
-              </Row>
-              <Row>
-                <p className='abilityMargin2'>{c.champion.ability.stats.length > 2 ? c.champion.ability.stats[2].type + ': ' + c.champion.ability.stats[2].value[0] + ' / ' + c.champion.ability.stats[2].value[1] + ' / ' + c.champion.ability.stats[2].value[2] : ""}</p>
-              </Row>
-            </Collapse>
-          </CardBody>
-        </Card>);
-        teamData.push({champion: c.champion, tier: c.tier, items: c.items});
-    })
-
-    Object.keys(this.state.synergies).forEach((key, index) => {
-      color = BLACK_COLOR;
-      let synergyTiers = synergies[key.toLowerCase()].bonuses.length;
-
-      for (let j = synergyTiers-1; j >= 0; --j) {
-        if (this.state.synergies[key].count >= synergies[key.toLowerCase()].bonuses[j].needed) {
-          if (j === synergyTiers - 1) {
-            color = GOLD_COLOR;
-            iconColor = 'black-icon';
-            this.state.synergies[key].tier = 3;
-            break;
-          }
-          else if (j === synergyTiers - 2 && synergyTiers === 3) {
-            color =  SILVER_COLOR;
-            iconColor = 'black-icon';
-            this.state.synergies[key].tier = 2;
-            break;
-          }
-          else {
-            if ((synergies[key.toLowerCase()].mustBeExact && this.state.synergies[key].count === synergies[key.toLowerCase()].bonuses[j].needed) || !synergies[key.toLowerCase()].mustBeExact) {
-              color = BRONZE_COLOR;
-              iconColor = 'black-icon';
-              this.state.synergies[key].tier = 1;
-              break;
-            }
-          }
-        }
-        else {
-          color = BLACK_COLOR;
-          iconColor = '';
-          this.state.synergies[key].tier = 0;
-        }
-      }
-      synergiesUnsorted.push({synergy1: this.state.synergies[key], synergy2: synergies[key.toLowerCase()], color: color, iconcolor: iconColor});
-    })
-
-    synergiesUnsorted.sort(this.compareSynergy);
-    for (let i = 0; i < synergiesUnsorted.length; i++) {
-      synergiesSorted.push(<div>
-        <Card id={synergiesUnsorted[i].synergy2.key}
-        inverse={synergiesUnsorted[i].color === '#404040'}
-        style={{ backgroundColor: synergiesUnsorted[i].color, borderColor: synergiesUnsorted[i].color }}>
-        <CardBody><img src={synergiesUnsorted[i].synergy2.image} className={synergiesUnsorted[i].iconcolor}/>{synergiesUnsorted[i].synergy2.name + ": " + synergiesUnsorted[i].synergy1.count} / {synergiesUnsorted[i].synergy1.tier >= synergiesUnsorted[i].synergy2.bonuses.length ? synergiesUnsorted[i].synergy2.bonuses[synergiesUnsorted[i].synergy2.bonuses.length - 1].needed : synergiesUnsorted[i].synergy2.bonuses[synergiesUnsorted[i].synergy1.tier].needed}</CardBody>
-        </Card>
-        <Tooltip placement="right" isOpen={this.isToolTipOpen(synergiesUnsorted[i].synergy2.key)} target={synergiesUnsorted[i].synergy2.key} toggle={() => this.toggle(synergiesUnsorted[i].synergy2.key)}>
-          <div>
-            <p className='tooltipTitle'>{synergiesUnsorted[i].synergy2.name}</p>
-            <p>{synergiesUnsorted[i].synergy2.description ? synergiesUnsorted[i].synergy2.description : ""}</p>
-            <p className={synergiesUnsorted[i].synergy1.tier < 1 ? 'tooltipLocked' : ''}>{synergiesUnsorted[i].synergy2.bonuses[0].needed + ": " + synergiesUnsorted[i].synergy2.bonuses[0].effect}</p>
-            <p className={synergiesUnsorted[i].synergy1.tier < 2 ? 'tooltipLocked' : ''}>{synergiesUnsorted[i].synergy2.bonuses.length > 1 ? synergiesUnsorted[i].synergy2.bonuses[1].needed + ": " + synergiesUnsorted[i].synergy2.bonuses[1].effect : ""}</p>
-            <p className={synergiesUnsorted[i].synergy1.tier < 3 ? 'tooltipLocked' : ''}>{synergiesUnsorted[i].synergy2.bonuses.length > 2 ? synergiesUnsorted[i].synergy2.bonuses[2].needed + ": " + synergiesUnsorted[i].synergy2.bonuses[2].effect : ""}</p>
-            <p className={synergiesUnsorted[i].synergy1.tier < 4 ? 'tooltipLocked' : ''}>{synergiesUnsorted[i].synergy2.bonuses.length > 3 ? synergiesUnsorted[i].synergy2.bonuses[3].needed + ": " + synergiesUnsorted[i].synergy2.bonuses[3].effect : ""}</p>
-          </div>
-        </Tooltip>
-        </div>);
-    }
-
       return (
         <div>
-        <Row>
-        <Col sm={1}></Col>
-        <Col sm={2}>
-              <Col>{synergiesSorted}</Col>
-        </Col>
-        <Col sm={4}>
-        <div>
-          <Alert color={this.state.alertVariant} isOpen={this.state.showAlert}>{this.state.alertMessage}</Alert>
-        </div>
           <Row>
-            <Button type="button" color="primary" style={{width: '23%', height: '5%', marginLeft: '22px'}} onClick={this.randomButton}>Random</Button>
-            <Button type="button" color="primary" style={{width: '23%', height: '5%'}} onClick={this.clearTeam}>Clear</Button>
-            <Button type="button" color="primary" style={{width: '23%', height: '5%'}} onClick={this.copy}>Copy</Button>
-            <Button type="button" color="primary" style={{width: '23%', height: '5%'}} onClick={this.handleSave}>Save</Button>
-          </Row>
-          <Input type="text" id="search" name="teamName" style={{height: '5%'}} onChange={this.handleChanges} placeholder="Team Name"/>
-          <Card name="pool" style={{height: '90%'}}>
-            <CardBody>
-              {team}
-            </CardBody>
-          </Card>
-          </Col>
-          <Col sm={4}>
-          <Row>
-            <Card>
-              <CardHeader className='whitebg'>
-                <strong>Champions</strong>
-              </CardHeader>
-              <CardBody>
-                <Input type="text" id="search" name="searchNameChamps" onChange={this.handleChanges} placeholder="Champion Name" />
-                {champions}
-              </CardBody>
-            </Card>
-          </Row>
-          <Row>
-            <Card>
-              <CardHeader className='whitebg'>
-                <strong>Items</strong>
-              </CardHeader>
-              <CardBody>
-              <Input type="text" id="search" name="searchNameItems" onChange={this.handleChanges} placeholder="Item Name" />
-                {items}
-              </CardBody>
-            </Card>
-          </Row>
-          </Col>
-          <Col sm={1}></Col>
+            <Col sm={1}></Col>
+            <Col sm={2}>
+              <SynergiesPanel classes={this.state.classes} origins={this.state.origins} synergies={this.state.synergies}/>
+            </Col>
+            <Col sm={4}>
+              <div>
+                <Alert color={this.state.alertVariant} isOpen={this.state.showAlert}>{this.state.alertMessage}</Alert>
+              </div>
+              <Row>
+                <Button type="button" color="primary" style={{width: '23%', height: '5%', marginLeft: '22px'}} onClick={this.randomButton}>Random</Button>
+                <Button type="button" color="primary" style={{width: '23%', height: '5%'}} onClick={this.clearTeam}>Clear</Button>
+                <Button type="button" color="primary" style={{width: '23%', height: '5%'}} onClick={this.copy}>Copy</Button>
+                <Button type="button" color="primary" style={{width: '23%', height: '5%'}} onClick={this.handleSave}>Save</Button>
+              </Row>
+              <Input type="text" id="search" name="teamName" style={{height: '5%'}} onChange={this.handleChanges} placeholder="Team Name"/>
+              <TeamPanel team={this.state.team} champions={this.state.champions}/>
+            </Col>
+            <Col sm={4}>
+              <Row>
+                <ChampionPanel champions={this.state.champions} addToTeam={this.addToTeam} drag={this.drag}/>
+              </Row>
+              <Row>
+                <ItemPanel items={this.state.items} drag={this.drag}/>
+              </Row>
+            </Col>
+            <Col sm={1}></Col>
           </Row>
         </div>
       )

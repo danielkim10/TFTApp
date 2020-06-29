@@ -54,10 +54,13 @@ const Navigation = (props) => {
                     Set 1
                   </DropdownItem>
                   <DropdownItem>
-                    Set 2
+                    Set 2 - Rise of the Elements
                   </DropdownItem>
                   <DropdownItem>
-                    Set 3
+                    Set 3 - Galaxies
+                  </DropdownItem>
+                  <DropdownItem>
+                    Set 3 - Galaxies: Return to the Stars
                   </DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>

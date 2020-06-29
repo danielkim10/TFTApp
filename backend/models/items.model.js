@@ -9,13 +9,13 @@ const itemSchema = new Schema({
   type: {type: String},
   bonus: [{type: String}],
   depth: {type: Number},
-  stats: [{
+  stats: [[{
     name: {type: String},
     label: {type: String},
     value: {type: Number},
-  }],
-  buildsFrom: [{type: String}],
-  buildsInto: [{type: String}],
+  }]],
+  buildsFrom: [[{type: String}]],
+  buildsInto: [[{type: String}]],
   unique: {type: Boolean},
   cannotEquip: {type: String},
   set: [{type: Number}],

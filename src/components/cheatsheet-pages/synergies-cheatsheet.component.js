@@ -34,8 +34,8 @@ class SynergiesCheatSheet extends Component {
     let championDesc = [];
     for (let i = 0; i < champions.length; ++i) {
       championDesc.push(<div style={{display: 'inline-block'}}>
-        <img src={champions[i].icon} width={60} height={60} onClick={() => this.championRedirect(champions[i].key)} id={champions[i].key}/>
-        <Tooltip placement="top" isOpen={this.isToolTipOpen(champions[i].key)} target={champions[i].key} toggle={() => this.toggle(champions[i].key)}>{champions[i].name}</Tooltip>
+        <img src={champions[i].icon} width={60} height={60} onClick={() => this.championRedirect(champions[i].key)} id={champions[i].key + '-' + data.name}/>
+        <Tooltip placement="top" isOpen={this.isToolTipOpen(champions[i].key + '-' + data.name)} target={champions[i].key + '-' + data.name} toggle={() => this.toggle(champions[i].key + '-' + data.name)}>{champions[i].name}</Tooltip>
       </div>);
     }
 
