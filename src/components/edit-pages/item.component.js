@@ -90,23 +90,8 @@ class Item extends Component {
         }
         tempStrings.bonus = bonus;
 
-        let buildsFrom = "";
-        for (let i in item.buildsFrom) {
-          buildsFrom += item.buildsFrom[i].join();
-          if (i < item.buildsFrom.length - 1) {
-            buildsFrom += "/";
-          }
-        }
-
-        let buildsInto = "";
-        for (let i in item.buildsInto) {
-          buildsInto += item.buildsInto[i].join();
-          if (i < item.buildsInto.length - 1) {
-            buildsInto += "/";
-          }
-        }
-        tempStrings.buildsFrom = buildsFrom;
-        tempStrings.buildsInto = buildsInto;
+        tempStrings.buildsFrom = item.buildsFrom.join();
+        tempStrings.buildsInto = item.buildsInto.join();
         tempStrings.set = item.set.join();
         this.setState({
           item: item, tempStrings: tempStrings
@@ -160,26 +145,19 @@ class Item extends Component {
     _item.bonus = this.state.tempStrings.bonus.split('^');
     _item.stats = stats;
 
-    let buildsFrom = [];
-    let buildsFrom1 = [];
-    let buildsFrom2 = this.state.tempStrings.buildsFrom.split('/');
-    for (let i in buildsFrom2) {
-        buildsFrom.push(buildsFrom2[i].split(','));
-        //buildsFrom.push(buildsFrom1);
-        //buildsFrom1 = [];
+    let buildsFrom = this.state.tempStrings.buildsFrom.split(',');
+    if (buildsFrom[0] != "") {
+      buildsFrom.forEach((id) => {
+        _item.buildsFrom.push(parseInt(id));
+      })
     }
 
-    let buildsInto = [];
-    let buildsInto1 = [];
-    let buildsInto2 = this.state.tempStrings.buildsInto.split('/');
-    for (let i in buildsInto2) {
-      buildsInto.push(buildsInto2[i].split(','));
-      //buildsInto.push(buildsInto1);
-      //buildsInto1 = [];
+    let buildsInto = this.state.tempStrings.buildsInto.split(',');
+    if (buildsInto[0] != "") {
+      buildsInto.forEach((id) => {
+        _item.buildsInto.push(parseInt(id));
+      })
     }
-
-    _item.buildsFrom = buildsFrom;
-    _item.buildsInto = buildsInto;
     _item.set = this.state.tempStrings.set.split(',');
 
     this.setState({item: _item}, function() {
@@ -216,11 +194,11 @@ class Item extends Component {
                   {renderFormGroup("Key: ", "text", "key", "key", this.handleItems, this.state.item.key)}
                   {renderFormGroup("Name: ", "text", "name", "name", this.handleItems, this.state.item.name)}
                   {renderFormGroup("Type: ", "text", "type", "type", this.handleItems, this.state.item.type)}
-                  {renderFormGroup("Bonus: (A/B/C/D)", "text", "bonus", "bonus", this.handleItems, this.state.tempStrings.bonus)}
+                  {renderFormGroup("Bonus: (A/B/C/D)", "textarea", "bonus", "bonus", this.handleItems, this.state.tempStrings.bonus)}
                   {renderFormGroup("Depth: ", "number", "depth", "depth", this.handleItems, this.state.item.depth)}
-                  {renderFormGroup("Stats: (Name,Label,Value/Name,Label,Value^Name,Label,Value/Name,Label,Value)", "text", "stats", "stats", this.handleItems, this.state.tempStrings.stats)}
-                  {renderFormGroup("Builds From: (A,B/A,B)", "text", "buildsFrom", "buildsFrom", this.handleItems, this.state.tempStrings.buildsFrom)}
-                  {renderFormGroup("Builds Into: (A,B,C,D/A,B,C,D)", "text", "buildsInto", "buildsInto", this.handleItems, this.state.tempStrings.buildsInto)}
+                  {renderFormGroup("Stats: (Name,Label,Value/Name,Label,Value^Name,Label,Value/Name,Label,Value)", "textarea", "stats", "stats", this.handleItems, this.state.tempStrings.stats)}
+                  {renderFormGroup("Builds From: ", "text", "buildsFrom", "buildsFrom", this.handleItems, this.state.tempStrings.buildsFrom)}
+                  {renderFormGroup("Builds Into: ", "text", "buildsInto", "buildsInto", this.handleItems, this.state.tempStrings.buildsInto)}
                   {renderFormGroupCheckbox("Unique (one per champion): ", "checkbox", "unique", "unique", this.handleClick, this.state.item.unique)}
                   {renderFormGroup("Cannot Equip: ", "text", "cannotEquip", "cannotEquip", this.handleItems, this.state.item.cannotEquip)}
                   {renderFormGroup("Set: (A,A,A,A)", "text", "set", "set", this.handleItems, this.state.tempStrings.set)}

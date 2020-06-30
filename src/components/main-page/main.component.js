@@ -21,6 +21,7 @@ export default class Main extends Component {
       champions: {},
       classes: [],
       items: {},
+      itemsBasic: [],
       origins: [],
       draggedItem: {},
       showAlert: false,
@@ -58,12 +59,13 @@ export default class Main extends Component {
       this.setState({classes: data.filter(classe => classe.set === 1)});
     });
     getData('items').then(data => {
-      let itemsA = data.filter(item => item.set.includes(1));
+      let itemsA = data.filter(item => item.set.includes(1) && item.depth === 2);
+      let itemsB = data.filter(item => item.set.includes(1) && item.depth === 1).sort(this.compare);
       let items = Object.assign({}, this.state.items);
       for (let i = 0; i < itemsA.length; i++) {
         items[itemsA[i].key] = itemsA[i];
       }
-      this.setState({items: items});
+      this.setState({items: items, itemsBasic: itemsB});
     });
     getData('origins').then(data => {
       this.setState({origins: data.filter(origin => origin.set === 1)});
@@ -354,23 +356,23 @@ export default class Main extends Component {
     e.dataTransfer.setData("text", e.target.id);
     this.setState({draggedItem: item});
   }
-  drop(e, key) {
+  drop(e, id) {
     e.preventDefault();
     let data = e.dataTransfer.getData("text");
 
-    if (this.state.team[key].items.length === 0) {
-      if (this.applyItemEffects(this.state.draggedItem, key)) {
-        this.state.team[key].items[0] = this.state.draggedItem;
+    if (this.state.team[id].items.length === 0) {
+      if (this.applyItemEffects(this.state.draggedItem, id)) {
+        this.state.team[id].items[0] = this.state.draggedItem;
       }
     }
-    else if (this.state.team[key].items.length === 1) {
-      if (this.applyItemEffects(this.state.draggedItem, key)) {
-        this.state.team[key].items[1] = this.state.draggedItem;
+    else if (this.state.team[id].items.length === 1) {
+      if (this.applyItemEffects(this.state.draggedItem, id)) {
+        this.state.team[id].items[1] = this.state.draggedItem;
       }
     }
-    else if (this.state.team[key].items.length === 2) {
-      if (this.applyItemEffects(this.state.draggedItem, key)) {
-        this.state.team[key].items[2] = this.state.draggedItem;
+    else if (this.state.team[id].items.length === 2) {
+      if (this.applyItemEffects(this.state.draggedItem, id)) {
+        this.state.team[id].items[2] = this.state.draggedItem;
       }
     }
     else {
@@ -387,14 +389,14 @@ export default class Main extends Component {
       return false;
     }
 
-    for (let i = 0; i < item.stats.length; ++i) {
-      if (item.stats[i].name === 'class') {
-        if (!this.state.team[key].champion.classe.includes(item.stats[i].label)) {
-          this.state.team[key].champion.classe.push(item.stats[i].label);
+    for (let i = 0; i < item.stats[0].length; ++i) {
+      if (item.stats[0][i].name === 'class') {
+        if (!this.state.team[key].champion.classe.includes(item.stats[0][i].label)) {
+          this.state.team[key].champion.classe.push(item.stats[0][i].label);
           this.findSynergies(this.state.team);
         }
         else {
-          this.setState({showAlert: true, alertVariant: 'danger', alertMessage: `${item.stats[i].label} units cannot equip ${item.name}`});
+          this.setState({showAlert: true, alertVariant: 'danger', alertMessage: `${item.stats[0][i].label} units cannot equip ${item.name}`});
           window.setTimeout(() => {
             this.setState({showAlert: false, alertMessage: ""});
           }, 5000);
@@ -402,53 +404,53 @@ export default class Main extends Component {
         }
       }
       else if (item.stats[i].name === 'origin') {
-        if (!this.state.team[key].champion.origin.includes(item.stats[i].label)) {
-          this.state.team[key].champion.origin.push(item.stats[i].label);
+        if (!this.state.team[key].champion.origin.includes(item.stats[0][i].label)) {
+          this.state.team[key].champion.origin.push(item.stats[0][i].label);
           this.findSynergies(this.state.team);
         }
         else {
-          this.setState({showAlert: true, alertVariant: 'danger', alertMessage: `${item.stats[i].label} units cannot equip ${item.name}`});
+          this.setState({showAlert: true, alertVariant: 'danger', alertMessage: `${item.stats[0][i].label} units cannot equip ${item.name}`});
           window.setTimeout(() => {
             this.setState({showAlert: false, alertMessage: ""});
           }, 5000);
           return false;
         }
       }
-      else if (item.stats[i].name === 'attackdamage') {
-        this.state.team[key].champion.stats.offense.damage[0] += item.stats[i].value;
-        this.state.team[key].champion.stats.offense.damage[1] += item.stats[i].value;
-        this.state.team[key].champion.stats.offense.damage[2] += item.stats[i].value;
+      else if (item.stats[0][i].name === 'attackdamage') {
+        this.state.team[key].champion.stats.offense.damage[0] += item.stats[0][i].value;
+        this.state.team[key].champion.stats.offense.damage[1] += item.stats[0][i].value;
+        this.state.team[key].champion.stats.offense.damage[2] += item.stats[0][i].value;
       }
-      else if (item.stats[i].name === 'abilitypower') {
-        this.state.team[key].champion.stats.offense.spellPower += item.stats[i].value;
+      else if (item.stats[0][i].name === 'abilitypower') {
+        this.state.team[key].champion.stats.offense.spellPower += item.stats[0][i].value;
       }
-      else if (item.stats[i].name === 'critchance') {
-        this.state.team[key].champion.stats.offense.critChance += item.stats[i].value;
+      else if (item.stats[0][i].name === 'critchance') {
+        this.state.team[key].champion.stats.offense.critChance += item.stats[0][i].value;
       }
-      else if (item.stats[i].name === 'dodgechance') {
-        this.state.team[key].champion.stats.defense.dodgeChance += item.stats[i].value;
+      else if (item.stats[0][i].name === 'dodgechance') {
+        this.state.team[key].champion.stats.defense.dodgeChance += item.stats[0][i].value;
       }
-      else if (item.stats[i].name === 'attackspeed') {
-        this.state.team[key].champion.stats.offense.attackSpeed += item.stats[i].value * this.state.team[key].champion.stats.offense.attackSpeed / 100;
+      else if (item.stats[0][i].name === 'attackspeed') {
+        this.state.team[key].champion.stats.offense.attackSpeed += item.stats[0][i].value * this.state.team[key].champion.stats.offense.attackSpeed / 100;
       }
-      else if (item.stats[i].name === 'armor') {
-        this.state.team[key].champion.stats.defense.armor += item.stats[i].value;
+      else if (item.stats[0][i].name === 'armor') {
+        this.state.team[key].champion.stats.defense.armor += item.stats[0][i].value;
       }
-      else if (item.stats[i].name === 'magicresist') {
-        this.state.team[key].champion.stats.defense.magicResist += item.stats[i].value;
+      else if (item.stats[0][i].name === 'magicresist') {
+        this.state.team[key].champion.stats.defense.magicResist += item.stats[0][i].value;
       }
-      else if (item.stats[i].name === 'startingmana') {
+      else if (item.stats[0][i].name === 'startingmana') {
         if (this.state.team[key].champion.ability.manaCost != 0) {
-          this.state.team[key].champion.ability.manaStart += item.stats[i].value;
+          this.state.team[key].champion.ability.manaStart += item.stats[0][i].value;
           if (this.state.team[key].champion.ability.manaStart > this.state.team[key].champion.ability.manaCost) {
             this.state.team[key].champion.ability.manaStart = this.state.team[key].champion.ability.manaCost
           }
         }
       }
-      else if (item.stats[i].name === 'health') {
-        this.state.team[key].champion.stats.defense.health[0] += item.stats[i].value;
-        this.state.team[key].champion.stats.defense.health[1] += item.stats[i].value;
-        this.state.team[key].champion.stats.defense.health[2] += item.stats[i].value;
+      else if (item.stats[0][i].name === 'health') {
+        this.state.team[key].champion.stats.defense.health[0] += item.stats[0][i].value;
+        this.state.team[key].champion.stats.defense.health[1] += item.stats[0][i].value;
+        this.state.team[key].champion.stats.defense.health[2] += item.stats[0][i].value;
       }
     }
     return true;
@@ -487,7 +489,7 @@ export default class Main extends Component {
                 <ChampionPanel champions={this.state.champions} addToTeam={this.addToTeam} drag={this.drag}/>
               </Row>
               <Row>
-                <ItemPanel items={this.state.items} drag={this.drag}/>
+                <ItemPanel items={this.state.items} itemsBasic={this.state.itemsBasic} drag={this.drag}/>
               </Row>
             </Col>
             <Col sm={1}></Col>
