@@ -35,7 +35,7 @@ class ItemPanel extends Component {
   placeItems = () => {
     let items = [];
     Object.keys(this.props.items).forEach((key, index) => {
-      if (key.includes(this.state.searchNameItems.toLowerCase()) || this.props.items[key].name.includes(this.state.searchNameItems)) {
+      if (key.includes(this.state.searchNameItems.toLowerCase()) || this.props.items[key].name[0].includes(this.state.searchNameItems)) {
         let str = "";
         for (let j = 0; j < this.props.items[key].stats[0].length; ++j) {
           if (this.props.items[key].depth !== 1 && (this.props.items[key].stats[0][j].name !== 'class' && this.props.items[key].stats[0][j].name !== 'origin') && key !== 'forceofnature') {
@@ -45,9 +45,9 @@ class ItemPanel extends Component {
           }
         }
         items.push(<div style={{display: 'inline-block'}}>
-        <img src={this.props.items[key].image} draggable="true" onDragStart={(e) => this.props.drag(e, this.props.items[key])} className='icon50' id={key}/>
+        <img src={this.props.items[key].image[0]} draggable="true" onDragStart={(e) => this.props.drag(e, this.props.items[key])} className='icon50' id={key}/>
         <ItemTooltip placement="top" isOpen={this.isToolTipOpen(key)} target={key} toggle={() => this.toggle(key)}
-                     title={this.props.items[key].name} bonus={this.props.items[key].bonus[0]} stats={str} item1={this.props.itemsBasic[Math.floor(this.props.items[key].id / 10) - 1].image} item2={this.props.itemsBasic[Math.floor(this.props.items[key].id % 10) - 1].image}/>
+                     title={this.props.items[key].name[0]} bonus={this.props.items[key].bonus[0]} stats={str} item1={this.props.itemsBasic[Math.floor(this.props.items[key].id / 10) - 1].image[0]} item2={this.props.itemsBasic[Math.floor(this.props.items[key].id % 10) - 1].image[0]}/>
         </div>);
       }
     });

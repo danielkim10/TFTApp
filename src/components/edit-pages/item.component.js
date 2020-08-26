@@ -9,26 +9,31 @@ class Item extends Component {
     super(props);
     this.state = {
       tempStrings: {
+        key: "",
+        name: "",
         bonus: "",
         stats: "",
         buildsFrom: "",
         buildsInto: "",
+        unique: "",
+        cannotEquip: "",
         set: "",
+        image: "",
       },
       item: {
         id: 0,
-        key: "",
-        name: "",
+        key: [],
+        name: [],
         type: "",
         bonus: [],
         depth: 0,
         stats: [],
         buildsFrom: [],
         buildsInto: [],
-        unique: false,
-        cannotEquip: "",
+        unique: [],
+        cannotEquip: [],
         set: [],
-        image: "",
+        image: [],
       },
     }
     this.handleItems = this.handleItems.bind(this);
@@ -90,14 +95,33 @@ class Item extends Component {
         }
         tempStrings.bonus = bonus;
 
+        tempStrings.key = item.key.join();
+        tempStrings.name = item.name.join();
+        if (item.cannotEquip !== undefined) {
+          tempStrings.cannotEquip = item.cannotEquip.join();
+        }
         tempStrings.buildsFrom = item.buildsFrom.join();
         tempStrings.buildsInto = item.buildsInto.join();
+        tempStrings.unique = "";
+        for (let i in item.unique) {
+          tempStrings.unique += item.unique[i].toString();
+          if (i < item.unique.length - 1) {
+            tempStrings.unique += ',';
+          }
+        }
         tempStrings.set = item.set.join();
+        tempStrings.image = item.image.join();
         this.setState({
           item: item, tempStrings: tempStrings
         });
       // }
     // });
+  }
+
+  handleTempStrings = (event) => {
+    let tempStrings = Object.assign({}, this.state.tempStrings);
+    tempStrings[event.target.name] = event.target.value;
+    this.setState({ tempStrings: tempStrings });
   }
 
   handleItems(event) {
@@ -158,7 +182,23 @@ class Item extends Component {
         _item.buildsInto.push(parseInt(id));
       })
     }
+
+
+    _item.key = this.state.tempStrings.key.split(',');
+    _item.name = this.state.tempStrings.name.split(',');
+    _item.unique = [];
+    let unique = this.state.tempStrings.unique.split(',');
+    for (let i in unique) {
+      if (unique[i] === 'true') {
+        _item.unique[i] = true;
+      }
+      else {
+        _item.unique[i] = false;
+      }
+    }
+    _item.cannotEquip = this.state.tempStrings.cannotEquip.split(',');
     _item.set = this.state.tempStrings.set.split(',');
+    _item.image = this.state.tempStrings.image.split(',');
 
     this.setState({item: _item}, function() {
       const item = {
@@ -191,18 +231,18 @@ class Item extends Component {
               <Row>
                 <Col>
                   {renderFormGroup("Id: ", "number", "id", "id", this.handleItems, this.state.item.id)}
-                  {renderFormGroup("Key: ", "text", "key", "key", this.handleItems, this.state.item.key)}
-                  {renderFormGroup("Name: ", "text", "name", "name", this.handleItems, this.state.item.name)}
+                  {renderFormGroup("Key: ", "text", "key", "key", this.handleTempStrings, this.state.tempStrings.key)}
+                  {renderFormGroup("Name: ", "text", "name", "name", this.handleTempStrings, this.state.tempStrings.name)}
                   {renderFormGroup("Type: ", "text", "type", "type", this.handleItems, this.state.item.type)}
-                  {renderFormGroup("Bonus: (A/B/C/D)", "textarea", "bonus", "bonus", this.handleItems, this.state.tempStrings.bonus)}
+                  {renderFormGroup("Bonus: (A/B/C/D)", "textarea", "bonus", "bonus", this.handleTempStrings, this.state.tempStrings.bonus)}
                   {renderFormGroup("Depth: ", "number", "depth", "depth", this.handleItems, this.state.item.depth)}
-                  {renderFormGroup("Stats: (Name,Label,Value/Name,Label,Value^Name,Label,Value/Name,Label,Value)", "textarea", "stats", "stats", this.handleItems, this.state.tempStrings.stats)}
-                  {renderFormGroup("Builds From: ", "text", "buildsFrom", "buildsFrom", this.handleItems, this.state.tempStrings.buildsFrom)}
-                  {renderFormGroup("Builds Into: ", "text", "buildsInto", "buildsInto", this.handleItems, this.state.tempStrings.buildsInto)}
-                  {renderFormGroupCheckbox("Unique (one per champion): ", "checkbox", "unique", "unique", this.handleClick, this.state.item.unique)}
-                  {renderFormGroup("Cannot Equip: ", "text", "cannotEquip", "cannotEquip", this.handleItems, this.state.item.cannotEquip)}
-                  {renderFormGroup("Set: (A,A,A,A)", "text", "set", "set", this.handleItems, this.state.tempStrings.set)}
-                  {renderFormGroup("Image: ", "text", "image", "image", this.handleItems, this.state.item.image)}
+                  {renderFormGroup("Stats: (Name,Label,Value/Name,Label,Value^Name,Label,Value/Name,Label,Value)", "textarea", "stats", "stats", this.handleTempStrings, this.state.tempStrings.stats)}
+                  {renderFormGroup("Builds From: ", "text", "buildsFrom", "buildsFrom", this.handleTempStrings, this.state.tempStrings.buildsFrom)}
+                  {renderFormGroup("Builds Into: ", "text", "buildsInto", "buildsInto", this.handleTempStrings, this.state.tempStrings.buildsInto)}
+                  {renderFormGroup("Unique (one per champion): ", "text", "unique", "unique", this.handleTempStrings, this.state.tempStrings.unique)}
+                  {renderFormGroup("Cannot Equip: ", "text", "cannotEquip", "cannotEquip", this.handleTempStrings, this.state.tempStrings.cannotEquip)}
+                  {renderFormGroup("Set: (A,A,A,A)", "text", "set", "set", this.handleTempStrings, this.state.tempStrings.set)}
+                  {renderFormGroup("Image: ", "textarea", "image", "image", this.handleTempStrings, this.state.tempStrings.image)}
                 </Col>
               </Row>
           </CardBody>

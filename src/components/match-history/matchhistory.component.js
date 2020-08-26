@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Card, CardHeader, CardBody, Row, Col, Input, Button} from 'reactstrap';
 import { Link } from 'react-router-dom';
+import { getData } from '../../api-helper/api.js';
+import MatchBasic from './match-basic.component.js';
 
 class MatchHistory extends Component {
 
@@ -11,17 +13,72 @@ class MatchHistory extends Component {
       summonerName: "",
       region: "",
       gamedata: {},
-      matchesId: [],
-
+      matches: [],
+      champions: {},
+      championsSet4: {},
+      championsSet3: {},
+      championsSet2: {},
+      championsSet1: {},
+      classes: [],
+      classesSet4: [],
+      classesSet3: [],
+      classesSet2: [],
+      classesSet1: [],
+      items: {},
+      itemsSet4: {},
+      itemsSet3: {},
+      itemsSet2: {},
+      itemsSet1: {},
+      origins: [],
+      originsSet4: [],
+      originsSet3: [],
+      originsSet2: [],
+      originsSet1: [],
+      setNumber: 4,
     }
 
     this.search = this.search.bind(this);
     this.handleName = this.handleName.bind(this);
-    this.generateMatches = this.generateMatches.bind(this);
+  }
+
+  compare(a, b) {
+    const idA = a.id;
+    const idB = b.id;
+
+    let comparison = 0;
+    if (idA > idB) {
+      comparison = 1;
+    }
+    else if (idA < idB) {
+      comparison = -1;
+    }
+    return comparison;
   }
 
   componentDidMount() {
-
+    getData('champions').then(data => {
+      let championsA = data.filter(champion => champion.set.includes(4));
+      let champions = Object.assign({}, this.state.champions);
+      for (let i = 0; i < championsA.length; i++) {
+        champions[championsA[i].key] = championsA[i];
+      }
+      this.setState({champions: champions});
+    });
+    getData('classes').then(data => {
+      this.setState({classes: data.filter(classe => classe.set === 4)});
+    });
+    getData('items').then(data => {
+      let itemsA = data.filter(item => item.set.includes(4)).sort(this.compare);
+      let itemsB = data.filter(item => item.set.includes(4) && item.depth === 1).sort(this.compare);
+      let items = Object.assign({}, this.state.items);
+      for (let i = 0; i < itemsA.length; i++) {
+        items[itemsA[i].id] = itemsA[i];
+      }
+      this.setState({items: items, itemsBasic: itemsB});
+    });
+    getData('origins').then(data => {
+      this.setState({origins: data.filter(origin => origin.set === 4)});
+    });
   }
 
   search(e) {
@@ -30,37 +87,56 @@ class MatchHistory extends Component {
     const REGION_AMERICA='https://americas.api.riotgames.com';
     const EUW1 = 'https://euw1.api.riotgames.com';
     const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-    const summonerUrl = `${NA1}/tft/summoner/v1/summoners/by-name/Shabu%20Shabu?api_key=${process.env.REACT_APP_RIOT_KEY}`;
+    const summonerUrl = `${NA1}/tft/summoner/v1/summoners/by-name/${this.state.summonerName}?api_key=${process.env.REACT_APP_RIOT_KEY}`;
 
-    let matchesId;
-    let data = fetch(proxyUrl+summonerUrl).then
+    let summonerData = fetch(proxyUrl+summonerUrl).then
       (res => res.json()).then(res => {
+        console.log(res);
         let puuid = res.puuid;
-        let matchesUrl = `${REGION_AMERICA}/tft/match/v1/matches/by-puuid/${puuid}/ids?count=5&api_key=${process.env.REACT_APP_RIOT_KEY}`;
-        let matches = fetch(proxyUrl+matchesUrl).then
+        let matchesUrl = `${REGION_AMERICA}/tft/match/v1/matches/by-puuid/${puuid}/ids?count=3&api_key=${process.env.REACT_APP_RIOT_KEY}`;
+        let summonerMatches = fetch(proxyUrl+matchesUrl).then
             (res2 => res2.json()).then(res2 => {
-              let match0 = res2[0];
-              let matchUrl = `${REGION_AMERICA}/tft/match/v1/matches/${match0}?api_key=${process.env.REACT_APP_RIOT_KEY}`;
-              let match = fetch(proxyUrl+matchUrl).then
-                (res3 => res3.json()).then(res3 => {console.log(res3)})
+              console.log(res2);
+              let matchIds = res2;
+              let matches = [];
+              let setNumber = this.state.setNumber;
+              for (let i in matchIds) {
+                if (setNumber === this.state.setNumber) {
+                let matchUrl = `${REGION_AMERICA}/tft/match/v1/matches/${matchIds[i]}?api_key=${process.env.REACT_APP_RIOT_KEY}`;
+                let match = fetch(proxyUrl+matchUrl).then
+                  (res3 => res3.json()).then(res3 => {
+                    console.log(res3);
+
+                    let patch = this.parseDataVersion(res3.info.game_version);
+
+                    if (parseFloat(patch) > 10.12) {
+                      matches[i] = res3;
+                    }
+                    else {
+                      return;
+                    }
+                    setNumber = res3.metadata.data_version;
+                    this.setState({matches: matches});
+                  })
+                  .catch(err => console.log('Error: ' + err))
+                }
+              }
             }
         )
+        .catch(err => console.log('Error: ' + err))
       }
     )
-    // let data = fetch(proxyUrl + summonerUrl)
-    //   .then(res => res.json())
-    //   .then(async data => {
-    //     const matchesUrl = `${REGION_AMERICA}/tft/match/v1/matches/by-puuid/${data.puuid}/ids?count=20&api_key=${process.env.REACT_APP_RIOT_KEY}`;
-    //     let data2 = await fetch(proxyUrl + matchesUrl)
-    //       .then(res2 => res2.json())
-    //
-    //       matchesId = data2;
-    //   })
-    //this.generate();
+    .catch(err => console.log('Error: ' + err))
   }
 
   handleName(event) {
     this.setState({summonerName: event.target.value});
+  }
+
+  parseDataVersion = (dataVersion, patch) => {
+    let dataVersionCut = dataVersion.substring(dataVersion.indexOf(' ' + 1));
+    dataVersionCut = dataVersionCut.substring(1, dataVersion.indexOf(' ') - 1);
+    return dataVersionCut;
   }
 
 //   info:
@@ -206,33 +282,13 @@ class MatchHistory extends Component {
 // 6: "Yr8AtAorW7O2n55ckFSzGqn0XggQACW-j8XrwDmVA7LOKsowoWRT-cnk-PSjuiY35aMWz0g7XMvD7w"
 // 7: "OlhSqsujJQx34PIzIxrlfPF18DGaLjKSXDkjIDRch8HJWJIHAPrZLnKRhDRIn8VLLly5V2QEpxt9ug"
 
-  parseSummonerName() {
-
+  parseSummonerName = () => {
+    this.setState({ summonerName: this.state.summonerName.replace(" ", "")});
   }
 
-  generateMatches(id) {
-    const REGION_AMERICA='https://americas.api.riotgames.com';
-    const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-    const matchUrl = `${REGION_AMERICA}/tft/match/v1/matches/${id}?api_key=${process.env.REACT_APP_RIOT_KEY}`;
-    //let gamedata = this.state.gamedata;
-    let data = fetch(proxyUrl + matchUrl)
-      .then(res => res.json())
 
-    this.setState({gamedata: data});
-    //return(<Card><CardBody>{data.info.participants[i].placement}</CardBody></Card>);
-  }
 
   render() {
-    let matches = [];
-    // for (let i = 0; i < this.state.matchesId.length; ++i) {
-    //   let pathname="/matchhistory/" + this.state.matchesId[i];
-    //   matches.push(<div><Button outline color="transparent" onClick={this.generateMatches(this.state.matchesId[i])}>{this.state.matchesId[i]}</Button></div>)
-    // }
-    // let placement = 0;
-    // if (this.state.gamedata.info !== undefined) {
-    //   placement = this.state.gamedata.info.participants[0].placement;
-    // }
-
       return (
         <div>
         <Card>
@@ -246,14 +302,17 @@ class MatchHistory extends Component {
           <Col sm={3}>
             <Card>
               <CardBody>
-                {matches}
               </CardBody>
             </Card>
           </Col>
           <Col sm={9}>
             <Card>
               <CardBody>
-                {/*placement*/}
+                {this.state.matches.map((match) => {
+                  return (
+                    <MatchBasic gamedata={match} champions={this.state.champions} classes={this.state.classes} origins={this.state.origins} items={this.state.items}/>
+                  )
+                })}
               </CardBody>
             </Card>
           </Col>

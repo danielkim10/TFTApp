@@ -16,6 +16,7 @@ class Champion extends Component {
           statsUnit: "",
           damage: "",
           health: "",
+          set: "",
       },
       origins: [],
       classes: [],
@@ -50,7 +51,7 @@ class Champion extends Component {
             dodgeChance: 0,
           },
         },
-        set: 0,
+        set: [],
         image: "",
         icon: "",
         abilityIcon: "",
@@ -86,6 +87,7 @@ class Champion extends Component {
       tempStrings.statsUnit = abilityStatUnit.join();
       tempStrings.damage = champion.stats.offense.damage.join();
       tempStrings.health = champion.stats.defense.health.join();
+      tempStrings.set = champion.set.join();
       champion.ability.statsType = abilityStatType;
       champion.ability.statsValue = abilityStatValue;
       this.setState({
@@ -95,7 +97,7 @@ class Champion extends Component {
   }
 
   handleChampions(event) {
-    if (event.target.name === "cost" || event.target.name === "damage" || event.target.name === "health" ||
+    if (event.target.name === "cost" || event.target.name === "damage" || event.target.name === "health" || event.target.name === "set" ||
         event.target.name === "origin" || event.target.name === "classe" || event.target.name === "statsType" || event.target.name === "statsValue" || event.target.name === "statsUnit") {
         let tempStrings = Object.assign({}, this.state.tempStrings);
         tempStrings[event.target.name] = event.target.value;
@@ -157,6 +159,7 @@ class Champion extends Component {
     champion.stats.offense.damage = damage;
     champion.stats.defense.health = health;
     champion.ability.stats = stats;
+    champion.set = this.state.tempStrings.set.split(',');
     this.setState({champion: champion}, function() {
       const _champion = {
        id: this.state.champion.id,
@@ -241,7 +244,7 @@ class Champion extends Component {
                 {renderFormGroup("Health: ", "text", "defense", "health", this.handleChampions, this.state.tempStrings.health)}
                 {renderFormGroup("Armor: ", "number", "defense", "armor", this.handleChampions, this.state.champion.stats.defense.armor)}
                 {renderFormGroup("Magic Resist: ", "number", "defense", "magicResist", this.handleChampions, this.state.champion.stats.defense.magicResist)}
-                {renderFormGroup("Set: ", "number", "set", "set", this.handleChampions, this.state.champion.set)}
+                {renderFormGroup("Set: ", "text", "set", "set", this.handleChampions, this.state.tempStrings.set)}
                 {renderFormGroup("Image: ", "text", "image", "image", this.handleChampions, this.state.champion.image)}
                 {renderFormGroup("Icon: ", "text", "icon", "icon", this.handleChampions, this.state.champion.icon)}
                 {renderFormGroup("Ability Icon: ", "text", "abilityIcon", "abilityIcon", this.handleChampions, this.state.champion.abilityIcon)}

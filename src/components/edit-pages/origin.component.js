@@ -33,25 +33,32 @@ class Origin extends Component {
         let origin = Object.assign({}, this.props.location.state.data);
         let tempStrings = Object.assign({}, this.state.tempStrings);
         // origin = data;
-        let needed = [];
-        let effect = [];
-        let checkpoint = "";
+        let bonus = "";
+
         for (let i = 0; i < origin.bonuses.length; i++) {
-          needed.push(origin.bonuses[i].needed);
-          checkpoint += needed[i].toString();
-          if (i < origin.bonuses.length -1) {
-            checkpoint += '^';
-          }
-        }
-        checkpoint += '/'
-        for (let i = 0; i < origin.bonuses.length; i++) {
-          effect.push(origin.bonuses[i].effect);
-          checkpoint += effect[i];
+          bonus += origin.bonuses[i].needed + ',' + origin.bonuses[i].effect;
           if (i < origin.bonuses.length - 1) {
-            checkpoint += '^'
+            bonus += '^';
           }
         }
-        tempStrings.bonuses = checkpoint;
+
+
+        // for (let i = 0; i < origin.bonuses.length; i++) {
+        //   needed.push(origin.bonuses[i].needed);
+        //   checkpoint += needed[i].toString();
+        //   if (i < origin.bonuses.length -1) {
+        //     checkpoint += '^';
+        //   }
+        // }
+        // checkpoint += '/'
+        // for (let i = 0; i < origin.bonuses.length; i++) {
+        //   effect.push(origin.bonuses[i].effect);
+        //   checkpoint += effect[i];
+        //   if (i < origin.bonuses.length - 1) {
+        //     checkpoint += '^'
+        //   }
+        // }
+        tempStrings.bonuses = bonus;
 
         this.setState({origin: origin, tempStrings: tempStrings});
       // }
@@ -61,7 +68,7 @@ class Origin extends Component {
   handleOrigins(event) {
     if (event.target.name === "bonuses") {
       let tempStrings = Object.assign({}, this.state.tempStrings);
-      tempStrings.bonuses = event.target.value;
+      tempStrings[event.target.name] = event.target.value;
       this.setState({tempStrings: tempStrings});
     }
     else {
@@ -80,24 +87,27 @@ class Origin extends Component {
   handleSubmit(e) {
     e.preventDefault();
     let origin = Object.assign({}, this.state.origin);
-    let object = this.state.tempStrings.bonuses.split('/');
-    let needed = [];
-    let effect = [];
-    let bonuses = [];
+    origin.bonuses = [];
+    let bonusString = this.state.tempStrings.bonuses.split('^');
 
-    let neededString = object[0].split('^');
-    for (let subString in neededString) {
-      needed.push(parseInt(neededString[subString]));
+    for (let i in bonusString) {
+      let bonusString2 = bonusString[i].split(',');
+      origin.bonuses.push({needed: parseInt(bonusString2[0]), effect: bonusString2[1]});
     }
-    let effectString = object[1].split('^');
-    for (let subString in effectString) {
-      effect.push(effectString[subString]);
-    }
+    // let neededString = object[0].split('^');
+    // for (let subString in neededString) {
+    //   needed.push(parseInt(neededString[subString]));
+    // }
+    // let effectString = object[1].split('^');
+    // for (let subString in effectString) {
+    //   effect.push(effectString[subString]);
+    // }
 
-    for (let i = 0; i < needed.length; i++) {
-      bonuses.push({needed: needed[i], effect: effect[i]});
-    }
-    origin.bonuses = bonuses;
+    // for (let i = 0; i < needed.length; i++) {
+    //   bonuses.push({needed: needed[i], effect: effect[i]});
+    // }
+    //origin.bonuses = bonuses;
+
     this.setState({ origin: origin }, function() {
       const _origin = {
         id: this.state.origin.id,

@@ -55,7 +55,7 @@ class ChampionsCheatSheet extends Component {
   }
 
   componentDidMount() {
-      getSetData('champions', 1).then(data => {
+      getSetData('champions', 4).then(data => {
         this.setState({ champions: data.map(champion => champion) });
 
         if (!this.props.location.data) {

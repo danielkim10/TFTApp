@@ -37,7 +37,7 @@ const championSchema = new Schema({
       dodgeChance: {type: Number},
     },
   },
-  set: {type: Number},
+  set: [{type: Number}],
   image: {type: String},
   icon: {type: String},
   abilityIcon: {type: String},

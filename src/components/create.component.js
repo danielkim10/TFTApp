@@ -56,6 +56,7 @@ class Create extends Component {
           }
         },
         set: 0,
+        setTempString: "",
         image: "",
         icon: "",
         abilityIcon: "",
@@ -86,10 +87,10 @@ class Create extends Component {
       },
       item: {
         id: 0,
-        key: "",
-        name: "",
+        key: [],
+        name: [],
         type: "",
-        bonus: "",
+        bonus: [],
         depth: 0,
         stats: [],
         statsTempString: "",
@@ -97,15 +98,21 @@ class Create extends Component {
         buildsFromTempString: "",
         buildsInto: [],
         buildsIntoTempString: "",
-        unique: false,
+        unique: [],
         cannotEquip: "",
-        set: 0,
-        image: "",
+        set: [],
+        image: [],
       },
       itemTempStrings: {
+        key: "",
+        name: "",
+        bonus: "",
         stats: "",
         buildsFrom: "",
         buildsInto: "",
+        unique: "",
+        set: "",
+        image: "",
       },
       origin: {
         id: 0,
@@ -115,7 +122,7 @@ class Create extends Component {
         bonuses: [],
         bonusesTempString: "",
         mustBeExact: false,
-        set: 0,
+        set: "",
         image: "",
       },
       originTempStrings: {
@@ -238,9 +245,9 @@ class Create extends Component {
     let classe = this.state.champion.classeTempString.split(',');
     let damageString = this.state.champion.stats.offense.damageTempString.split(',');
     let healthString = this.state.champion.stats.defense.healthTempString.split(',');
-    let statsType = this.state.champion.ability.statsTypeTempString.split(',');
-    let statsValueString = this.state.champion.ability.statsValueTempString.split('/');
-    let statsUnit = this.state.champion.ability.statsUnitTempString.split(',');
+    let statsType = this.state.champion.ability.stats.statsTypeTempString.split(',');
+    let statsValueString = this.state.champion.ability.stats.statsValueTempString.split('/');
+    let statsUnit = this.state.champion.ability.stats.statsUnitTempString.split(',');
 
     // for (let subString in costString) {
     //   cost.push(parseInt(costString[subString]));
@@ -265,6 +272,7 @@ class Create extends Component {
     _champion.stats.offense.damage = damage;
     _champion.stats.defense.health = health;
     _champion.ability.stats = stats;
+    _champion.set = this.state.champion.setTempString.split(',');
 
     this.setState({ champion: _champion }, function() {
       e.preventDefault();
@@ -288,21 +296,12 @@ class Create extends Component {
 
   handleClassSubmit(e) {
     let _classe = Object.assign({}, this.state.classe);
-    let needed = [];
-    let effect = [];
-    let bonusString = this.state.classe.bonusesTempString.split('/');
+    let bonusString = this.state.classe.bonusesTempString.split('^');
+    for (let i in bonusString) {
+      let bonusString1 = bonusString[i].split(',');
+      _classe.bonuses.push({needed: parseInt(bonusString1[0]), effect: bonusString1[1]});
+    }
 
-    let neededString = bonusString[0].split(',');
-    for (let subString in neededString) {
-      needed.push(parseInt(subString));
-    }
-    let effectString = bonusString[1].split(',');
-    for (let subString in effectString) {
-      effect.push(subString);
-    }
-    for (let i = 0; i < neededString.length; i++) {
-      _classe.bonuses.push({ needed: needed[i], effect: effect[i] });
-    }
     this.setState({ classe: _classe }, function() {
       e.preventDefault();
         const classe = {
@@ -363,20 +362,23 @@ class Create extends Component {
 
   handleOriginSubmit(e) {
     let _origin = Object.assign({}, this.state.origin);
-    let needed = [];
-    let effect = [];
-    let bonusString = this.state.origin.bonusesTempString.split('/');
-    let neededString = bonusString[0].split(',');
-    for (let subString in neededString) {
-      needed.push(parseInt(subString));
+    let bonusString = this.state.origin.bonusesTempString.split('^');
+    for (let i in bonusString) {
+      let bonusString1 = bonusString[i].split(',');
+      _origin.bonuses.push({needed: parseInt(bonusString1[0]), effect: bonusString1[1]});
     }
-    let effectString = bonusString[1].split(',');
-    for (let subString in effectString) {
-      effect.push(subString);
-    }
-    for (let i = 0; i < neededString.length; i++) {
-      _origin.bonuses.push({ needed: needed[i], effect: effect[i] });
-    }
+
+    // let neededString = bonusString[0].split(',');
+    // for (let subString in neededString) {
+    //   needed.push(parseInt(subString));
+    // }
+    // let effectString = bonusString[1].split(',');
+    // for (let subString in effectString) {
+    //   effect.push(subString);
+    // }
+    // for (let i = 0; i < neededString.length; i++) {
+    //   _origin.bonuses.push({ needed: needed[i], effect: effect[i] });
+    // }
     this.setState({ origin: _origin }, function() {
       e.preventDefault();
       const origin = {
@@ -490,7 +492,7 @@ class Create extends Component {
                     {renderFormGroup("Health: ", "text", "defense", "healthTempString", this.handleChampions)}
                     {renderFormGroup("Armor: ", "number", "defense", "armor", this.handleChampions)}
                     {renderFormGroup("Magic Resist: ", "number", "defense", "magicResist", this.handleChampions)}
-                    {renderFormGroup("Set: ", "number", "set", "set", this.handleChampions)}
+                    {renderFormGroup("Set: ", "number", "set", "setTempString", this.handleChampions)}
                     {renderFormGroup("Image: ", "text", "image", "image", this.handleChampions)}
                     {renderFormGroup("Icon: ", "text", "icon", "icon", this.handleChampions)}
                     {renderFormGroup("Ability Icon: ", "text", "abilityIcon", "abilityIcon", this.handleChampions)}
@@ -565,15 +567,15 @@ class Create extends Component {
                       {renderFormGroup("Key: ", "text", "key", "key", this.handleItems)}
                       {renderFormGroup("Name: ", "text", "name", "name", this.handleItems)}
                       {renderFormGroup("Type: ", "text", "type", "type", this.handleItems)}
-                      {renderFormGroup("Bonus: ", "text", "bonus", "bonus", this.handleItems)}
+                      {renderFormGroup("Bonus: ", "textarea", "bonus", "bonus", this.handleItems)}
                       {renderFormGroup("Depth: ", "number", "depth", "depth", this.handleItems)}
-                      {renderFormGroup("Stats: ", "text", "stats", "stats", this.handleItems)}
+                      {renderFormGroup("Stats: ", "textarea", "stats", "stats", this.handleItems)}
                       {renderFormGroup("Builds From: ", "text", "buildsFromTempString", "buildsFromTempString", this.handleItems)}
                       {renderFormGroup("Builds Into: ", "text", "buildsIntoTempString", "buildsIntoTempString", this.handleItems)}
-                      {renderFormGroupCheckbox("Unique (one per champion): ", "checkbox", "unique", "unique", event => this.handleClick(event, 2), null)}
+                      {renderFormGroupCheckbox("Unique (one per champion): ", "text", "unique", "unique", event => this.handleClick(event, 2), null)}
                       {renderFormGroup("Cannot Equip:", "text", "cannotEquip", "cannotEquip", this.handleItems)}
-                      {renderFormGroup("Set: ", "number", "set", "set", this.handleItems)}
-                      {renderFormGroup("Image: ", "text", "image", "image", this.handleItems)}
+                      {renderFormGroup("Set: ", "text", "set", "set", this.handleItems)}
+                      {renderFormGroup("Image: ", "textarea", "image", "image", this.handleItems)}
                     </Col>
                   </Row>
                 </CardBody>

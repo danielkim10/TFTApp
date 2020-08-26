@@ -18,7 +18,7 @@ class Class extends Component {
         description: "",
         bonuses: [],
         mustBeExact: false,
-        set: 0,
+        set: "",
         image: "",
       },
     }
@@ -34,25 +34,32 @@ class Class extends Component {
         let classe = Object.assign({}, this.props.location.state.data);
         let tempStrings = Object.assign({}, this.state.tempStrings);
         // classe = data;
-        let needed = [];
-        let effect = [];
-        let checkpoint = "";
+
+        let bonus = "";
+
         for (let i = 0; i < classe.bonuses.length; i++) {
-          needed.push(classe.bonuses[i].needed);
-          checkpoint += needed[i].toString();
-          if (i < classe.bonuses.length -1) {
-            checkpoint += '^';
-          }
-        }
-        checkpoint += '/'
-        for (let i = 0; i < classe.bonuses.length; i++) {
-          effect.push(classe.bonuses[i].effect);
-          checkpoint += effect[i];
+          bonus += classe.bonuses[i].needed + ',' + classe.bonuses[i].effect;
           if (i < classe.bonuses.length - 1) {
-            checkpoint += '^'
+            bonus += '^';
           }
         }
-        tempStrings.bonuses = checkpoint;
+        // let checkpoint = "";
+        // for (let i = 0; i < classe.bonuses.length; i++) {
+        //   needed.push(classe.bonuses[i].needed);
+        //   checkpoint += needed[i].toString();
+        //   if (i < classe.bonuses.length -1) {
+        //     checkpoint += '^';
+        //   }
+        // }
+        // checkpoint += '/'
+        // for (let i = 0; i < classe.bonuses.length; i++) {
+        //   effect.push(classe.bonuses[i].effect);
+        //   checkpoint += effect[i];
+        //   if (i < classe.bonuses.length - 1) {
+        //     checkpoint += '^'
+        //   }
+        // }
+        tempStrings.bonuses = bonus;
 
         this.setState({class: classe, tempStrings: tempStrings});
       // }
@@ -81,24 +88,15 @@ class Class extends Component {
   handleSubmit(e) {
     e.preventDefault();
     let classe = Object.assign({}, this.state.class);
-    let object = this.state.tempStrings.bonuses.split('/');
-    let needed = [];
-    let effect = [];
-    let bonuses = [];
+    classe.bonuses = [];
 
-    let neededString = object[0].split('^');
-    for (let subString in neededString) {
-      needed.push(parseInt(neededString[subString]));
-    }
-    let effectString = object[1].split('^');
-    for (let subString in effectString) {
-      effect.push(effectString[subString]);
+    let bonusString = this.state.tempStrings.bonuses.split('^');
+
+    for (let i in bonusString) {
+      let bonusString2 = bonusString[i].split(',');
+      classe.bonuses.push({needed: parseInt(bonusString2[0]), effect: bonusString2[1]});
     }
 
-    for (let i = 0; i < needed.length; i++) {
-      bonuses.push({needed: needed[i], effect: effect[i]});
-    }
-    classe.bonuses = bonuses;
     this.setState({ class: classe }, function() {
       const _class = {
         id: this.state.class.id,

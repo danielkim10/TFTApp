@@ -15,13 +15,13 @@ class SynergiesCheatSheet extends Component {
   }
 
   componentDidMount() {
-    getSetData('origins', 1).then(data => {
+    getSetData('origins', 3).then(data => {
       this.setState({origins: data.map(origin => origin)});
     });
-    getSetData('classes', 1).then(data => {
+    getSetData('classes', 3).then(data => {
       this.setState({classes: data.map(classe => classe)});
     });
-    getSetData('champions', 1).then(data => {
+    getSetData('champions', 3).then(data => {
       this.setState({champions: data.map(champion => champion)});
     })
   }
@@ -34,8 +34,8 @@ class SynergiesCheatSheet extends Component {
     let championDesc = [];
     for (let i = 0; i < champions.length; ++i) {
       championDesc.push(<div style={{display: 'inline-block'}}>
-        <img src={champions[i].icon} width={60} height={60} onClick={() => this.championRedirect(champions[i].key)} id={champions[i].key + '-' + data.name}/>
-        <Tooltip placement="top" isOpen={this.isToolTipOpen(champions[i].key + '-' + data.name)} target={champions[i].key + '-' + data.name} toggle={() => this.toggle(champions[i].key + '-' + data.name)}>{champions[i].name}</Tooltip>
+        <img src={champions[i].icon} width={60} height={60} onClick={() => this.championRedirect(champions[i].key)} id={champions[i].key + '-' + data.name.replace(" ", "")}/>
+        <Tooltip placement="top" isOpen={this.isToolTipOpen(champions[i].key + '-' + data.name.replace(" ", ""))} target={champions[i].key + '-' + data.name.replace(" ", "")} toggle={() => this.toggle(champions[i].key + '-' + data.name.replace(" ", ""))}>{champions[i].name}</Tooltip>
       </div>);
     }
 

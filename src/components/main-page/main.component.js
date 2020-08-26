@@ -5,6 +5,7 @@ import ChampionPanel from './champion-panel.js';
 import ItemPanel from './item-panel.js';
 import SynergiesPanel from './synergies-panel.js';
 import TeamPanel from './team-panel.js';
+import { SetContext } from '../../api-helper/set-context.js';
 import '../../css/colors.css';
 import '../../css/fonts.css';
 import '../../css/margins.css';
@@ -48,7 +49,7 @@ export default class Main extends Component {
 
   componentDidMount() {
     getData('champions').then(data => {
-      let championsA = data.filter(champion => champion.set === 1);
+      let championsA = data.filter(champion => champion.set.includes(1));
       let champions = Object.assign({}, this.state.champions);
       for (let i = 0; i < championsA.length; i++) {
         champions[championsA[i].key] = championsA[i];
@@ -59,11 +60,11 @@ export default class Main extends Component {
       this.setState({classes: data.filter(classe => classe.set === 1)});
     });
     getData('items').then(data => {
-      let itemsA = data.filter(item => item.set.includes(1) && item.depth === 2);
-      let itemsB = data.filter(item => item.set.includes(1) && item.depth === 1).sort(this.compare);
+      let itemsA = data.filter(item => item.set.includes(this.context.set1) && item.depth === 2);
+      let itemsB = data.filter(item => item.set.includes(this.context.set1) && item.depth === 1).sort(this.compare);
       let items = Object.assign({}, this.state.items);
       for (let i = 0; i < itemsA.length; i++) {
-        items[itemsA[i].key] = itemsA[i];
+        items[itemsA[i].key[0]] = itemsA[i];
       }
       this.setState({items: items, itemsBasic: itemsB});
     });
@@ -498,3 +499,5 @@ export default class Main extends Component {
       )
   }
 }
+
+Main.contextType = SetContext;
