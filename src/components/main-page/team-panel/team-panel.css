@@ -1,0 +1,42 @@
+.cost1champion1{
+  width: 80px;
+  height: 80px;
+  box-shadow: -2px -2px gray, -2px 2px gray, 2px -2px gray, 2px 2px gray;
+}
+.cost2champion1{
+  width: 80px;
+  height: 80px;
+  box-shadow: -2px -2px green, -2px 2px green, 2px -2px green, 2px 2px green;
+}
+.cost3champion1{
+  width: 80px;
+  height: 80px;
+  box-shadow: -2px -2px blue, -2px 2px blue, 2px -2px blue, 2px 2px blue;
+}
+.cost4champion1{
+  width: 80px;
+  height: 80px;
+  box-shadow: -2px -2px purple, -2px 2px purple, 2px -2px purple, 2px 2px purple;
+}
+.cost5champion1{
+  width: 80px;
+  height: 80px;
+  box-shadow: -2px -2px orange, -2px 2px orange, 2px -2px orange, 2px 2px orange;
+}
+.champion-name1{
+    position: absolute;
+    color: white;
+    top: 75%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+    font-size: 14px;
+    text-align: center;
+}
+.cost1{
+  position: absolute;
+  color: white;
+  top: 0px;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+  font-size: 14px;
+}

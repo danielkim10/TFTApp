@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Alert, Button, Card, CardHeader, CardBody, Col, Collapse, Row, Input, Tooltip } from 'reactstrap';
 
+import './team-panel.css';
+
 class TeamPanel extends Component {
   constructor(props) {
     super(props);
@@ -34,22 +36,35 @@ class TeamPanel extends Component {
   }
 
   createTeam = () => {
+    let synergies = {};
+    for (let i = 0; i < this.props.classes.length; ++i) {
+      synergies[this.props.classes[i].name] = this.props.classes[i];
+    }
+
+    for (let i = 0; i < this.props.origins.length; ++i) {
+      synergies[this.props.origins[i].name] = this.props.origins[i];
+    }
+
+
     let team = [];
     let teamData = [];
     Object.keys(this.props.team).forEach((key, index) => {
       let c = this.props.team[key];
       team.push(
-        <Card onDrop={(e) => this.props.drop(e, key)} onDragOver={this.allowDrop} id="hello" inverse='#404040' style={{backgroundColor: '#404040', borderColor: 'black'}}>
+        <Card onDrop={(e) => this.props.drop(e, key)} onDragOver={this.allowDrop} id="hello" inverse="#404040" style={{backgroundColor: '#404040', borderColor: 'black'}}>
           <CardBody className='marginLeft14'>
-            <Row>{c.champion.name}</Row>
             <Row>
-              <img src={c.champion.icon} className='icon60'/>
-              <div style={{display: 'block'}}>
-              <p>{c.champion.origin[0]}</p>
+              <div style={{position: 'relative'}}>
+              <img src={c.champion.icon} className={c.champion.cost === 1 ? 'cost1champion1' : c.champion.cost === 2 ? 'cost2champion1' : c.champion.cost === 3 ? 'cost3champion1' : c.champion.cost === 4 ? 'cost4champion1' : 'cost5champion1'}/>
+                <p className="champion-name1">{c.champion.name}</p>
+                <p className="cost1">${c.champion.cost}</p>
               </div>
-              <p>{c.champion.origin.length > 1 ? c.champion.origin[1] : ""}</p>
-              <p>{c.champion.classe[0]}</p>
-              <p>{c.champion.classe.length > 1 ? c.champion.classe[1] : ""}</p>
+              <Col>
+                <Row><img src={synergies[c.champion.origin[0]].image} width="20px" height="20px"/><p>{c.champion.origin[0]}</p></Row>
+                {c.champion.origin.length > 1 ? <Row><img src={synergies[c.champion.origin[1]].image} width="20px" height="20px"/><p>{c.champion.origin[1]}</p></Row> : <></>}
+                <Row><img src={synergies[c.champion.classe[0]].image} width="20px" height="20px"/><p>{c.champion.classe[0]}</p></Row>
+                {c.champion.classe.length > 1 ? <Row><img src={synergies[c.champion.classe[1]].image} width="20px" height="20px"/><p>{c.champion.classe[1]}</p></Row> : <></>}
+              </Col>
               <img src={c.items.length > 0 ? c.items[0].image : ""} className='itemMargins'/>
               <img src={c.items.length > 1 ? c.items[1].image : ""} className='itemMargins'/>
               <img src={c.items.length > 2 ? c.items[2].image : ""} className='itemMargins'/>
@@ -88,10 +103,10 @@ class TeamPanel extends Component {
                 <p className='abilityMargin2'>{c.champion.ability.stats[0].type}: {c.champion.ability.stats[0].value[0]} / {c.champion.ability.stats[0].value[1]} / {c.champion.ability.stats[0].value[2]}</p>
               </Row>
               <Row>
-                <p className='abilityMargin2'>{c.champion.ability.stats.length > 1 ? c.champion.ability.stats[1].type + ': ' + c.champion.ability.stats[1].value[0] + ' / ' + c.champion.ability.stats[1].value[1] + ' / ' + c.champion.ability.stats[1].value[2] : ""}</p>
+                {c.champion.ability.stats.length > 1 ? <p className='abilityMargin2'>{ c.champion.ability.stats[1].type + ': ' + c.champion.ability.stats[1].value[0] + ' / ' + c.champion.ability.stats[1].value[1] + ' / ' + c.champion.ability.stats[1].value[2]}</p> : <></>}
               </Row>
               <Row>
-                <p className='abilityMargin2'>{c.champion.ability.stats.length > 2 ? c.champion.ability.stats[2].type + ': ' + c.champion.ability.stats[2].value[0] + ' / ' + c.champion.ability.stats[2].value[1] + ' / ' + c.champion.ability.stats[2].value[2] : ""}</p>
+                {c.champion.ability.stats.length > 2 ? <p className='abilityMargin2'>{ c.champion.ability.stats[2].type + ': ' + c.champion.ability.stats[2].value[0] + ' / ' + c.champion.ability.stats[2].value[1] + ' / ' + c.champion.ability.stats[2].value[2]}</p> : <></>}
               </Row>
             </Collapse>
           </CardBody>

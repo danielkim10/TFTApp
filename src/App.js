@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Navigation from "./components/navbar.component";
-import Main from "./components/main-page/main.component";
+import Main from "./components/main-page/main/main.component";
 import ChampionsCheatSheet from "./components/cheatsheet-pages/champions-cheatsheet.component";
 import SynergiesCheatSheet from "./components/cheatsheet-pages/synergies-cheatsheet.component";
 import ItemsCheatSheet from "./components/cheatsheet-pages/items-cheatsheet.component";

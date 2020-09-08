@@ -22,6 +22,32 @@
   width: 50px;
   height: 50px;
 }
+.cost1champion{
+  width: 50px;
+  height: 50px;
+  box-shadow: -2px -2px gray, -2px 2px gray, 2px -2px gray, 2px 2px gray;
+}
+.cost2champion{
+  width: 50px;
+  height: 50px;
+  box-shadow: -2px -2px green, -2px 2px green, 2px -2px green, 2px 2px green;
+}
+.cost3champion{
+  width: 50px;
+  height: 50px;
+  box-shadow: -2px -2px blue, -2px 2px blue, 2px -2px blue, 2px 2px blue;
+}
+.cost4champion{
+  width: 50px;
+  height: 50px;
+  box-shadow: -2px -2px purple, -2px 2px purple, 2px -2px purple, 2px 2px purple;
+}
+.cost5champion{
+  width: 50px;
+  height: 50px;
+  box-shadow: -2px -2px orange, -2px 2px orange, 2px -2px orange, 2px 2px orange;
+}
+
 .icon60{
   width: 60px;
   height: 60px;
@@ -42,26 +68,7 @@
   margin-left: 14px;
   margin-top: 14px;
 }
-.cost1border{
-  border-width: 2px;
-  border-color: gray;
-}
-.cost2border{
-  border-width: 2px;
-  border-color: green;
-}
-.cost3border{
-  border-width: 2px;
-  border-color: blue;
-}
-.cost4border{
-  border-width: 2px;
-  border-color: magenta;
-}
-.cost5border{
-  border-width: 2px;
-  border-color: orange;
-}
+
 p{
   margin: 0;
   padding: 0;

@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import { Alert, Button, Card, CardHeader, CardBody, Col, Collapse, Row, Input, Tooltip } from 'reactstrap';
-import { getData, postData } from '../../api-helper/api.js';
-import ChampionPanel from './champion-panel.js';
-import ItemPanel from './item-panel.js';
-import SynergiesPanel from './synergies-panel.js';
-import TeamPanel from './team-panel.js';
-import { SetContext } from '../../api-helper/set-context.js';
-import '../../css/colors.css';
-import '../../css/fonts.css';
-import '../../css/margins.css';
-import '../../css/main.css';
+import { getData, postData } from '../../../api-helper/api';
+import ChampionPanel from '../champion-panel/champion-panel';
+import ItemPanel from '../item-panel/item-panel';
+import SynergiesPanel from '../synergies-panel/synergies-panel';
+import TeamPanel from '../team-panel/team-panel';
+import { SetContext } from '../../../api-helper/set-context.js';
+import '../../../css/colors.css';
+import '../../../css/fonts.css';
+import '../../../css/margins.css';
+import '../../../css/main.css';
 
 export default class Main extends Component {
   constructor(props) {
@@ -483,7 +483,7 @@ export default class Main extends Component {
                 <Button type="button" color="primary" style={{width: '23%', height: '5%'}} onClick={this.handleSave}>Save</Button>
               </Row>
               <Input type="text" id="search" name="teamName" style={{height: '5%'}} onChange={this.handleChanges} placeholder="Team Name"/>
-              <TeamPanel team={this.state.team} champions={this.state.champions}/>
+              <TeamPanel team={this.state.team} items={this.state.items} champions={this.state.champions} classes={this.state.classes} origins={this.state.origins} drop={this.drop}/>
             </Col>
             <Col sm={4}>
               <Row>

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Alert, Button, Card, CardHeader, CardBody, Col, Collapse, Row, Input, Tooltip } from 'reactstrap';
-import SynergiesTooltip from '../../sub-components/synergies-tooltips.js';
+import SynergiesTooltip from '../../../sub-components/synergies-tooltips.js';
 
 class SynergiesPanel extends Component {
   constructor(props) {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Alert, Button, Card, CardHeader, CardBody, Col, Collapse, Row, Input, Tooltip } from 'reactstrap';
-import ItemTooltip from '../../sub-components/item-tooltips.js';
+import ItemTooltip from '../../../sub-components/item-tooltips.js';
 
 class ItemPanel extends Component {
   constructor(props) {
