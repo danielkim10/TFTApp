@@ -1,13 +1,7 @@
 .tooltipTitle{
   color: yellow;
 }
-.enhancedStat{
-  font-size: 14px;
-  color: green;
-}
-.statText{
-  font-size: 14px;
-}
+
 .tooltipLocked{
   color: gray;
 }
@@ -58,16 +52,7 @@
   width: 40px;
   height: 40px;
 }
-.abilityMargin1{
-  font-size: 14px;
-  margin-left: 14px;
-  margin-right: 14px;
-}
-.abilityMargin2{
-  font-size: 14px;
-  margin-left: 14px;
-  margin-top: 14px;
-}
+
 
 p{
   margin: 0;

@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import { getSetData, getDataFromName } from '../../api-helper/api.js';
+import { getSetData, getDataFromName } from '../../../api-helper/api.js';
 import { Card, CardHeader, CardBody, Container, Row, Col, Input } from 'reactstrap';
-import '../../css/colors.css'
+import '../../../css/colors.css'
+
+import './champions-cheatsheet.component.css';
 
 class ChampionsCheatSheet extends Component {
   constructor(props) {
@@ -55,7 +57,7 @@ class ChampionsCheatSheet extends Component {
   }
 
   componentDidMount() {
-      getSetData('champions', 4).then(data => {
+      getSetData('champions', 1).then(data => {
         this.setState({ champions: data.map(champion => champion) });
 
         if (!this.props.location.data) {
@@ -172,7 +174,12 @@ class ChampionsCheatSheet extends Component {
 
       let matchingChampionsIcons = [];
       for (let j = 0; j < matchingChampions.length; ++j) {
-        matchingChampionsIcons.push(<img src={matchingChampions[j].icon} width={60} height={60} onClick={() => this.loadChampionData(matchingChampions[j])}/>);
+        matchingChampionsIcons.push(
+          <div className='champion-spacing'>
+            <img src={matchingChampions[j].icon} className={matchingChampions[j].cost === 1 ? 'cost1champion' : matchingChampions[j].cost === 2 ? 'cost2champion' : matchingChampions[j].cost === 3 ? 'cost3champion' : matchingChampions[j].cost === 4 ? 'cost4champion' : 'cost5champion'} onClick={() => this.loadChampionData(matchingChampions[j])}/>
+            <p className='champion-name'>{matchingChampions[j].name}</p>
+            <p className='cost'>${matchingChampions[j].cost}</p>
+          </div>);
       }
 
       let bonuses = [];
@@ -210,7 +217,12 @@ class ChampionsCheatSheet extends Component {
 
       let matchingChampionsIcons = [];
       for (let j = 0; j < matchingChampions.length; ++j) {
-        matchingChampionsIcons.push(<img src={matchingChampions[j].icon} width={60} height={60} onClick={() => this.loadChampionData(matchingChampions[j])}/>);
+        matchingChampionsIcons.push(
+          <div className='champion-spacing'>
+            <img src={matchingChampions[j].icon} className={matchingChampions[j].cost === 1 ? 'cost1champion' : matchingChampions[j].cost === 2 ? 'cost2champion' : matchingChampions[j].cost === 3 ? 'cost3champion' : matchingChampions[j].cost === 4 ? 'cost4champion' : 'cost5champion'} onClick={() => this.loadChampionData(matchingChampions[j])}/>
+            <p className='champion-name'>{matchingChampions[j].name}</p>
+            <p className='cost'>${matchingChampions[j].cost}</p>
+          </div>);
       }
 
       let bonuses = [];
@@ -250,7 +262,12 @@ class ChampionsCheatSheet extends Component {
 
     for (let i = 0; i < this.state.champions.length; ++i) {
       if (this.state.champions[i].key.includes(this.state.searchName.toLowerCase()) || this.state.champions[i].name.includes(this.state.searchName))
-      champions.push(<img src={this.state.champions[i].icon} width={60} height={60} onClick={() => this.loadChampionData(this.state.champions[i])}/>)
+      champions.push(
+        <div className='champion-spacing'>
+          <img src={this.state.champions[i].icon} className={this.state.champions[i].cost === 1 ? 'cost1champion' : this.state.champions[i].cost === 2 ? 'cost2champion' : this.state.champions[i].cost === 3 ? 'cost3champion' : this.state.champions[i].cost === 4 ? 'cost4champion' : 'cost5champion'} onClick={() => this.loadChampionData(this.state.champions[i])}/>
+            <p className='champion-name'>{this.state.champions[i].name}</p>
+            <p className='cost'>${this.state.champions[i].cost}</p>
+        </div>)
     }
 
 

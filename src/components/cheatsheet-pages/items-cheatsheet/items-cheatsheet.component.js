@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Card, CardHeader, CardBody, Container, Row, Col, Button, Tooltip } from 'reactstrap';
-import { getData } from '../../api-helper/api.js'
-import { cardColumn } from '../../sub-components/prebuiltcard.js';
-import '../../css/colors.css';
+import { getData } from '../../../api-helper/api.js'
+import { cardColumn } from '../../../sub-components/prebuiltcard.js';
+import '../../../css/colors.css';
 
 class ItemsCheatSheet extends Component {
   constructor(props) {

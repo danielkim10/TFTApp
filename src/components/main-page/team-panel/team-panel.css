@@ -40,3 +40,31 @@
   text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
   font-size: 14px;
 }
+
+.synergy-icon{
+  margin-left: 15px;
+  margin-top: 3px;
+  margin-right: 5px;
+  width: 20px;
+  height: 20px;
+}
+.synergy-text{
+  font-size: 16px;
+}
+.abilityMargin1{
+  font-size: 14px;
+  margin-left: 14px;
+  margin-right: 14px;
+}
+.abilityMargin2{
+  font-size: 14px;
+  margin-left: 14px;
+  margin-top: 14px;
+}
+.statText{
+  font-size: 14px;
+}
+.enhancedStat{
+  font-size: 14px;
+  color: green;
+}

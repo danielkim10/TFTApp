@@ -4,9 +4,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Navigation from "./components/navbar.component";
 import Main from "./components/main-page/main/main.component";
-import ChampionsCheatSheet from "./components/cheatsheet-pages/champions-cheatsheet.component";
-import SynergiesCheatSheet from "./components/cheatsheet-pages/synergies-cheatsheet.component";
-import ItemsCheatSheet from "./components/cheatsheet-pages/items-cheatsheet.component";
+import ChampionsCheatSheet from "./components/cheatsheet-pages/champions-cheatsheet/champions-cheatsheet.component";
+import SynergiesCheatSheet from "./components/cheatsheet-pages/synergies-cheatsheet/synergies-cheatsheet.component";
+import ItemsCheatSheet from "./components/cheatsheet-pages/items-cheatsheet/items-cheatsheet.component";
 import MatchHistory from "./components/match-history/matchhistory.component";
 import Teams from "./components/teams/teams.component";
 import Create from "./components/create.component";

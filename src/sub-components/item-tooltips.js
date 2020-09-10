@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Row, Tooltip } from 'reactstrap';
 
+import './item-tooltips.css';
+
 class ItemTooltip extends Component {
   constructor(props) {
     super(props);
@@ -19,9 +21,9 @@ class ItemTooltip extends Component {
         {
           this.props.item1 !== "" ?
           <Row>
-            <img src={this.props.item1} width={40} height={40}/>
+            <img src={this.props.item1} className='tooltipimage1'/>
             <p style={{fontSize: '28px'}}>+</p>
-            <img src={this.props.item2} width={40} height={40}/>
+            <img src={this.props.item2} className='tooltipimage2'/>
           </Row>
           : <></>
         }

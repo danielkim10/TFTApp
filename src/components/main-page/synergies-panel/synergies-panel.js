@@ -10,10 +10,10 @@ class SynergiesPanel extends Component {
     }
   }
 
-  isToolTipOpen(target) {
+  isToolTipOpen = (target) => {
     return this.state[target] ? this.state[target].tooltipOpen : false;
   }
-  toggle(target) {
+  toggle = (target) => {
     if (!this.state[target]) {
       this.setState({
         ...this.state,
@@ -31,7 +31,7 @@ class SynergiesPanel extends Component {
     }
   }
 
-  compareSynergy(a, b) {
+  compareSynergy = (a, b) => {
     const idA = a.synergy1.tier;
     const idB = b.synergy1.tier;
 

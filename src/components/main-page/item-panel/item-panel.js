@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Alert, Button, Card, CardHeader, CardBody, Col, Collapse, Row, Input, Tooltip } from 'reactstrap';
 import ItemTooltip from '../../../sub-components/item-tooltips.js';
 
+import './item-panel.css';
+
 class ItemPanel extends Component {
   constructor(props) {
     super(props);
@@ -11,10 +13,10 @@ class ItemPanel extends Component {
     }
   }
 
-  isToolTipOpen(target) {
+  isToolTipOpen = (target) => {
     return this.state[target] ? this.state[target].tooltipOpen : false;
   }
-  toggle(target) {
+  toggle = (target) => {
     if (!this.state[target]) {
       this.setState({
         ...this.state,
@@ -44,8 +46,10 @@ class ItemPanel extends Component {
             str += this.props.items[key].stats[0][j].label;
           }
         }
-        items.push(<div style={{display: 'inline-block'}}>
-        <img src={this.props.items[key].image[0]} draggable="true" onDragStart={(e) => this.props.drag(e, this.props.items[key])} className='icon50' id={key}/>
+        items.push(<div style={{position: 'relative', display: 'inline-block', margin: '4px'}} id={key}>
+        <img src={this.props.items[key].image[0]} draggable="true" onDragStart={(e) => this.props.drag(e, this.props.items[key])} className='itemborder'/>
+          <p className='item-name'>{this.props.items[key].name[0]}</p>
+
         <ItemTooltip placement="top" isOpen={this.isToolTipOpen(key)} target={key} toggle={() => this.toggle(key)}
                      title={this.props.items[key].name[0]} bonus={this.props.items[key].bonus[0]} stats={str} item1={this.props.itemsBasic[Math.floor(this.props.items[key].id / 10) - 1].image[0]} item2={this.props.itemsBasic[Math.floor(this.props.items[key].id % 10) - 1].image[0]}/>
         </div>);
