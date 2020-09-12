@@ -4,6 +4,8 @@ import { getData } from '../../../api-helper/api.js'
 import { cardColumn } from '../../../sub-components/prebuiltcard.js';
 import '../../../css/colors.css';
 
+import './items-cheatsheet.component.css'
+
 class ItemsCheatSheet extends Component {
   constructor(props) {
     super(props);
@@ -12,19 +14,19 @@ class ItemsCheatSheet extends Component {
       basicItem1: {
         name: "",
         bonus: "",
-        image: "http://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/maps/particles/tft/tft_item_emptyslot.tft916critcomponent.png",
+        image: "http://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/maps/particles/tft/tft_item_unusableslot.tft3_1013_gamevariations.png",
         stats: [],
       },
       basicItem2: {
         name: "",
         bonus: "",
-        image: "http://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/maps/particles/tft/tft_item_emptyslot.tft916critcomponent.png",
+        image: "http://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/maps/particles/tft/tft_item_unusableslot.tft3_1013_gamevariations.png",
         stats: [],
       },
       advancedItem: {
         name: "",
         bonus: "",
-        image: "http://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/maps/particles/tft/tft_item_emptyslot.tft916critcomponent.png",
+        image: "http://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/maps/particles/tft/tft_item_unusableslot.tft3_1013_gamevariations.png",
         stats: [],
       },
     };
@@ -85,7 +87,7 @@ class ItemsCheatSheet extends Component {
           for (let j = 0; j < this.state.basicItem2.buildsInto.length; ++j) {
             if (this.state.basicItem2.buildsInto[j] === this.state.basicItem1.buildsInto[i]) {
               Object.keys(this.state.items).forEach((key, index) => {
-                if (this.state.basicItem1.buildsInto[i] === key) {
+                if (this.state.basicItem1.buildsInto[i] === this.state.items[key].id) {
                   this.setState({advancedItem: this.state.items[key]});
                 }
               })
@@ -97,10 +99,10 @@ class ItemsCheatSheet extends Component {
     else if (depth === 2) {
       if (this.state.basicItem1.name === "" || this.state.basicItem2.name === "") {
         Object.keys(this.state.items).forEach((key, index) => {
-          if (key === this.state.advancedItem.buildsFrom[0]) {
+          if (this.state.items[key].id === Math.floor(this.state.advancedItem.id / 10)) {
             this.setState({basicItem1: this.state.items[key]});
           }
-          if (key === this.state.advancedItem.buildsFrom[1]) {
+          if (this.state.items[key].id === this.state.advancedItem.id % 10) {
             this.setState({basicItem2: this.state.items[key]});
           }
         })
@@ -118,7 +120,7 @@ class ItemsCheatSheet extends Component {
   }
 
   clear() {
-    let blankItem = {name: "", bonus: "", image: "http://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/maps/particles/tft/tft_item_emptyslot.tft916critcomponent.png", stats: []};
+    let blankItem = {name: "", bonus: "", image: "http://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/maps/particles/tft/tft_item_unusableslot.tft3_1013_gamevariations.png", stats: []};
     this.setState({ basicItem1: blankItem, basicItem2: blankItem, advancedItem: blankItem });
   }
 
@@ -148,10 +150,20 @@ class ItemsCheatSheet extends Component {
     const advancedItems = [];
     Object.keys(this.state.items).forEach((key, index) => {
       if (this.state.items[key].depth === 1) {
-        basicItems.push(<img src={this.state.items[key].image} onClick={() => this.addItem(this.state.items[key])}/>);
+        basicItems.push(
+          <div className='champion-spacing' onClick={() => this.addItem(this.state.items[key])}>
+            <img src={this.state.items[key].image[0]} className='itemMargins' />
+              <p className='item-name'>{this.state.items[key].name[0]}</p>
+          </div>
+        );
       }
       else if (this.state.items[key].depth === 2) {
-        advancedItems.push(<img src={this.state.items[key].image} onClick={() => this.addItem(this.state.items[key])}/>);
+        advancedItems.push(
+          <div className='champion-spacing' onClick={() => this.addItem(this.state.items[key])}>
+            <img src={this.state.items[key].image[0]} className='itemMargins' />
+              <p className='item-name'>{this.state.items[key].name[0]}</p>
+          </div>
+        );
       }
     })
 
@@ -166,20 +178,20 @@ class ItemsCheatSheet extends Component {
                   <CardHeader style={{backgroundColor: '#ffffff'}}><Row><strong>Builder</strong></Row><Row><Button type="button" color="primary" onClick={this.clear}>Clear</Button></Row></CardHeader>
                   <CardBody>
                   <Row>
-                    <Col><Row><img src={this.state.basicItem1.image}/></Row>
-                          <Row>{this.state.basicItem1.name}</Row>
+                    <Col><Row><img src={this.state.basicItem1.image[0]}/></Row>
+                          <Row>{this.state.basicItem1.name[0]}</Row>
                          <Row><Container>{this.itemStats(this.state.basicItem1)}</Container></Row>
-                         <Row>{this.state.basicItem1.bonus}</Row></Col>
+                         <Row>{this.state.basicItem1.bonus[0]}</Row></Col>
                     <Col>+</Col>
-                    <Col><Row><img src={this.state.basicItem2.image}/></Row>
-                        <Row>{this.state.basicItem2.name}</Row>
+                    <Col><Row><img src={this.state.basicItem2.image[0]}/></Row>
+                        <Row>{this.state.basicItem2.name[0]}</Row>
                          <Row><Container>{this.itemStats(this.state.basicItem2)}</Container></Row>
-                         <Row>{this.state.basicItem2.bonus}</Row></Col>
+                         <Row>{this.state.basicItem2.bonus[0]}</Row></Col>
                     <Col>=</Col>
-                    <Col><Row><img src={this.state.advancedItem.image}/></Row>
-                        <Row>{this.state.advancedItem.name}</Row>
+                    <Col><Row><img src={this.state.advancedItem.image[0]}/></Row>
+                        <Row>{this.state.advancedItem.name[0]}</Row>
                          <Row><Container>{this.itemStats(this.state.advancedItem)}</Container></Row>
-                         <Row>{this.state.advancedItem.bonus}</Row></Col>
+                         <Row>{this.state.advancedItem.bonus[0]}</Row></Col>
                   </Row>
                   </CardBody>
                 </Card>

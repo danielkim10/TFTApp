@@ -3,6 +3,8 @@ import { Card, CardHeader, CardBody, Row, Col, Container, Tooltip } from 'reacts
 import { getSetData } from '../../../api-helper/api.js';
 import '../../../css/colors.css';
 
+import './synergies-cheatsheet.component.css';
+
 class SynergiesCheatSheet extends Component {
   constructor(props) {
     super(props);
@@ -33,9 +35,10 @@ class SynergiesCheatSheet extends Component {
 
     let championDesc = [];
     for (let i = 0; i < champions.length; ++i) {
-      championDesc.push(<div style={{display: 'inline-block'}}>
-        <img src={champions[i].icon} width={60} height={60} onClick={() => this.championRedirect(champions[i].key)} id={champions[i].key + '-' + data.name.replace(" ", "")}/>
-        <Tooltip placement="top" isOpen={this.isToolTipOpen(champions[i].key + '-' + data.name.replace(" ", ""))} target={champions[i].key + '-' + data.name.replace(" ", "")} toggle={() => this.toggle(champions[i].key + '-' + data.name.replace(" ", ""))}>{champions[i].name}</Tooltip>
+      championDesc.push(<div className='champion-spacing' onClick={() => this.championRedirect(champions[i].key)}>
+        <img src={champions[i].icon} className={champions[i].cost === 1 ? 'cost1champion' : champions[i].cost === 2 ? 'cost2champion' : champions[i].cost === 3 ? 'cost3champion' : champions[i].cost === 4 ? 'cost4champion' : 'cost5champion'}/>
+        <p className='champion-name'>{champions[i].name}</p>
+        <p className='cost'>${champions[i].cost}</p>
       </div>);
     }
 
