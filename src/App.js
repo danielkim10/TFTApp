@@ -9,18 +9,11 @@ import SynergiesCheatSheet from "./components/cheatsheet-pages/synergies-cheatsh
 import ItemsCheatSheet from "./components/cheatsheet-pages/items-cheatsheet/items-cheatsheet.component";
 import MatchHistory from "./components/match-history/matchhistory.component";
 import Teams from "./components/teams/teams.component";
-import Create from "./components/create.component";
-import Edit from "./components/edit-pages/edit.component";
-import Champion from "./components/edit-pages/champion.component";
-import Class from "./components/edit-pages/class.component";
-import Item from "./components/edit-pages/item.component";
-import Origin from "./components/edit-pages/origin.component";
-import Guides from "./components/guides.component";
 
 function App() {
   return (
     <Router>
-      <div className>
+      <div>
         <Navigation />
         <br/>
         <Route path="/" exact component={Main} />
@@ -29,13 +22,6 @@ function App() {
         <Route path="/cheatsheet/items" component={ItemsCheatSheet} />
         <Route path="/matchhistory" component={MatchHistory} />
         <Route path="/teams" component={Teams} />
-        <Route path="/create" component={Create}/>
-        <Route path="/edit" component={Edit} />
-        <Route path="/champion/:id" component={Champion}/>
-        <Route path="/class/:id" component={Class} />
-        <Route path="/item/:id" component={Item} />
-        <Route path="/origin/:id" component={Origin} />
-        <Route path="/guides" component={Guides} />
       </div>
     </Router>
 

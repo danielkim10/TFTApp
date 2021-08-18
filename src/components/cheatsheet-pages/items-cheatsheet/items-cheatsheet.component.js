@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { Card, CardHeader, CardBody, Container, Row, Col, Button, Tooltip } from 'reactstrap';
-import { getData } from '../../../api-helper/api.js'
-import { cardColumn } from '../../../sub-components/prebuiltcard.js';
+import { Button } from '@material-ui/core';
+import { item_desc_parse } from '../../../api-helper/string-parsing.js';
 import '../../../css/colors.css';
 
 import './items-cheatsheet.component.css'
@@ -11,40 +10,32 @@ class ItemsCheatSheet extends Component {
     super(props);
     this.state = {
       items: {},
-      basicItem1: {
-        name: "",
-        bonus: "",
-        image: "http://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/maps/particles/tft/tft_item_unusableslot.tft3_1013_gamevariations.png",
-        stats: [],
-      },
-      basicItem2: {
-        name: "",
-        bonus: "",
-        image: "http://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/maps/particles/tft/tft_item_unusableslot.tft3_1013_gamevariations.png",
-        stats: [],
-      },
-      advancedItem: {
-        name: "",
-        bonus: "",
-        image: "http://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/maps/particles/tft/tft_item_unusableslot.tft3_1013_gamevariations.png",
-        stats: [],
-      },
+      selectedItem: {},
     };
     this.clear = this.clear.bind(this);
   }
 
-  componentDidMount() {
-    getData('items').then(data => {
-      let itemsA = data.filter(item => item.set.includes(1)).sort(this.compare);
-      let items = Object.assign({}, this.state.items);
-      for (let i = 0; i < itemsA.length; ++i) {
-        items[itemsA[i].key] = itemsA[i];
+  componentDidMount = () => {
+    let items = require("../../../data/items.json");
+    let items_arr = {};
+    for (let item in items) {
+      items_arr['i' + items[item].id] = items[item];
+    }
+
+    fetch("https://raw.communitydragon.org/11.15/cdragon/tft/en_us.json").then(res => res.json()).then(res => {
+      console.log(res);
+      for (let item in res.items) {
+        if (items_arr['i' + res.items[item].id] !== undefined) {
+          items_arr['i' + res.items[item].id].patch_data = res.items[item];
+        }
       }
-      this.setState({items: items});
+
+      this.setState({items: items_arr});
     });
+    console.log(items_arr);
   }
 
-  compare(a, b) {
+  compare = (a, b) => {
     const idA = a.id;
     const idB = b.id;
 
@@ -58,73 +49,106 @@ class ItemsCheatSheet extends Component {
     return comparison;
   }
 
-  addItem(item) {
-    if (item.depth === 1) {
-      if (this.state.basicItem1.name === "") {
-        this.setState({basicItem1: item}, function() {
-          this.itemCombination(item.depth);
-        });
-      }
-      else if (this.state.basicItem2.name === "") {
-        this.setState({basicItem2: item}, function() {
-          this.itemCombination(item.depth);
-        });
-      }
-    }
-    else {
-      if (this.state.advancedItem.name === "") {
-        this.setState({advancedItem: item}, function() {
-          this.itemCombination(item.depth);
-        });
-      }
-    }
+  selectItem = (e, item) => {
+    this.setState({selectedItem: item});
   }
+  showItemDetail = (item) => {
+    let basicStats = {
+      'AD': 'Attack Damage', 
+      'AS': '% Attack Speed', 
+      'AP': 'Ability Power', 
+      'Mana': 'Mana', 
+      'Armor': 'Armor', 
+      'MagicResist': 'Magic Resist', 
+      'Health': 'Health', 
+      'CritChance': '% Critical Strike Chance', 
+      '{c4b5579c}': '% Dodge Chance'
+    };
+    if (item === undefined) return <div/>
 
-  itemCombination(depth) {
-    if (depth === 1) {
-      if (this.state.basicItem1.name !== "" && this.state.basicItem2.name !== "") {
-        for (let i = 0; i < this.state.basicItem1.buildsInto.length; ++i) {
-          for (let j = 0; j < this.state.basicItem2.buildsInto.length; ++j) {
-            if (this.state.basicItem2.buildsInto[j] === this.state.basicItem1.buildsInto[i]) {
-              Object.keys(this.state.items).forEach((key, index) => {
-                if (this.state.basicItem1.buildsInto[i] === this.state.items[key].id) {
-                  this.setState({advancedItem: this.state.items[key]});
-                }
-              })
-            }
-          }
+    if (item.isRadiant) {
+      let itemStats = [];
+      Object.keys(item.patch_data.effects).forEach((key, index) => {
+        if (basicStats[key] !== undefined) {
+          itemStats.push(<p key={key+item.id}>+{item.patch_data.effects[key]} {basicStats[key]}</p>)
         }
+      });
+      
+      return (
+        <div>
+          <Button onClick={this.clear}>Clear</Button>
+          <img src={require(`../../../data/items/` + item.id + `.png`)} alt={item.name} width={50} height={50}/>
+          <p className='test-whitespace'>{item_desc_parse(item)}</p>
+          {itemStats}
+        </div>
+      );
+    }
+    else if (item.isElusive) {
+      let itemStats = [];
+      Object.keys(item.patch_data.effects).forEach((key, index) => {
+        if (basicStats[key] !== undefined) {
+          itemStats.push(<p key={key+item.id}>+{item.patch_data.effects[key]} {basicStats[key]}</p>)
+        }
+      });
+
+      return (
+        <div>
+          <Button onClick={this.clear}>Clear</Button>
+          <img src={require(`../../../data/items/` + item.id + `.png`)} alt={item.name} width={50} height={50}/>
+          <p>{item_desc_parse(item)}</p>
+          {itemStats}
+        </div>
+      );
+    }
+
+    else if (item.id < 10) {
+      let itemRecipes = [];
+      
+      for (let i = 1; i < 10; i++) {
+        itemRecipes.push(
+          <div key={i}>
+            <img src={require(`../../../data/items/0` + item.id + `.png`)} alt={item.name} width={30} height={30}/>+
+            <img src={require(`../../../data/items/0` + i + `.png`)} alt={item.name} width={30} height={30}/>=
+            <img src={require(`../../../data/items/` + Math.min(item.id*10 + i, i*10 + item.id) + `.png`)} alt={item.name} width={30} height={30}/>
+          </div>
+        )
       }
+
+      return (
+        <div>
+          <Button onClick={this.clear}>Clear</Button>
+          <img src={require(`../../../data/items/0` + item.id + `.png`)} alt={item.name} width={50} height={50}/>
+          <p>{item_desc_parse(item)}</p>
+          {itemRecipes}
+        </div>
+      );
     }
-    else if (depth === 2) {
-      if (this.state.basicItem1.name === "" || this.state.basicItem2.name === "") {
-        Object.keys(this.state.items).forEach((key, index) => {
-          if (this.state.items[key].id === Math.floor(this.state.advancedItem.id / 10)) {
-            this.setState({basicItem1: this.state.items[key]});
-          }
-          if (this.state.items[key].id === this.state.advancedItem.id % 10) {
-            this.setState({basicItem2: this.state.items[key]});
-          }
-        })
-      }
+    else if (item.id >= 10) {
+      let itemStats = [];
+      Object.keys(item.patch_data.effects).forEach((key, index) => {
+        if (basicStats[key] !== undefined) {
+          itemStats.push(<p key={key+item.id}>+{item.patch_data.effects[key]} {basicStats[key]}</p>)
+        }
+      });
+
+      return (
+        <div>
+          <Button onClick={this.clear}>Clear</Button>
+          <img src={require(`../../../data/items/` + item.id + `.png`)} alt={item.name} width={50} height={50}/>
+          <p>{item_desc_parse(item)}</p>
+          {itemStats}
+        </div>
+      );
     }
+    
+
   }
 
-  itemStats(item) {
-    let stats = [];
-    for (let i = 0; i < item.stats.length; ++i) {
-      if (item.depth !== 1 && (item.stats[i].name !== 'class' && item.stats[i].name !== 'origin'))
-        stats.push(<Row>{item.stats[i].label}</Row>)
-    }
-    return stats;
+  clear = () => {
+    this.setState({ selectedItem: {} });
   }
 
-  clear() {
-    let blankItem = {name: "", bonus: "", image: "http://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/maps/particles/tft/tft_item_unusableslot.tft3_1013_gamevariations.png", stats: []};
-    this.setState({ basicItem1: blankItem, basicItem2: blankItem, advancedItem: blankItem });
-  }
-
-  toggle(target) {
+  toggle = (target) => {
     if (!this.state[target]) {
       this.setState({
         ...this.state,
@@ -141,79 +165,98 @@ class ItemsCheatSheet extends Component {
       });
     }
   }
-  isToolTipOpen(target) {
+  isToolTipOpen = (target) => {
     return this.state[target] ? this.state[target].tooltipOpen : false;
   }
 
-  render() {
+  render = () => {
     const basicItems = [];
     const advancedItems = [];
+    const radiantItems = [];
+    const otherItems = [];
     Object.keys(this.state.items).forEach((key, index) => {
-      if (this.state.items[key].depth === 1) {
-        basicItems.push(
-          <div className='champion-spacing' onClick={() => this.addItem(this.state.items[key])}>
-            <img src={this.state.items[key].image[0]} className='itemMargins' />
-              <p className='item-name'>{this.state.items[key].name[0]}</p>
+      if (this.state.items[key].isRadiant) {
+        let str = parseInt((key.substring(1, key.length)));
+        radiantItems.push(
+          <div className='champion-spacing' key={key} onClick={(e) => this.selectItem(e, this.state.items[key])}>
+            <img src={require(`../../../data/items/` + str + `.png`)} alt={this.state.items[key].name} width={50} height={50} />
+            <p className='item-name'>{this.state.items[key].name}</p>
           </div>
         );
       }
-      else if (this.state.items[key].depth === 2) {
-        advancedItems.push(
-          <div className='champion-spacing' onClick={() => this.addItem(this.state.items[key])}>
-            <img src={this.state.items[key].image[0]} className='itemMargins' />
-              <p className='item-name'>{this.state.items[key].name[0]}</p>
-          </div>
-        );
-      }
-    })
 
-      return (
-        <div>
-        <Row>
-        <Col sm={1}></Col>
-        <Col sm={10}>
-          <Row>
-            <Card>
-                <Card>
-                  <CardHeader style={{backgroundColor: '#ffffff'}}><Row><strong>Builder</strong></Row><Row><Button type="button" color="primary" onClick={this.clear}>Clear</Button></Row></CardHeader>
-                  <CardBody>
-                  <Row>
-                    <Col><Row><img src={this.state.basicItem1.image[0]}/></Row>
-                          <Row>{this.state.basicItem1.name[0]}</Row>
-                         <Row><Container>{this.itemStats(this.state.basicItem1)}</Container></Row>
-                         <Row>{this.state.basicItem1.bonus[0]}</Row></Col>
-                    <Col>+</Col>
-                    <Col><Row><img src={this.state.basicItem2.image[0]}/></Row>
-                        <Row>{this.state.basicItem2.name[0]}</Row>
-                         <Row><Container>{this.itemStats(this.state.basicItem2)}</Container></Row>
-                         <Row>{this.state.basicItem2.bonus[0]}</Row></Col>
-                    <Col>=</Col>
-                    <Col><Row><img src={this.state.advancedItem.image[0]}/></Row>
-                        <Row>{this.state.advancedItem.name[0]}</Row>
-                         <Row><Container>{this.itemStats(this.state.advancedItem)}</Container></Row>
-                         <Row>{this.state.advancedItem.bonus[0]}</Row></Col>
-                  </Row>
-                  </CardBody>
-                </Card>
-                <Card>
-                  <CardHeader style={{backgroundColor: '#ffffff'}}><strong>Basic</strong></CardHeader>
-                  <CardBody>
+      else if (this.state.items[key].isElusive) {
+        let str = parseInt((key.substring(1, key.length)));
+        otherItems.push(
+          <div className='champion-spacing' key={key} onClick={(e) => this.selectItem(e, this.state.items[key])}>
+            <img src={require(`../../../data/items/` + str + `.png`)} alt={this.state.items[key].name} width={50} height={50} />
+            <p className='item-name'>{this.state.items[key].name}</p>
+          </div>
+        );
+      }
+
+      else if (this.state.items[key].id < 10) {
+        let str = '0' + key.substring(1, key.length);
+        basicItems.push(
+          <div className='champion-spacing' key={key} onClick={(e) => this.selectItem(e, this.state.items[key])}>
+            <img src={require(`../../../data/items/` + str + `.png`)} alt={this.state.items[key].name} width={50} height={50} />
+            <p className='item-name'>{this.state.items[key].name}</p>
+          </div>
+        );
+      }
+      else if (this.state.items[key].id >= 10) {
+        let str = parseInt((key.substring(1, key.length)));
+        advancedItems.push(
+          <div className='champion-spacing' key={key} onClick={(e) => this.selectItem(e, this.state.items[key])}>
+            <img src={require(`../../../data/items/` + str + `.png`)} alt={this.state.items[key].name} width={50} height={50} />
+            <p className='item-name'>{this.state.items[key].name}</p>
+          </div>
+          
+        );
+      }
+    });
+
+    return (
+      <table>
+        <tbody>
+          <tr>
+            <td style={{width: '16%'}}></td>
+            <td style={{width: '66%'}}>
+              <div>
+                {
+                  this.state.selectedItem !== undefined ? this.showItemDetail(this.state.selectedItem) : <div/> 
+                }
+                <div>
+                  <div style={{backgroundColor: '#ffffff'}}><strong>Basic</strong></div>
+                  <div>
                     {basicItems}
-                  </CardBody>
-                </Card>
-                <Card>
-                  <CardHeader style={{backgroundColor: '#ffffff'}}><strong>Advanced</strong></CardHeader>
-                  <CardBody>
+                  </div>
+                </div>
+                <div>
+                  <div style={{backgroundColor: '#ffffff'}}><strong>Advanced</strong></div>
+                  <div>
                     {advancedItems}
-                  </CardBody>
-                </Card>
-            </Card>
-          </Row>
-        </Col>
-          <Col sm={1}></Col>
-          </Row>
-        </div>
-      )
+                  </div>
+                </div>
+                <div>
+                  <div style={{backgroundColor: '#ffffff'}}><strong>Radiant</strong></div>
+                  <div>
+                    {radiantItems}
+                  </div>
+                </div>
+                <div>
+                  <div style={{backgroundColor: '#ffffff'}}><strong>Elusive</strong></div>
+                  <div>
+                    {otherItems}
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td style={{width: '16%'}}></td>
+          </tr>
+        </tbody>
+      </table>
+    );
   }
 }
 

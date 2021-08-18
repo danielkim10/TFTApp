@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, Button, Card, CardHeader, CardBody, Col, Collapse, Row, Input, Tooltip } from 'reactstrap';
+import { Card, CardHeader, CardBody, Input } from 'reactstrap';
 import ChampionTooltip from '../../../sub-components/champion-tooltips.js';
 
 import './champion-panel.css';
@@ -36,18 +36,21 @@ class ChampionPanel extends Component {
   }
 
   placeChampions = () => {
+
     let champions = [];
     Object.keys(this.props.champions).forEach((key, index) => {
-      if (key.includes(this.state.searchNameChamps.toLowerCase()) || this.props.champions[key].name.includes(this.state.searchNameChamps)) {
-        champions.push(<div style={{ position: 'relative', display: 'inline-block', margin: '4px'}} onClick={() => this.props.addToTeam(this.props.champions[key])} id={key}>
+      if (this.props.champions[key].patch_data !== undefined) {
+        if (this.props.champions[key].name.toLowerCase().includes(this.state.searchNameChamps.toLowerCase())) {
+          champions.push(<div style={{ position: 'relative', display: 'inline-block', margin: '4px'}} onClick={() => this.props.addToTeam(this.props.champions[key])} id={key} key={key}>
 
-        <img src={this.props.champions[key].icon} draggable="true" onDragStart={this.props.drag} className={this.props.champions[key].cost === 1 ? 'cost1champion' : this.props.champions[key].cost === 2 ? 'cost2champion' : this.props.champions[key].cost === 3 ? 'cost3champion' : this.props.champions[key].cost === 4 ? 'cost4champion' : 'cost5champion'}/>
-          <p className="cost">${this.props.champions[key].cost}</p>
-          <p className="champion-name">{this.props.champions[key].name}</p>
+          <img src={require(`../../../data/champions/` + key + `.png`)} id={key} alt={this.props.champions[key].name} draggable="true" onDragStart={this.props.drag} className={this.props.champions[key].cost === 1 ? 'cost1champion' : this.props.champions[key].cost === 2 ? 'cost2champion' : this.props.champions[key].cost === 3 ? 'cost3champion' : this.props.champions[key].cost === 4 ? 'cost4champion' : 'cost5champion'}/>
+            <p className="cost">${this.props.champions[key].cost}</p>
+            <p className="champion-name">{this.props.champions[key].name}</p>
 
-        <ChampionTooltip placement="top" isOpen={this.isToolTipOpen(key)} target={key} toggle={() => this.toggle(key)}
-                 name={this.props.champions[key].name} cost={this.props.champions[key].cost} origin={this.props.champions[key].origin} classe={this.props.champions[key].classe}/>
-        </div>);
+          <ChampionTooltip placement="top" isOpen={this.isToolTipOpen(key)} target={key} toggle={() => this.toggle(key)}
+                  name={this.props.champions[key].name} cost={this.props.champions[key].cost}/>
+          </div>);
+        }
       }
     });
     return champions;

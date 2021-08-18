@@ -1,68 +1,63 @@
 import React, { Component } from 'react';
-import { Card, CardHeader, CardBody, Row, Col, Container, Tooltip } from 'reactstrap';
-import { getSetData } from '../../../api-helper/api.js';
+import SynergyCard from '../../../sub-components/synergy-card.js';
 import '../../../css/colors.css';
-
 import './synergies-cheatsheet.component.css';
+
 
 class SynergiesCheatSheet extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      origins: [],
-      classes: [],
-      champions: [],
+      traits: {},
+      champions: {},
     };
     this.championRedirect = this.championRedirect.bind(this);
   }
 
-  componentDidMount() {
-    getSetData('origins', 1).then(data => {
-      this.setState({origins: data.map(origin => origin)});
-    });
-    getSetData('classes', 1).then(data => {
-      this.setState({classes: data.map(classe => classe)});
-    });
-    getSetData('champions', 1).then(data => {
-      this.setState({champions: data.map(champion => champion)});
-    })
-  }
+  componentDidMount = () => {
+    let champions = require("../../../data/champions.json");
+    let traits = require("../../../data/traits.json");
 
-  createSynergy(data) {
-    let champions = this.state.champions.filter(champion => champion.origin.includes(data.name));
-    if (champions.length === 0)
-      champions = this.state.champions.filter(champion => champion.classe.includes(data.name));
-
-    let championDesc = [];
-    for (let i = 0; i < champions.length; ++i) {
-      championDesc.push(<div className='champion-spacing' onClick={() => this.championRedirect(champions[i].key)}>
-        <img src={champions[i].icon} className={champions[i].cost === 1 ? 'cost1champion' : champions[i].cost === 2 ? 'cost2champion' : champions[i].cost === 3 ? 'cost3champion' : champions[i].cost === 4 ? 'cost4champion' : 'cost5champion'}/>
-        <p className='champion-name'>{champions[i].name}</p>
-        <p className='cost'>${champions[i].cost}</p>
-      </div>);
+    let champions_arr = {};
+    for (let champion in champions) {
+      if (champions[champion].championId.startsWith("TFT5_")) {
+        champions_arr[champions[champion].championId] = champions[champion]; 
+      }
     }
 
-    let bonuses = [];
-    for (let i = 0; i < data.bonuses.length; ++i) {
-      bonuses.push(<Row><Col sm={2}>({data.bonuses[i].needed})</Col><Col sm={10}>{data.bonuses[i].effect}</Col></Row>);
+    let traits_arr = {};
+    for (let trait in traits) {
+      traits_arr[traits[trait].key] = traits[trait];
     }
 
-    return (<Card style={{width: "90%"}}>
-        <CardHeader style={{backgroundColor: '#ffffff'}}><img src={data.image} class='black-icon'/> {data.name}</CardHeader>
-        <CardBody>
-          <Container>{data.description}</Container>
-          <Container>{championDesc}</Container>
-          <Container>{bonuses}</Container>
-        </CardBody>
-      </Card>)
+    fetch("https://raw.communitydragon.org/11.15/cdragon/tft/en_us.json").then(res => res.json()).then(res => {
+      console.log(res);
+      for (let champion in res.setData[5].champions) {
+        if (champions_arr[res.setData[5].champions[champion].apiName] !== undefined) {
+          champions_arr[res.setData[5].champions[champion].apiName].patch_data = res.setData[5].champions[champion];
+        }
+      }
+
+      for (let trait in res.setData[5].traits) {
+        if (traits_arr[res.setData[5].traits[trait].apiName] !== undefined) {
+          traits_arr[res.setData[5].traits[trait].apiName].patch_data = res.setData[5].traits[trait];
+        }
+
+      }
+      this.setState({champions: champions_arr, traits: traits_arr});
+    });
   }
 
-  championRedirect(key) {
+  createSynergy = (data) => {
+    return <SynergyCard champions={this.state.champions} trait={data}/>
+  }
+
+  championRedirect = (key) => {
     let path = '/cheatsheet/champions';
     this.props.history.push({pathname: path, data: key});
   }
 
-  toggle(target) {
+  toggle = (target) => {
     if (!this.state[target]) {
       this.setState({
         ...this.state,
@@ -79,36 +74,49 @@ class SynergiesCheatSheet extends Component {
       });
     }
   }
-  isToolTipOpen(target) {
+  isToolTipOpen = (target) => {
     return this.state[target] ? this.state[target].tooltipOpen : false;
   }
 
-  render() {
+  render = () => {
     let originCards = [];
     let classCards = [];
 
-    for (let i = 0; i < this.state.origins.length; ++i) {
-      originCards.push(<Row>{this.createSynergy(this.state.origins[i])}</Row>);
-    }
-    for (let i = 0; i < this.state.classes.length; ++i) {
-      classCards.push(<Row>{this.createSynergy(this.state.classes[i])}</Row>)
-    }
+    console.log(this.state.traits);
+    console.log(this.state.champions);
+    Object.keys(this.state.traits).forEach((key, index) => {
+      if (this.state.traits[key].type === 'origin') {
+        originCards.push(<tr key={key}><td>{this.createSynergy(this.state.traits[key])}</td></tr>);
+      }
+      else {
+        classCards.push(<tr key={key}><td>{this.createSynergy(this.state.traits[key])}</td></tr>);
+      }
+    });
 
-
-      return (
-        <div>
-        <Row>
-          <Col sm={1}></Col>
-          <Col sm={5}>
-            {originCards}
-          </Col>
-          <Col sm={5}>
-            {classCards}
-          </Col>
-          <Col sm={1}></Col>
-          </Row>
-        </div>
-      )
+    return (
+      <table>
+        <tbody>
+          <tr>
+            <td style={{width: '16%'}}></td>
+            <td style={{width: '33%'}}>
+              <table>
+                <tbody>
+                  {originCards}
+                </tbody>
+              </table>
+            </td>
+            <td style={{width: '33%'}}>
+              <table>
+                <tbody>
+                  {classCards}
+                </tbody>
+              </table>
+            </td>
+            <td style={{width: '16%'}}></td>
+          </tr>
+        </tbody>
+      </table>
+    );
   }
 }
 

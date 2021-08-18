@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, Button, Card, CardHeader, CardBody, Col, Collapse, Row, Input, Tooltip } from 'reactstrap';
+import { Card, CardHeader, CardBody, Input } from 'reactstrap';
 import ItemTooltip from '../../../sub-components/item-tooltips.js';
 
 import './item-panel.css';
@@ -37,22 +37,23 @@ class ItemPanel extends Component {
   placeItems = () => {
     let items = [];
     Object.keys(this.props.items).forEach((key, index) => {
-      if (key.includes(this.state.searchNameItems.toLowerCase()) || this.props.items[key].name[0].includes(this.state.searchNameItems)) {
-        let str = "";
-        for (let j = 0; j < this.props.items[key].stats[0].length; ++j) {
-          if (this.props.items[key].depth !== 1 && (this.props.items[key].stats[0][j].name !== 'class' && this.props.items[key].stats[0][j].name !== 'origin') && key !== 'forceofnature') {
-            if (j != 0)
-              str += ', '
-            str += this.props.items[key].stats[0][j].label;
+      if (this.props.items[key].patch_data !== undefined) {
+        if (this.props.items[key].name.toLowerCase().includes(this.state.searchNameItems.toLowerCase())) {
+          let str = parseInt((key.substring(1, key.length)));
+          if (str < 10) {
+            str = '0' + key.substring(1, key.length);
           }
-        }
-        items.push(<div style={{position: 'relative', display: 'inline-block', margin: '4px'}} id={key}>
-        <img src={this.props.items[key].image[0]} draggable="true" onDragStart={(e) => this.props.drag(e, this.props.items[key])} className='itemborder'/>
-          <p className='item-name'>{this.props.items[key].name[0]}</p>
+          else {
+            str = key.substring(1, key.length);
+          }
+          items.push(<div style={{position: 'relative', display: 'inline-block', margin: '4px'}} id={key} key={key}>
+          <img src={require(`../../../data/items/` + str + `.png`)} alt={this.props.items[key].name} draggable="true" onDragStart={(e) => this.props.drag(e, this.props.items[key])} className='itemborder'/>
+            <p className='item-name'>{this.props.items[key].name}</p>
 
-        <ItemTooltip placement="top" isOpen={this.isToolTipOpen(key)} target={key} toggle={() => this.toggle(key)}
-                     title={this.props.items[key].name[0]} bonus={this.props.items[key].bonus[0]} stats={str} item1={this.props.itemsBasic[Math.floor(this.props.items[key].id / 10) - 1].image[0]} item2={this.props.itemsBasic[Math.floor(this.props.items[key].id % 10) - 1].image[0]}/>
-        </div>);
+          <ItemTooltip placement="top" isOpen={this.isToolTipOpen(key)} target={key} toggle={() => this.toggle(key)}
+                  name={this.props.items[key].name}/>
+          </div>);
+        }
       }
     });
     return items;

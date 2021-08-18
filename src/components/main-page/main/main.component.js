@@ -1,11 +1,17 @@
 import React, { Component } from 'react';
-import { Alert, Button, Card, CardHeader, CardBody, Col, Collapse, Row, Input, Tooltip } from 'reactstrap';
-import { getData, postData } from '../../../api-helper/api';
+import { Alert, Input } from 'reactstrap';
+import { postData } from '../../../api-helper/api';
 import ChampionPanel from '../champion-panel/champion-panel';
 import ItemPanel from '../item-panel/item-panel';
 import SynergiesPanel from '../synergies-panel/synergies-panel';
 import TeamPanel from '../team-panel/team-panel';
 import { SetContext } from '../../../api-helper/set-context.js';
+import { Button } from '@material-ui/core' ;
+import SaveIcon from '@material-ui/icons/Save';
+import CasinoIcon from '@material-ui/icons/Casino';
+import ClearIcon from '@material-ui/icons/Clear';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
+import HexagonGrid from '../../../sub-components/hexagon-grid';
 import '../../../css/colors.css';
 import '../../../css/fonts.css';
 import '../../../css/margins.css';
@@ -16,14 +22,20 @@ export default class Main extends Component {
     super(props);
 
     this.state = {
-      team: {},
+      team: [],
       teamString: "",
       synergies: {},
-      champions: {},
-      classes: [],
-      items: {},
+      champions: {
+        name: "",
+        patch_data: {},
+      },
+      traits: {},
+      items: {
+        name: "",
+        patch_data: {},
+      },
       itemsBasic: [],
-      origins: [],
+      
       draggedItem: {},
       showAlert: false,
       alertVariant: "danger",
@@ -33,6 +45,8 @@ export default class Main extends Component {
         searchNameChamps: "",
         searchNameItems: "",
       },
+      itemDrawerOpen: false,
+      championDrawerOpen: false,
     }
     this.randomButton = this.randomButton.bind(this);
     this.findSynergies = this.findSynergies.bind(this);
@@ -42,38 +56,77 @@ export default class Main extends Component {
     this.handleSave = this.handleSave.bind(this);
     this.copy = this.copy.bind(this);
     this.toggle = this.toggle.bind(this);
+    this.toggleChampionDrawer = this.toggleChampionDrawer.bind(this);
+    this.toggleItemDrawer = this.toggleItemDrawer.bind(this);
     this.addToTeam = this.addToTeam.bind(this);
     this.drag = this.drag.bind(this);
     this.drop = this.drop.bind(this);
   }
 
-  componentDidMount() {
-    getData('champions').then(data => {
-      let championsA = data.filter(champion => champion.set.includes(1));
-      let champions = Object.assign({}, this.state.champions);
-      for (let i = 0; i < championsA.length; i++) {
-        champions[championsA[i].key] = championsA[i];
+  componentDidMount = () => {
+    let champions = require("../../../data/champions.json");
+    let items = require("../../../data/items.json");
+    let traits = require("../../../data/traits.json");
+
+    // fetch("https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/tftchampions.json").then(res => res.json()).then(res => {
+    //   console.log(res);
+    // })
+    let champions_arr = {};
+    for (let champion in champions) {
+      if (champions[champion].championId.startsWith("TFT5_")) {
+        champions_arr[champions[champion].championId] = champions[champion]; 
       }
-      this.setState({champions: champions});
-    });
-    getData('classes').then(data => {
-      this.setState({classes: data.filter(classe => classe.set === 1)});
-    });
-    getData('items').then(data => {
-      let itemsA = data.filter(item => item.set.includes(this.context.set1) && item.depth === 2);
-      let itemsB = data.filter(item => item.set.includes(this.context.set1) && item.depth === 1).sort(this.compare);
-      let items = Object.assign({}, this.state.items);
-      for (let i = 0; i < itemsA.length; i++) {
-        items[itemsA[i].key[0]] = itemsA[i];
+    }
+
+    let items_arr = {};
+    for (let item in items) {
+      items_arr['i' + items[item].id] = items[item];
+    }
+
+    let traits_arr = {};
+    for (let trait in traits) {
+      traits_arr[traits[trait].key] = traits[trait];
+    }
+
+    fetch("https://raw.communitydragon.org/11.15/cdragon/tft/en_us.json").then(res => res.json()).then(res => {
+      console.log(res);
+      for (let champion in res.setData[5].champions) {
+        if (champions_arr[res.setData[5].champions[champion].apiName] !== undefined) {
+          champions_arr[res.setData[5].champions[champion].apiName].patch_data = res.setData[5].champions[champion];
+        }
       }
-      this.setState({items: items, itemsBasic: itemsB});
+
+      for (let item in res.items) {
+        if (items_arr['i' + res.items[item].id] !== undefined) {
+          items_arr['i' + res.items[item].id].patch_data = res.items[item];
+        }
+      }
+
+      for (let trait in res.setData[5].traits) {
+        if (traits_arr[res.setData[5].traits[trait].apiName] !== undefined) {
+          traits_arr[res.setData[5].traits[trait].apiName].patch_data = res.setData[5].traits[trait];
+          traits_arr[res.setData[5].traits[trait].apiName].count = 0;
+        }
+
+      }
+      this.setState({champions: champions_arr, items: items_arr, traits: traits_arr});
     });
-    getData('origins').then(data => {
-      this.setState({origins: data.filter(origin => origin.set === 1)});
-    });
+    console.log(champions_arr);
+    console.log(items_arr);
+    console.log(traits_arr)
+
+    
   }
 
-  compare(a, b) {
+  toggleChampionDrawer = () => {
+    this.setState({...this.state, championDrawerOpen: !this.state.championDrawerOpen});
+  }
+
+  toggleItemDrawer = () => {
+    this.setState({...this.state, itemDrawerOpen: !this.state.itemDrawerOpen});
+  }
+
+  compare = (a, b) => {
     const idA = a.id;
     const idB = b.id;
 
@@ -87,25 +140,31 @@ export default class Main extends Component {
     return comparison;
   }
 
-  addToTeam(data) {
-
+  addToTeam = (data) => {
+    // const canvas = document.getElementById('canvas');
+    // const ctx = canvas.getContext('2d');
+    // ctx.clearRect(0, 0, 700, 400);
+    
     let team = this.state.team;
-    let isDupe = team[data.name] === data.name;
-    team[data.name] = {champion: data, tier: 1, items: [], remainingSlots: 6, isDupe: isDupe}
-    //team.push({champion: data, tier: 1, items: [], remainingSlots: 6, isDupe: isDupe});
+    //let isDupe = team[data.championId] === data.championId;
+    team.push({champion: data, tier: 1, items: [], remainingSlots: 3 })
     this.setState({team: team});
-    this.findSynergies(this.state.team);
+    this.findSynergies(this.state.team, data);
   }
 
-  removeFromTeam() {
+  removeFromTeam = () => {
 
   }
 
-  clearTeam() {
-    this.setState({team: {}, synergies: {}, draggedItem: {}});
+  clearTeam = () => {
+    let traits = Object.assign({}, this.state.traits);
+    Object.keys(traits).forEach((key, index) => {
+      traits[key].count = 0;
+    });
+    this.setState({team: {}, traits: traits, draggedItem: {}});
   }
 
-  randomButton(e) {
+  randomButton = (e) => {
     e.preventDefault();
     this.clearTeam();
     const T3_CHAMPS = 4;
@@ -185,7 +244,7 @@ export default class Main extends Component {
     this.setState({team: team}); // temporary
   }
 
-  createChampion(champions, team) {
+  createChampion = (champions, team) => {
     let passTest = false;
     let champion = {};
     let tier = 0;
@@ -202,20 +261,20 @@ export default class Main extends Component {
       else {
         tier = 3;
       }
-      if ((team.filter(c => c.champion.name === champion.name && c.tier === tier).length < 2)
-        && !((team.filter(c => c.champion.name === champion.name).length < 1 && tier === 3))) {
-        passTest = true;
-      }
-      else if (team.filter(c => c.champion.name === champion.name).length > 0) {
-        passTest = true;
-        isDupe = true;
-      }
+      // if ((team.filter(c => c.champion.name === champion.name && c.tier === tier).length < 2)
+      //   && !((team.filter(c => c.champion.name === champion.name).length < 1 && tier === 3))) {
+      //   passTest = true;
+      // }
+      // else if (team.filter(c => c.champion.name === champion.name).length > 0) {
+      //   passTest = true;
+      //   isDupe = true;
+      // }
     }
     let c = {champion: champion, tier: tier, items: [], remainingSlots: 6, isdupe: isDupe};
     return c;
   }
 
-  randomizeItems(team, teamItems) {
+  randomizeItems = (team, teamItems) => {
     let teamMember;
     let items;
     while (teamItems > 0) {
@@ -247,9 +306,9 @@ export default class Main extends Component {
             itemTest = false;
           }
 
-          else if (items.filter(i => i.key === item.key).length > 0 && item.unique) {
-            itemTest = false;
-          }
+          // else if (items.filter(i => i.key === item.key).length > 0 && item.unique) {
+          //   itemTest = false;
+          // }
 
           else if (item.depth > teamItems) {
             item = this.state.items.filter(item => item.depth === 1)[Math.floor(Math.random()*this.state.items.filter(item => item.depth === 1).length)];
@@ -260,7 +319,7 @@ export default class Main extends Component {
           }
 
           else {
-            let itemOBonuses = item.stats.filter(b => b.name === 'origin');
+            //let itemOBonuses = item.stats.filter(b => b.name === 'origin');
             //e.x. youmuus does not equip to assassins
             for (let k = 0; k < teamMember.champion.origin.length; ++k) {
                 if (teamMember.champion.origin[k] === item.cannotEquip) {
@@ -268,7 +327,7 @@ export default class Main extends Component {
                 }
             }
 
-            let itemCBonuses = item.stats.filter(b => b.name === 'class');
+            //let itemCBonuses = item.stats.filter(b => b.name === 'class');
             for (let k = 0; k < teamMember.champion.classe.length; ++k) {
               if (teamMember.champion.classe[k] === item.cannotEquip) {
                 itemTest = false;
@@ -294,44 +353,30 @@ export default class Main extends Component {
     return team;
   }
 
-  findSynergies(team) {
-    let synergies = {};
-    Object.keys(this.state.team).forEach((key, index) => {
-      for (let j = 0; j < team[key].champion.origin.length; ++j) {
-
-        if (synergies[team[key].champion.origin[j]] === undefined) {
-          synergies[team[key].champion.origin[j]] = {synergy: team[key].champion.origin[j], count: 1, tier: 0};
-        }
-        else {
-          synergies[team[key].champion.origin[j]].count++;
-        }
+  findSynergies = (team, champion) => {
+    let traits = Object.assign({}, this.state.traits);
+    //Object.keys(this.state.team).forEach((key, index) => {
+      for (let j = 0; j < champion.traits.length; ++j) {
+          traits[champion.traits[j]].count++;
       }
-      for (let j = 0; j < team[key].champion.classe.length; ++j) {
-        if (synergies[team[key].champion.classe[j]] === undefined) {
-          synergies[team[key].champion.classe[j]] = {synergy: team[key].champion.classe[j], count: 1, tier: 0};
-        }
-        else {
-          synergies[team[key].champion.classe[j]].count++;
-        }
-      }
-    })
-    this.setState({synergies: synergies});
+    //})
+    this.setState({traits: traits});
   }
 
-  handleChanges(e) {
+  handleChanges = (e) => {
     let text = Object.assign({}, this.state.text);
     text[e.target.name] = e.target.value;
     this.setState({text: text});
   }
-  copy(event) {
-
+  copy = (event) => {
+    this.setState({drawerOpen: true});
   }
-  handleSave(event) {
+  handleSave = (event) => {
     let teamObj = {name: this.state.text.teamName, team: this.state.team, synergies: this.state.synergies, teamString: this.state.teamString, set: 1, patch: "10.10"};
     postData('teams', teamObj, "");
     this.setState({showAlert: true, alertVariant: 'success', alertMessage: `Successfully saved team ${this.state.text.teamName}`})
   }
-  toggle(target) {
+  toggle = (target) => {
     if (!this.state[target]) {
       this.setState({
         ...this.state,
@@ -349,152 +394,153 @@ export default class Main extends Component {
     }
   }
 
-  isToolTipOpen(target) {
+  isToolTipOpen = (target) => {
     return this.state[target] ? this.state[target].tooltipOpen : false;
   }
 
-  drag(e, item) {
+  drag = (e, item) => {
     e.dataTransfer.setData("text", e.target.id);
     this.setState({draggedItem: item});
   }
-  drop(e, id) {
+  drop = (e, id) => {
     e.preventDefault();
-    let data = e.dataTransfer.getData("text");
+    // let data = e.dataTransfer.getData("text");
 
-    if (this.state.team[id].items.length === 0) {
-      if (this.applyItemEffects(this.state.draggedItem, id)) {
-        this.state.team[id].items[0] = this.state.draggedItem;
-      }
-    }
-    else if (this.state.team[id].items.length === 1) {
-      if (this.applyItemEffects(this.state.draggedItem, id)) {
-        this.state.team[id].items[1] = this.state.draggedItem;
-      }
-    }
-    else if (this.state.team[id].items.length === 2) {
-      if (this.applyItemEffects(this.state.draggedItem, id)) {
-        this.state.team[id].items[2] = this.state.draggedItem;
-      }
-    }
-    else {
-    }
+    // if (this.state.team[id].items.length === 0) {
+    //   if (this.applyItemEffects(this.state.draggedItem, id)) {
+    //     this.state.team[id].items[0] = this.state.draggedItem;
+    //   }
+    // }
+    // else if (this.state.team[id].items.length === 1) {
+    //   if (this.applyItemEffects(this.state.draggedItem, id)) {
+    //     this.state.team[id].items[1] = this.state.draggedItem;
+    //   }
+    // }
+    // else if (this.state.team[id].items.length === 2) {
+    //   if (this.applyItemEffects(this.state.draggedItem, id)) {
+    //     this.state.team[id].items[2] = this.state.draggedItem;
+    //   }
+    // }
+    // else {
+    // }
     this.setState({draggedItem: {}});
   }
 
-  applyItemEffects(item, key) {
-    if (this.state.team[key].items.includes(item) && item.unique) {
-      this.setState({showAlert: true, alertVariant: 'danger', alertMessage: `${item.name} is a unique item - only one can be equipped per champion`});
-      window.setTimeout(() => {
-        this.setState({showAlert: false, alertMessage: ""});
-      }, 5000);
-      return false;
-    }
+  applyItemEffects = (item, key) => {
+    // if (this.state.team[key].items.includes(item) && item.unique) {
+    //   this.setState({showAlert: true, alertVariant: 'danger', alertMessage: `${item.name} is a unique item - only one can be equipped per champion`});
+    //   window.setTimeout(() => {
+    //     this.setState({showAlert: false, alertMessage: ""});
+    //   }, 5000);
+    //   return false;
+    // }
 
-    for (let i = 0; i < item.stats[0].length; ++i) {
-      if (item.stats[0][i].name === 'class') {
-        if (!this.state.team[key].champion.classe.includes(item.stats[0][i].label)) {
-          this.state.team[key].champion.classe.push(item.stats[0][i].label);
-          this.findSynergies(this.state.team);
-        }
-        else {
-          this.setState({showAlert: true, alertVariant: 'danger', alertMessage: `${item.stats[0][i].label} units cannot equip ${item.name}`});
-          window.setTimeout(() => {
-            this.setState({showAlert: false, alertMessage: ""});
-          }, 5000);
-          return false;
-        }
-      }
-      else if (item.stats[i].name === 'origin') {
-        if (!this.state.team[key].champion.origin.includes(item.stats[0][i].label)) {
-          this.state.team[key].champion.origin.push(item.stats[0][i].label);
-          this.findSynergies(this.state.team);
-        }
-        else {
-          this.setState({showAlert: true, alertVariant: 'danger', alertMessage: `${item.stats[0][i].label} units cannot equip ${item.name}`});
-          window.setTimeout(() => {
-            this.setState({showAlert: false, alertMessage: ""});
-          }, 5000);
-          return false;
-        }
-      }
-      else if (item.stats[0][i].name === 'attackdamage') {
-        this.state.team[key].champion.stats.offense.damage[0] += item.stats[0][i].value;
-        this.state.team[key].champion.stats.offense.damage[1] += item.stats[0][i].value;
-        this.state.team[key].champion.stats.offense.damage[2] += item.stats[0][i].value;
-      }
-      else if (item.stats[0][i].name === 'abilitypower') {
-        this.state.team[key].champion.stats.offense.spellPower += item.stats[0][i].value;
-      }
-      else if (item.stats[0][i].name === 'critchance') {
-        this.state.team[key].champion.stats.offense.critChance += item.stats[0][i].value;
-      }
-      else if (item.stats[0][i].name === 'dodgechance') {
-        this.state.team[key].champion.stats.defense.dodgeChance += item.stats[0][i].value;
-      }
-      else if (item.stats[0][i].name === 'attackspeed') {
-        this.state.team[key].champion.stats.offense.attackSpeed += item.stats[0][i].value * this.state.team[key].champion.stats.offense.attackSpeed / 100;
-      }
-      else if (item.stats[0][i].name === 'armor') {
-        this.state.team[key].champion.stats.defense.armor += item.stats[0][i].value;
-      }
-      else if (item.stats[0][i].name === 'magicresist') {
-        this.state.team[key].champion.stats.defense.magicResist += item.stats[0][i].value;
-      }
-      else if (item.stats[0][i].name === 'startingmana') {
-        if (this.state.team[key].champion.ability.manaCost != 0) {
-          this.state.team[key].champion.ability.manaStart += item.stats[0][i].value;
-          if (this.state.team[key].champion.ability.manaStart > this.state.team[key].champion.ability.manaCost) {
-            this.state.team[key].champion.ability.manaStart = this.state.team[key].champion.ability.manaCost
-          }
-        }
-      }
-      else if (item.stats[0][i].name === 'health') {
-        this.state.team[key].champion.stats.defense.health[0] += item.stats[0][i].value;
-        this.state.team[key].champion.stats.defense.health[1] += item.stats[0][i].value;
-        this.state.team[key].champion.stats.defense.health[2] += item.stats[0][i].value;
-      }
-    }
-    return true;
+    // for (let i = 0; i < item.stats[0].length; ++i) {
+    //   if (item.stats[0][i].name === 'class') {
+    //     if (!this.state.team[key].champion.classe.includes(item.stats[0][i].label)) {
+    //       this.state.team[key].champion.classe.push(item.stats[0][i].label);
+    //       this.findSynergies(this.state.team);
+    //     }
+    //     else {
+    //       this.setState({showAlert: true, alertVariant: 'danger', alertMessage: `${item.stats[0][i].label} units cannot equip ${item.name}`});
+    //       window.setTimeout(() => {
+    //         this.setState({showAlert: false, alertMessage: ""});
+    //       }, 5000);
+    //       return false;
+    //     }
+    //   }
+    //   else if (item.stats[i].name === 'origin') {
+    //     if (!this.state.team[key].champion.origin.includes(item.stats[0][i].label)) {
+    //       this.state.team[key].champion.origin.push(item.stats[0][i].label);
+    //       this.findSynergies(this.state.team);
+    //     }
+    //     else {
+    //       this.setState({showAlert: true, alertVariant: 'danger', alertMessage: `${item.stats[0][i].label} units cannot equip ${item.name}`});
+    //       window.setTimeout(() => {
+    //         this.setState({showAlert: false, alertMessage: ""});
+    //       }, 5000);
+    //       return false;
+    //     }
+    //   }
+    //   else if (item.stats[0][i].name === 'attackdamage') {
+    //     this.state.team[key].champion.stats.offense.damage[0] += item.stats[0][i].value;
+    //     this.state.team[key].champion.stats.offense.damage[1] += item.stats[0][i].value;
+    //     this.state.team[key].champion.stats.offense.damage[2] += item.stats[0][i].value;
+    //   }
+    //   else if (item.stats[0][i].name === 'abilitypower') {
+    //     this.state.team[key].champion.stats.offense.spellPower += item.stats[0][i].value;
+    //   }
+    //   else if (item.stats[0][i].name === 'critchance') {
+    //     this.state.team[key].champion.stats.offense.critChance += item.stats[0][i].value;
+    //   }
+    //   else if (item.stats[0][i].name === 'dodgechance') {
+    //     this.state.team[key].champion.stats.defense.dodgeChance += item.stats[0][i].value;
+    //   }
+    //   else if (item.stats[0][i].name === 'attackspeed') {
+    //     this.state.team[key].champion.stats.offense.attackSpeed += item.stats[0][i].value * this.state.team[key].champion.stats.offense.attackSpeed / 100;
+    //   }
+    //   else if (item.stats[0][i].name === 'armor') {
+    //     this.state.team[key].champion.stats.defense.armor += item.stats[0][i].value;
+    //   }
+    //   else if (item.stats[0][i].name === 'magicresist') {
+    //     this.state.team[key].champion.stats.defense.magicResist += item.stats[0][i].value;
+    //   }
+    //   else if (item.stats[0][i].name === 'startingmana') {
+    //     if (this.state.team[key].champion.ability.manaCost != 0) {
+    //       this.state.team[key].champion.ability.manaStart += item.stats[0][i].value;
+    //       if (this.state.team[key].champion.ability.manaStart > this.state.team[key].champion.ability.manaCost) {
+    //         this.state.team[key].champion.ability.manaStart = this.state.team[key].champion.ability.manaCost
+    //       }
+    //     }
+    //   }
+    //   else if (item.stats[0][i].name === 'health') {
+    //     this.state.team[key].champion.stats.defense.health[0] += item.stats[0][i].value;
+    //     this.state.team[key].champion.stats.defense.health[1] += item.stats[0][i].value;
+    //     this.state.team[key].champion.stats.defense.health[2] += item.stats[0][i].value;
+    //   }
+    // }
+    // return true;
   }
 
-  /*
-    Relevant synergies: Sorcerer, assassin, Cybernetic, Brawler, Warden, Mystic, 6 berserkers, 6 mages
-  */
-  applySynergyEffects(key) {
+  applySynergyEffects = (key) => {
 
   }
 
-  render() {
+  render = () => {
       return (
         <div>
-          <Row>
-            <Col sm={1}></Col>
-            <Col sm={2}>
-              <SynergiesPanel classes={this.state.classes} origins={this.state.origins} synergies={this.state.synergies}/>
-            </Col>
-            <Col sm={4}>
-              <div>
-                <Alert color={this.state.alertVariant} isOpen={this.state.showAlert}>{this.state.alertMessage}</Alert>
-              </div>
-              <Row>
-                <Button type="button" color="primary" style={{width: '23%', height: '5%', marginLeft: '22px'}} onClick={this.randomButton}>Random</Button>
-                <Button type="button" color="primary" style={{width: '23%', height: '5%'}} onClick={this.clearTeam}>Clear</Button>
-                <Button type="button" color="primary" style={{width: '23%', height: '5%'}} onClick={this.copy}>Copy</Button>
-                <Button type="button" color="primary" style={{width: '23%', height: '5%'}} onClick={this.handleSave}>Save</Button>
-              </Row>
-              <Input type="text" id="search" name="teamName" style={{height: '5%'}} onChange={this.handleChanges} placeholder="Team Name"/>
-              <TeamPanel team={this.state.team} items={this.state.items} champions={this.state.champions} classes={this.state.classes} origins={this.state.origins} drop={this.drop}/>
-            </Col>
-            <Col sm={4}>
-              <Row>
+          <table>
+            <tbody>
+              <tr>
+                <td style={{width: '16%'}}></td>
+                <td style={{width: '66%'}}>
+                
+                <Button type="button" color="primary" style={{width: '25%'}} onClick={this.randomButton}>
+                  <CasinoIcon/> Random
+                </Button>
+                <Button type="button" color="primary" style={{width: '25%'}} onClick={this.clearTeam}>
+                  <ClearIcon/> Clear
+                </Button>
+                <Button type="button" color="primary" style={{width: '25%'}} onClick={this.copy}>
+                  <FileCopyIcon/> Copy
+                </Button>
+                <Button type="button" color="primary" style={{width: '25%'}} onClick={this.handleSave}>
+                  <SaveIcon/> Save
+                </Button>
+                <div>
+                  <Alert color={this.state.alertVariant} isOpen={this.state.showAlert}>{this.state.alertMessage}</Alert>
+                </div>
+                <Input type="text" id="search" name="teamName" onChange={this.handleChanges} placeholder="Team Name"/>
                 <ChampionPanel champions={this.state.champions} addToTeam={this.addToTeam} drag={this.drag}/>
-              </Row>
-              <Row>
                 <ItemPanel items={this.state.items} itemsBasic={this.state.itemsBasic} drag={this.drag}/>
-              </Row>
-            </Col>
-            <Col sm={1}></Col>
-          </Row>
+                <HexagonGrid team={this.state.team}/>
+                <TeamPanel team={this.state.team} items={this.state.items} champions={this.state.champions} classes={this.state.classes} origins={this.state.origins} drop={this.drop}/>
+                <SynergiesPanel traits={this.state.traits}/>
+                </td>
+                <td style={{width: '16%'}}></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       )
   }

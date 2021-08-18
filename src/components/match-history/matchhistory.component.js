@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { Card, CardHeader, CardBody, Row, Col, Input, Button} from 'reactstrap';
-import { Link } from 'react-router-dom';
-import { getData } from '../../api-helper/api.js';
 import MatchBasic from './match-basic.component.js';
 
 class MatchHistory extends Component {
@@ -15,26 +13,9 @@ class MatchHistory extends Component {
       gamedata: {},
       matches: [],
       champions: {},
-      championsSet4: {},
-      championsSet3: {},
-      championsSet2: {},
-      championsSet1: {},
-      classes: [],
-      classesSet4: [],
-      classesSet3: [],
-      classesSet2: [],
-      classesSet1: [],
       items: {},
-      itemsSet4: {},
-      itemsSet3: {},
-      itemsSet2: {},
-      itemsSet1: {},
-      origins: [],
-      originsSet4: [],
-      originsSet3: [],
-      originsSet2: [],
-      originsSet1: [],
-      setNumber: 4,
+      traits: {},
+      setNumber: 5,
     }
 
     this.search = this.search.bind(this);
@@ -56,77 +37,54 @@ class MatchHistory extends Component {
   }
 
   componentDidMount() {
-    getData('champions').then(data => {
-      let championsA = data.filter(champion => champion.set.includes(4));
-      let champions = Object.assign({}, this.state.champions);
-      for (let i = 0; i < championsA.length; i++) {
-        champions[championsA[i].key] = championsA[i];
-      }
-      this.setState({champions: champions});
-    });
-    getData('classes').then(data => {
-      this.setState({classes: data.filter(classe => classe.set === 4)});
-    });
-    getData('items').then(data => {
-      let itemsA = data.filter(item => item.set.includes(4)).sort(this.compare);
-      let itemsB = data.filter(item => item.set.includes(4) && item.depth === 1).sort(this.compare);
-      let items = Object.assign({}, this.state.items);
-      for (let i = 0; i < itemsA.length; i++) {
-        items[itemsA[i].id] = itemsA[i];
-      }
-      this.setState({items: items, itemsBasic: itemsB});
-    });
-    getData('origins').then(data => {
-      this.setState({origins: data.filter(origin => origin.set === 4)});
-    });
   }
 
   search(e) {
     //e.preventDefault()
-    const NA1 = 'https://na1.api.riotgames.com';
-    const REGION_AMERICA='https://americas.api.riotgames.com';
-    const EUW1 = 'https://euw1.api.riotgames.com';
-    const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-    const summonerUrl = `${NA1}/tft/summoner/v1/summoners/by-name/${this.state.summonerName}?api_key=${process.env.REACT_APP_RIOT_KEY}`;
+    //const NA1 = 'https://na1.api.riotgames.com';
+    //const REGION_AMERICA='https://americas.api.riotgames.com';
+    //const EUW1 = 'https://euw1.api.riotgames.com';
+    //const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+    //const summonerUrl = `${NA1}/tft/summoner/v1/summoners/by-name/${this.state.summonerName}?api_key=${process.env.REACT_APP_RIOT_KEY}`;
 
-    let summonerData = fetch(proxyUrl+summonerUrl).then
-      (res => res.json()).then(res => {
-        console.log(res);
-        let puuid = res.puuid;
-        let matchesUrl = `${REGION_AMERICA}/tft/match/v1/matches/by-puuid/${puuid}/ids?count=3&api_key=${process.env.REACT_APP_RIOT_KEY}`;
-        let summonerMatches = fetch(proxyUrl+matchesUrl).then
-            (res2 => res2.json()).then(res2 => {
-              console.log(res2);
-              let matchIds = res2;
-              let matches = [];
-              let setNumber = this.state.setNumber;
-              for (let i in matchIds) {
-                if (setNumber === this.state.setNumber) {
-                let matchUrl = `${REGION_AMERICA}/tft/match/v1/matches/${matchIds[i]}?api_key=${process.env.REACT_APP_RIOT_KEY}`;
-                let match = fetch(proxyUrl+matchUrl).then
-                  (res3 => res3.json()).then(res3 => {
-                    console.log(res3);
+    // let summonerData = fetch(proxyUrl+summonerUrl).then
+    //   (res => res.json()).then(res => {
+    //     console.log(res);
+    //     let puuid = res.puuid;
+    //     let matchesUrl = `${REGION_AMERICA}/tft/match/v1/matches/by-puuid/${puuid}/ids?count=3&api_key=${process.env.REACT_APP_RIOT_KEY}`;
+    //     let summonerMatches = fetch(proxyUrl+matchesUrl).then
+    //         (res2 => res2.json()).then(res2 => {
+    //           console.log(res2);
+    //           let matchIds = res2;
+    //           let matches = [];
+    //           let setNumber = this.state.setNumber;
+    //           for (let i in matchIds) {
+    //             if (setNumber === this.state.setNumber) {
+    //             let matchUrl = `${REGION_AMERICA}/tft/match/v1/matches/${matchIds[i]}?api_key=${process.env.REACT_APP_RIOT_KEY}`;
+    //             let match = fetch(proxyUrl+matchUrl).then
+    //               (res3 => res3.json()).then(res3 => {
+    //                 console.log(res3);
 
-                    let patch = this.parseDataVersion(res3.info.game_version);
+    //                 let patch = this.parseDataVersion(res3.info.game_version);
 
-                    if (parseFloat(patch) > 10.12) {
-                      matches[i] = res3;
-                    }
-                    else {
-                      return;
-                    }
-                    setNumber = res3.metadata.data_version;
-                    this.setState({matches: matches});
-                  })
-                  .catch(err => console.log('Error: ' + err))
-                }
-              }
-            }
-        )
-        .catch(err => console.log('Error: ' + err))
-      }
-    )
-    .catch(err => console.log('Error: ' + err))
+    //                 if (parseFloat(patch) > 10.12) {
+    //                   matches[i] = res3;
+    //                 }
+    //                 else {
+    //                   return;
+    //                 }
+    //                 setNumber = res3.metadata.data_version;
+    //                 this.setState({matches: matches});
+    //               })
+    //               .catch(err => console.log('Error: ' + err))
+    //             }
+    //           }
+    //         }
+    //     )
+    //     .catch(err => console.log('Error: ' + err))
+    //   }
+    // )
+    // .catch(err => console.log('Error: ' + err))
   }
 
   handleName(event) {

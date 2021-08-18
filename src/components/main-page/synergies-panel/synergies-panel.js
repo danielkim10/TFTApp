@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, Button, Card, CardHeader, CardBody, Col, Collapse, Row, Input, Tooltip } from 'reactstrap';
+import { Card, CardBody, Col } from 'reactstrap';
 import SynergiesTooltip from '../../../sub-components/synergies-tooltips.js';
 
 class SynergiesPanel extends Component {
@@ -46,80 +46,67 @@ class SynergiesPanel extends Component {
   }
 
   createSynergies = () => {
-    const BLACK_COLOR = '#404040';
-    const GOLD_COLOR = '#ffd700';
-    const SILVER_COLOR = '#acacac';
-    const BRONZE_COLOR = '#cd7f32';
-    const DIAMOND_COLOR = '#425af5'; // used for things like 8 sorcs
-    let color = BLACK_COLOR;
+    const colors = {
+      'BLACK_COLOR': '#404040', 
+      'gold': '#ffd700', 
+      'silver': '#acacac',
+      'bronze': '#cd7f32',
+      'chromatic': '#425af5'
+    };
+    let color = colors['BLACK_COLOR'];
     let iconColor = '';
     let synergiesUnsorted = [];
     let synergiesSorted = [];
 
-    let synergies = {};
-    for (let i = 0; i < this.props.classes.length; ++i) {
-      synergies[this.props.classes[i].key] = this.props.classes[i];
-    }
+    Object.keys(this.props.traits).forEach((key, index) => {
+      color = colors['BLACK_COLOR'];
+      let sets = this.props.traits[key].sets.length;
 
-    for (let i = 0; i < this.props.origins.length; ++i) {
-      synergies[this.props.origins[i].key] = this.props.origins[i];
-    }
-
-    Object.keys(this.props.synergies).forEach((key, index) => {
-      color = BLACK_COLOR;
-      let synergyTiers = synergies[key.toLowerCase()].bonuses.length;
-
-      for (let j = synergyTiers-1; j >= 0; --j) {
-        if (this.props.synergies[key].count >= synergies[key.toLowerCase()].bonuses[j].needed) {
-          if (j === synergyTiers - 1) {
-            color = GOLD_COLOR;
+      if (this.props.traits[key].count !== 0) {
+        for (let j = sets-1; j >= 0; j--) {
+          if (this.props.traits[key].count >= this.props.traits[key].sets[j].min) {
+            color = colors[this.props.traits[key].sets[j].style];
             iconColor = 'black-icon';
-            this.props.synergies[key].tier = 3;
-            break;
-          }
-          else if (j === synergyTiers - 2 && synergyTiers === 3) {
-            color =  SILVER_COLOR;
-            iconColor = 'black-icon';
-            this.props.synergies[key].tier = 2;
+            this.props.traits[key].tier = j+1;
             break;
           }
           else {
-            if ((synergies[key.toLowerCase()].mustBeExact && this.props.synergies[key].count === synergies[key.toLowerCase()].bonuses[j].needed) || !synergies[key.toLowerCase()].mustBeExact) {
-              color = BRONZE_COLOR;
-              iconColor = 'black-icon';
-              this.props.synergies[key].tier = 1;
-              break;
-            }
+            color = colors['BLACK_COLOR'];
+            iconColor = '';
+            this.props.traits[key].tier = 0;
           }
         }
-        else {
-          color = BLACK_COLOR;
-          iconColor = '';
-          this.props.synergies[key].tier = 0;
-        }
+        synergiesUnsorted.push({synergy: this.props.traits[key], color: color, iconcolor: iconColor});
       }
-      synergiesUnsorted.push({synergy1: this.props.synergies[key], synergy2: synergies[key.toLowerCase()], color: color, iconcolor: iconColor});
     })
 
-    synergiesUnsorted.sort(this.compareSynergy);
+    // synergiesUnsorted.sort(this.compareSynergy);
     for (let i = 0; i < synergiesUnsorted.length; i++) {
+      let max = 0;
+      if (synergiesUnsorted[i].synergy.tier === synergiesUnsorted[i].synergy.sets.length) {
+        max = synergiesUnsorted[i].synergy.sets[synergiesUnsorted[i].synergy.tier-1].min;
+      }
+      else {
+        max = synergiesUnsorted[i].synergy.sets[synergiesUnsorted[i].synergy.tier].min;
+      }
+
       synergiesSorted.push(<div>
-        <Card id={synergiesUnsorted[i].synergy2.key}
-        inverse={synergiesUnsorted[i].color === '#404040'}
+        <Card id={synergiesUnsorted[i].synergy.key}
+        inverse={synergiesUnsorted[i].color === colors['BLACK_COLOR']}
         style={{ backgroundColor: synergiesUnsorted[i].color, borderColor: synergiesUnsorted[i].color }}>
-        <CardBody><img src={synergiesUnsorted[i].synergy2.image} className={synergiesUnsorted[i].iconcolor}/>{synergiesUnsorted[i].synergy2.name + ": " + synergiesUnsorted[i].synergy1.count} / {synergiesUnsorted[i].synergy1.tier >= synergiesUnsorted[i].synergy2.bonuses.length ? synergiesUnsorted[i].synergy2.bonuses[synergiesUnsorted[i].synergy2.bonuses.length - 1].needed : synergiesUnsorted[i].synergy2.bonuses[synergiesUnsorted[i].synergy1.tier].needed}</CardBody>
+        <CardBody><img src={require('../../../data/traits/' + synergiesUnsorted[i].synergy.name.toLowerCase() + '.svg')} alt={synergiesUnsorted[i].synergy.name} width='24px' height='24px' className={synergiesUnsorted[i].iconcolor}/>{synergiesUnsorted[i].synergy.name + ": " + synergiesUnsorted[i].synergy.count + " / " + max}</CardBody>
         </Card>
-        <SynergiesTooltip placement="right" isOpen={this.isToolTipOpen(synergiesUnsorted[i].synergy2.key)} target={synergiesUnsorted[i].synergy2.key} toggle={() => this.toggle(synergiesUnsorted[i].synergy2.key)}
-                          name={synergiesUnsorted[i].synergy2.name} description={synergiesUnsorted[i].synergy2.description ? synergiesUnsorted[i].synergy2.description : ""} tier={synergiesUnsorted[i].synergy1.tier} bonuses={synergiesUnsorted[i].synergy2.bonuses}/>
+        <SynergiesTooltip placement="right" isOpen={this.isToolTipOpen(synergiesUnsorted[i].synergy.key)} target={synergiesUnsorted[i].synergy.key} toggle={() => this.toggle(synergiesUnsorted[i].synergy.key)}
+                          name={synergiesUnsorted[i].synergy.name} description={synergiesUnsorted[i].synergy.description ? synergiesUnsorted[i].synergy.description : ""} tier={synergiesUnsorted[i].synergy.tier}/>
         </div>);
     }
     return synergiesSorted;
   }
 
   render = () => {
-      return(
-        <Col>{this.createSynergies()}</Col>
-      );
+    return(
+      <Col>{this.createSynergies()}</Col>
+    );
   }
 }
 

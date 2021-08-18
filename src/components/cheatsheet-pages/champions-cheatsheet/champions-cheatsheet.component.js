@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { getSetData, getDataFromName } from '../../../api-helper/api.js';
-import { Card, CardHeader, CardBody, Container, Row, Col, Input } from 'reactstrap';
+import { Input } from 'reactstrap';
+import { ability_desc_parse } from '../../../api-helper/string-parsing.js';
+import SynergyCard from '../../../sub-components/synergy-card.js';
 import '../../../css/colors.css'
 
 import './champions-cheatsheet.component.css';
@@ -9,321 +10,223 @@ class ChampionsCheatSheet extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      champions: [],
-      champion: {
-        id: 0,
-        key: "",
-        name: "",
-        origin: [],
-        classe: [],
-        cost: 0,
-        tier: 0,
-        ability: {
-          name: "",
-          description: "",
-          type: "",
-          manaCost: 0,
-          manaStart: 0,
-          stats: [],
-        },
-        stats: {
-          offense: {
-            damage: [0, 0, 0],
-            attackSpeed: 0,
-            spellPower: 0,
-            critChance: 0,
-            range: 0,
-          },
-          defense: {
-            health: [0, 0, 0],
-            armor: 0,
-            magicResist: 0,
-            dodgeChance: 0,
-          }
-        },
-        set: 0,
-        image: "",
-        icon: "",
-        abilityIcon: "",
-      },
+      champions: {},
+      championNumber: 0,
+      champion: {},
       championList: [],
       searchName: "",
-
-      origins: [],
-      classes: [],
+      traits: {},
     };
 
     this.handleSearch = this.handleSearch.bind(this);
   }
 
-  componentDidMount() {
-      getSetData('champions', 1).then(data => {
-        this.setState({ champions: data.map(champion => champion) });
+  componentDidMount = () => {
+    let champions = require("../../../data/champions.json");
+    let traits = require("../../../data/traits.json");
+    let champions_arr = {};
+    for (let champion in champions) {
+      if (champions[champion].championId.startsWith("TFT5_")) {
+        champions_arr[champions[champion].championId] = champions[champion];
+      }
+    }
 
-        if (!this.props.location.data) {
-          this.loadChampionData(this.state.champions[Math.floor(Math.random() * this.state.champions.length)]);
-        }
-        else {
-          this.loadChampionData(this.state.champions.filter(champion => champion.key === this.props.location.data)[0]);
-        }
+    let traits_arr = {};
+    for (let trait in traits) {
+      traits_arr[traits[trait].key] = traits[trait];
+    }
 
-        //this.setState({ champion: this.state.champions[Math.floor(Math.random() * this.state.champions.length)] });
-      });
+    fetch("https://raw.communitydragon.org/latest/cdragon/tft/en_us.json").then(res => res.json()).then(res =>{
+      for (let champion in res.setData[5].champions) {
+        if (champions_arr[res.setData[5].champions[champion].apiName] !== undefined) {
+          champions_arr[res.setData[5].champions[champion].apiName].patch_data = res.setData[5].champions[champion];
+        }
+      }
+
+      for (let trait in res.setData[5].traits) {
+        if (traits_arr[res.setData[5].traits[trait].apiName] !== undefined) {
+          traits_arr[res.setData[5].traits[trait].apiName].patch_data = res.setData[5].traits[trait];
+        }
+      }
+      this.setState({champions: champions_arr, championNumber: champions_arr.length, traits: traits_arr});
+    });
   }
 
-  randomChampion() {
-    let random = Math.floor(Math.random() * this.state.champions.length);
+  randomChampion = () => {
+    let random = Math.floor(Math.random() * this.state.championNumber);
+    console.log(this.state.champions[random]);
     this.setState({champion: this.state.champions[random]});
   }
 
-  loadChampionData(champion) {
+  loadChampionData = (champion) => {
     this.setState({ champion: champion });
-
-    let origins = [];
-    for (let i = 0; i < champion.origin.length; ++i) {
-      getDataFromName('origins', champion.origin[i]).then(data => {
-        origins.push(data);
-        this.setState({origins: origins});
-      });
-    }
-
-    let classes = [];
-    for (let i = 0; i < champion.classe.length; ++i) {
-      getDataFromName('classes', champion.classe[i]).then(data => {
-        classes.push(data);
-        this.setState({classes: classes});
-      });
-    }
   }
 
-  handleSearch(event) {
+  handleSearch = (event) => {
     this.setState({searchName: event.target.value});
   }
 
-  statsCard() {
-    let abilityStats = [];
-    let health = "";
-    let damage = "";
-    for (let i = 0; i < this.state.champion.ability.stats.length; ++i) {
-      let partString1 = "";
-      for (let j = 0; j < this.state.champion.ability.stats[i].value.length; ++j) {
-        partString1 += this.state.champion.ability.stats[i].value[j];
-        if (j < this.state.champion.ability.stats[i].value.length - 1) {
-          partString1 += '/';
-        }
-      }
-      abilityStats.push(<Row>{this.state.champion.ability.stats[i].type}: {partString1}</Row>)
-    }
+  championCard = (champion) => {
+    console.log(champion);
 
-    for (let i = 0; i < this.state.champion.stats.offense.damage.length; ++i) {
-      damage += this.state.champion.stats.offense.damage[i];
-      if (i < this.state.champion.stats.offense.damage.length - 1) {
-        damage += ' / ';
+    let abilityVariables = [];
+    let championTraits = [];
+    for (let variable in champion.patch_data.ability.variables) {
+      if (!(champion.patch_data.ability.variables[variable].value[1] === champion.patch_data.ability.variables[variable].value[2] && champion.patch_data.ability.variables[variable].value[1] === champion.patch_data.ability.variables[variable].value[2])) {
+        abilityVariables.push(
+          <p key={variable}>{champion.patch_data.ability.variables[variable].name}: {Math.round(champion.patch_data.ability.variables[variable].value[1]*100)/100}/{Math.round(champion.patch_data.ability.variables[variable].value[2]*100)/100}/{Math.round(champion.patch_data.ability.variables[variable].value[3]*100)/100}</p>
+        );
       }
     }
 
-    for (let i = 0; i < this.state.champion.stats.defense.health.length; ++i) {
-      health += this.state.champion.stats.defense.health[i];
-      if (i < this.state.champion.stats.defense.health.length - 1) {
-        health += ' / ';
-      }
+    for (let trait in champion.traits) {
+      championTraits.push(
+        <SynergyCard key={trait} champions={this.state.champions} trait={this.state.traits[champion.traits[trait]]}/>
+      );
     }
+    
+    console.log(champion.patch_data.ability.icon.indexOf('Icons2D'));
+    console.log(champion.patch_data.ability.icon.indexOf('.dds'));
+    let icon = champion.patch_data.ability.icon.substring(champion.patch_data.ability.icon.indexOf('Icons2D/')+8, champion.patch_data.ability.icon.indexOf('.dds')).toLowerCase();
+    console.log(icon);
+    icon = icon.replace('tft5_', '');
+    icon = icon.replace('.tft_set5', '');
+    console.log("https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/characters/" + this.state.champion.name.replace(' ', '').replace('\'', '').toLowerCase() + "/hud/icons2d/" + icon + ".png");
 
+    // to fix manually: akshan, garen, karma, khazix, lee, mf, nid, rakan, rell, syndra, teemo, vel
 
-    return (<Card style={{width: "100%"}}>
-      <CardHeader>
-        <Container>
-        <Row><strong> {this.state.champion.name}</strong></Row>
-        <Row>Cost: {this.state.champion.cost}/{this.state.champion.cost + 2}/{this.state.champion.cost + 4}</Row>
-        </Container>
-      </CardHeader>
-      <CardBody>
-      <Container>
-      <Row>
-        <Col>
-          <Row>Health: {health}</Row>
-          <Row>Attack Damage: {damage}</Row>
-          <Row>Attack Speed: {this.state.champion.stats.offense.attackSpeed}</Row>
-          <Row>Attack Range: {this.state.champion.stats.offense.range === 1 ? 125 : (this.state.champion.stats.offense.range === 2) ? 420 : (this.state.champion.stats.offense.range === 3) ? 680 : (this.state.champion.stats.offense.range === 4) ? 890 : 1130}</Row>
-          <Row>Armor: {this.state.champion.stats.defense.armor}</Row>
-          <Row>Magic Resist: {this.state.champion.stats.defense.magicResist}</Row>
-        </Col>
-        </Row>
-        <Row>
-        <Col sm={2}><img src={this.state.champion.abilityIcon} /></Col>
-        <Col sm={10}>
-          <Row>
-            <Col><strong>{this.state.champion.ability.name}</strong></Col>
-            <Col>Mana: {this.state.champion.ability.manaStart}/{this.state.champion.ability.manaCost}</Col>
-          </Row>
-          <Row>
-            <Col sm={12}>{this.state.champion.ability.description}</Col><Col sm={0}></Col></Row>
-          <Row>
-            <Col sm={12}><Container>{abilityStats}</Container></Col><Col sm={0}></Col></Row>
-        </Col>
-        </Row>
-        </Container>
-      </CardBody>
-    </Card>);
+    return (
+      <div>
+        <div>
+          <table>
+            <tbody>
+              <tr>
+                <td>
+                  <img src={require(`../../../data/champions/` + champion.championId + `.png`)} alt={champion.name} className={champion.cost === 1 ? 'cost1champion' : champion.cost === 2 ? 'cost2champion' : champion.cost === 3 ? 'cost3champion' : champion.cost === 4 ? 'cost4champion' : 'cost5champion'}/>
+                </td>
+                <td>
+                  <table>
+                    <tbody>
+                      <tr>
+                        <td><strong>{this.state.champion.name}</strong></td>
+                      </tr>
+                      <tr>
+                        <td>Cost: {this.state.champion.cost}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <table>
+            <tbody>
+              <tr>
+                <td>
+                  <table>
+                    <tbody>
+                      <tr>
+                        <td>Attack Damage: {this.state.champion.patch_data.stats.damage}</td>
+                        <td>Attack Speed: {Math.round(this.state.champion.patch_data.stats.attackSpeed*100)/100}</td>
+                        <td>Attack Range: {this.state.champion.patch_data.stats.range}</td>
+                      </tr>
+                      <tr>
+                        <td>Health: {this.state.champion.patch_data.stats.hp}</td>
+                        <td>Armor: {this.state.champion.patch_data.stats.armor}</td>
+                        <td>Magic Resist: {this.state.champion.patch_data.stats.magicResist}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <table>
+                    <tbody>
+                    <tr>
+                      <td style={{width: '60px'}}><img src={"https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/characters/" + this.state.champion.name.replace(' ', '').replace('\'', '').toLowerCase() + "/hud/icons2d/" + icon + ".png"} alt={this.state.champion.patch_data.ability.name}/></td>
+                      <td>
+                        <table>
+                          <tbody>
+                            <tr>
+                              <td><strong>{this.state.champion.patch_data.ability.name}</strong></td>
+                            </tr>
+                            <tr>
+                              <td>Mana: {this.state.champion.patch_data.stats.initialMana}/{this.state.champion.patch_data.stats.mana}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+                  <table>
+                    <tbody>
+                      <tr>
+                        <td className='test-whitespace'>{ability_desc_parse(this.state.champion.patch_data.ability)}</td>
+                      </tr>
+                      <tr>
+                        <td>{abilityVariables}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td>{championTraits}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
   }
 
-  synergyCard() {
-    let cards = [];
-    for (let i = 0; i < this.state.origins.length; ++i) {
-      let matchingChampions = this.state.champions.filter(champion => champion.origin.includes(this.state.origins[i].name));
-
-      let matchingChampionsIcons = [];
-      for (let j = 0; j < matchingChampions.length; ++j) {
-        matchingChampionsIcons.push(
-          <div className='champion-spacing'>
-            <img src={matchingChampions[j].icon} className={matchingChampions[j].cost === 1 ? 'cost1champion' : matchingChampions[j].cost === 2 ? 'cost2champion' : matchingChampions[j].cost === 3 ? 'cost3champion' : matchingChampions[j].cost === 4 ? 'cost4champion' : 'cost5champion'} onClick={() => this.loadChampionData(matchingChampions[j])}/>
-            <p className='champion-name'>{matchingChampions[j].name}</p>
-            <p className='cost'>${matchingChampions[j].cost}</p>
-          </div>);
-      }
-
-      let bonuses = [];
-      for (let j = 0; j < this.state.origins[i].bonuses.length; ++j) {
-        bonuses.push(<Row>({this.state.origins[i].bonuses[j].needed}) {this.state.origins[i].bonuses[j].effect}</Row>)
-      }
-
-      cards.push(
-        <Container>
-        <Row>
-          <Col sm={3}>
-            <Row>
-              <img src={this.state.origins[i].image} class='black-icon'/> {this.state.origins[i].name}
-            </Row>
-            <Row></Row>
-            <Row></Row>
-          </Col>
-          <Col>
-            <Row>
-              {matchingChampionsIcons}
-            </Row>
-            <Row>
-              {this.state.origins[i].description}
-            </Row>
-            <Container>
-              {bonuses}
-            </Container>
-          </Col>
-          </Row>
-          </Container>);
-    }
-    for (let i = 0; i < this.state.classes.length; ++i) {
-
-      let matchingChampions = this.state.champions.filter(champion => champion.classe.includes(this.state.classes[i].name));
-
-      let matchingChampionsIcons = [];
-      for (let j = 0; j < matchingChampions.length; ++j) {
-        matchingChampionsIcons.push(
-          <div className='champion-spacing'>
-            <img src={matchingChampions[j].icon} className={matchingChampions[j].cost === 1 ? 'cost1champion' : matchingChampions[j].cost === 2 ? 'cost2champion' : matchingChampions[j].cost === 3 ? 'cost3champion' : matchingChampions[j].cost === 4 ? 'cost4champion' : 'cost5champion'} onClick={() => this.loadChampionData(matchingChampions[j])}/>
-            <p className='champion-name'>{matchingChampions[j].name}</p>
-            <p className='cost'>${matchingChampions[j].cost}</p>
-          </div>);
-      }
-
-      let bonuses = [];
-      for (let j = 0; j < this.state.classes[i].bonuses.length; ++j) {
-        bonuses.push(<Row>({this.state.classes[i].bonuses[j].needed}) {this.state.classes[i].bonuses[j].effect}</Row>)
-      }
-
-      cards.push(
-      <Container>
-        <Row>
-          <Col sm={3}>
-            <Row><img src={this.state.classes[i].image} class='black-icon'/> {this.state.classes[i].name}</Row>
-            <Row></Row>
-            <Row></Row>
-          </Col>
-          <Col>
-            <Row>
-               {matchingChampionsIcons}
-            </Row>
-            <Row>
-              {this.state.classes[i].description}
-            </Row>
-            <Container>
-              {bonuses}
-            </Container>
-          </Col>
-          </Row>
-        </Container>
-      )
-    }
-    return cards;
-  }
-
-  render() {
+  render = () => {
     const champions = [];
 
-
-    for (let i = 0; i < this.state.champions.length; ++i) {
-      if (this.state.champions[i].key.includes(this.state.searchName.toLowerCase()) || this.state.champions[i].name.includes(this.state.searchName))
-      champions.push(
-        <div className='champion-spacing'>
-          <img src={this.state.champions[i].icon} className={this.state.champions[i].cost === 1 ? 'cost1champion' : this.state.champions[i].cost === 2 ? 'cost2champion' : this.state.champions[i].cost === 3 ? 'cost3champion' : this.state.champions[i].cost === 4 ? 'cost4champion' : 'cost5champion'} onClick={() => this.loadChampionData(this.state.champions[i])}/>
-            <p className='champion-name'>{this.state.champions[i].name}</p>
-            <p className='cost'>${this.state.champions[i].cost}</p>
-        </div>)
-    }
-
-
-      return (
-      <div>
-        <Row>
-          <Col sm={1}></Col>
-          <Col sm={10}>
-            <Card>
-              <CardBody>
-              <Row>
-              <Col sm={3}>
-                <Card>
-                  <CardBody>
-                    <Input type="text" id="search" name="search" onChange={this.handleSearch} placeholder="Champion Name" />
-
-                    {champions}
-                  </CardBody>
-                </Card>
-                </Col>
-                <Col sm={9}>
-                  <Card>
-                    <CardBody>
-                      <Row>
-                        <Col>
-                          <Row><img src={this.state.champion.image} width='40%' height='40%'/></Row>
-                        </Col>
-                        <Col>
-                          <Row>
-                            {this.statsCard()}
-                          </Row>
-                          <Row>
-                            <Card style={{width: "100%"}}>
-                              <CardHeader>
-                                <strong>Traits</strong>
-                              </CardHeader>
-                              <CardBody>
-                                {this.synergyCard()}
-                              </CardBody>
-                            </Card>
-                          </Row>
-                          <Row></Row>
-                        </Col>
-                      </Row>
-                    </CardBody>
-                  </Card>
-                </Col>
-              </Row>
-
-            </CardBody>
-          </Card>
-        </Col>
-        <Col sm={1}></Col>
-      </Row>
-    </div>
-      )
+    Object.keys(this.state.champions).forEach((key, index) => {
+      if (this.state.champions[key].name.toLowerCase().includes(this.state.searchName.toLowerCase())) {
+        champions.push(
+          <div className='champion-spacing' key={key}>
+            <img src={require(`../../../data/champions/` + key + `.png`)} alt={this.state.champions[key].name} className={this.state.champions[key].cost === 1 ? 'cost1champion' : this.state.champions[key].cost === 2 ? 'cost2champion' : this.state.champions[key].cost === 3 ? 'cost3champion' : this.state.champions[key].cost === 4 ? 'cost4champion' : 'cost5champion'} onClick={() => this.loadChampionData(this.state.champions[key])}/>
+            <p className='champion-name'>{this.state.champions[key].name}</p>
+            <p className='cost'>${this.state.champions[key].cost}</p>
+          </div>
+        );
+      }
+    });
+    return (
+      <table>
+        <tbody>
+          <tr>
+            <td style={{width: '16%'}}></td>
+            <td style={{width: '66%'}}>
+              <table>
+                <tbody>
+                  <tr>
+                    <td style={{width: '33%'}}>
+                      <div>
+                          <Input type="text" id="search" name="search" onChange={this.handleSearch} placeholder="Champion Name" />
+                          {champions}
+                       </div>
+                    </td>
+                    <td style={{width: '66%'}}>
+                      <div>
+                          {this.state.champion.name === undefined ? <div/> : this.championCard(this.state.champion)}
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+            <td style={{width: '16%'}}></td>
+          </tr>
+        </tbody>
+      </table>
+    );
   }
 }
 
