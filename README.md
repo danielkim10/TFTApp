@@ -1,10 +1,10 @@
-Use 'nodemon server' in TFTApp/tft-app/backend to start the server and connect to the DB.
+Use 'nodemon server' in TFTApp/tft-app/backend to start the server and connect to the DB, but this app can be run without the backend.
 
 Use 'npm start in TFTApp/tft-app to start the frontend.
 
-A .env file with two keys is required. The first one, ATLAS_URI, is required for champion data. The second one, RIOT_KEY, is required to access player data.
+A .env file with two keys is required. The first one, ATLAS_URI, is required for teams. The second one, RIOT_KEY, is required to access player data.
 
-This project is not deployed anywhere until this product is officially registered with Riot Games, which will not occur until ...
+This project is not deployed anywhere until this product is officially registered with Riot Games, which will not occur until ... October 2021 (?)
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
