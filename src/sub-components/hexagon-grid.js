@@ -15,7 +15,7 @@ class HexagonGrid extends Component {
     }
 
     componentDidMount = () => {
-        //this.drawGrid();
+        this.drawGrid();
     }
 
     drawGrid = () => {
@@ -31,15 +31,15 @@ class HexagonGrid extends Component {
             
             for (let x = r, j = 0; x + r * (1 + Math.cos(a)) < width && xcount < 4; x += r * (1 + Math.cos(a)), y += (-1) ** j++ * r * Math.sin(a)) {
                 xcount++;
-                if (this.props.team.length > 0) {
+                //if (this.props.team.length > 0) {
                     //hexagons.push(<Hexagon x={x} y={x} img={this.props.team[0].champion.championId}/>);
-                    hexagons.push(<img src={require(`../data/champions/` +  this.props.team[0].champion.championId + `.png`)}/>);
+                    //hexagons.push(<img src={require(`../data/champions/` +  this.props.team[0].champion.championId + `.png`)}/>);
                     // this.drawHexagon(x, y, this.props.team[0].champion.championId);
-                }
-                else {
-                    // this.drawHexagon(x, y, null);
-                    hexagons.push(<Hexagon x={x} y={y}/>);
-                }
+                //}
+                //else {
+                    this.drawHexagon(x, y, null);
+                    //hexagons.push(<Hexagon x={x} y={y}/>);
+                //}
             }
         ycount++;
         xcount=0;
@@ -66,13 +66,13 @@ class HexagonGrid extends Component {
             for (let x = r, j = 0; x + r * (1 + Math.cos(a)) < width && xcount < 4; x += r * (1 + Math.cos(a)), y += (-1) ** j++ * r * Math.sin(a)) {
                 xcount++;
                 if (this.props.team.length > 0) {
-                    hexagons.push(<img src={require(`../data/champions/` +  this.props.team[0].champion.championId + `.png`)}/>);
+                    //hexagons.push(<img src={require(`../data/champions/` +  this.props.team[0].champion.championId + `.png`)}/>);
                     //hexagons.push(<Hexagon x={x} y={x} img={this.props.team[0].champion.championId}/>);
                     //this.redrawHexagon(x, y, this.props.team[0].champion.championId);
                 }
                 else {
-                    //this.redrawHexagon(x, y, null);
-                    hexagons.push(<Hexagon x={x} y={y}/>);
+                    this.redrawHexagon(x, y, null);
+                    //hexagons.push(<Hexagon x={x} y={y}/>);
                 }
             }
         ycount++;
@@ -131,8 +131,8 @@ class HexagonGrid extends Component {
 
         return (
             <div>
-                <Button onClick={() => this.redrawGrid()}>Test</Button>
-            <canvas id="canvas" width="700" height="400">{this.drawGrid()}</canvas>
+                {/*<Button onClick={() => this.redrawGrid()}>Test</Button>*/}
+            <canvas id="canvas" width="700" height="400"></canvas>
             </div>
         );
     }

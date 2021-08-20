@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Card, CardHeader, CardBody } from 'reactstrap';
+import { sortTierMatchDescending } from '../../api-helper/sorting.js'; 
 
 class MatchBasic extends Component {
   constructor(props) {
@@ -8,8 +9,7 @@ class MatchBasic extends Component {
     this.state = {
       gamedata: this.props.gamedata,
       champions: this.props.champions,
-      origins: this.props.origins,
-      classes: this.props.classes,
+      traits: this.props.traits,
       items: this.props.items,
     }
 
@@ -44,17 +44,86 @@ class MatchBasic extends Component {
     // return teamMembers;
   }
 
+  gameDataParse = () => {
+    let players = this.props.gamedata.info.participants;
+    let playerData = [];
+    
+    for (let player in players) {
+      playerData.push(this.playerDataParse(players[player]));
+    }
+    
+
+    return (
+      <table>
+        <tbody>
+          {playerData}
+        </tbody>
+      </table>
+    );
+  }
+
+  playerDataParse = (player) => {
+    let traits = player.traits;
+    let traitsSorted = [];
+    let traitsRow = [];
+
+    traitsSorted = traits.sort(sortTierMatchDescending);
+
+    for (let trait in traitsSorted) {
+      console.log(this.props.traits[traits[trait].name]);
+      if (this.props.traits[traitsSorted[trait].name] !== undefined) {
+        if (traitsSorted[trait].tier_current > 0) {
+          let image = this.props.traits[traitsSorted[trait].name].patch_data.icon.substring(0, this.props.traits[traitsSorted[trait].name].patch_data.icon.indexOf('dds')).toLowerCase();
+
+          traitsRow.push(
+            <td><img src={"https://raw.communitydragon.org/latest/game/" + image +"png"}/></td>
+          );
+        }
+      }
+    }
+
+    let champions = player.units;
+    let championsItemsRowUnsorted = [];
+    let championsItemsRowSorted = [];
+
+    for (let champion in champions) {
+
+    }
+
+    return (
+      <tr>
+        <td>
+          <table>
+            <tbody>
+              <tr>
+                {traitsRow}
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    )
+  }
+
   render = () => {
     return(
       <Card>
         <CardHeader>
           <p>{new Date(this.state.gamedata.info.game_datetime).toString()}</p>
-          <p>{this.state.gamedata.info.game_variation}</p>
         </CardHeader>
         <CardBody>
+          <table>
+            <tbody>
+              <tr>
+                <td>
+
+                </td>
+              </tr>
+            </tbody>
+          </table>
           <p>{this.state.gamedata.info.participants[0].level}</p>
           <p>{this.state.gamedata.info.participants[0].placement}</p>
-          {this.createTeam(this.state.gamedata.info.participants[0].units)}
+          {this.gameDataParse()}
         </CardBody>
       </Card>
 

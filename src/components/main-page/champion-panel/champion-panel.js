@@ -67,7 +67,7 @@ class ChampionPanel extends Component {
           <strong>Champions</strong>
         </CardHeader>
         <CardBody>
-          <Input type="text" id="search" name="searchNameChamps" onChange={this.handleChanges} placeholder="Champion Name" />
+          <Input type="text" id="searchNameChamps" name="searchNameChamps" onChange={this.handleChanges} placeholder="Champion Name" />
           {this.placeChampions()}
         </CardBody>
       </Card>

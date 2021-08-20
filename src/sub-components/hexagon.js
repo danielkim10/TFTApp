@@ -57,7 +57,7 @@ class Hexagon extends Component {
 
     render = () => {
         return (
-            <div>{() => this.drawHexagon(this.state.x, this.state.y)}</div>
+            <div>{this.drawHexagon(this.state.x, this.state.y)}</div>
         );
     }
 }

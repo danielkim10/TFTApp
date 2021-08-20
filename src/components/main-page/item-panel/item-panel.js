@@ -40,19 +40,21 @@ class ItemPanel extends Component {
       if (this.props.items[key].patch_data !== undefined) {
         if (this.props.items[key].name.toLowerCase().includes(this.state.searchNameItems.toLowerCase())) {
           let str = parseInt((key.substring(1, key.length)));
-          if (str < 10) {
-            str = '0' + key.substring(1, key.length);
-          }
-          else {
-            str = key.substring(1, key.length);
-          }
-          items.push(<div style={{position: 'relative', display: 'inline-block', margin: '4px'}} id={key} key={key}>
-          <img src={require(`../../../data/items/` + str + `.png`)} alt={this.props.items[key].name} draggable="true" onDragStart={(e) => this.props.drag(e, this.props.items[key])} className='itemborder'/>
-            <p className='item-name'>{this.props.items[key].name}</p>
+          if (str > 10) {
+            //str = key.substring(1, key.length);
+            let image = this.props.items[key].patch_data.icon.substring(0, this.props.items[key].patch_data.icon.indexOf('dds'));
+            console.log("https://raw.communitydragon.org/latest/game/assets/"+image+'png');
+            
+            //if (str === 11) {
+            items.push(<div style={{position: 'relative', display: 'inline-block', margin: '4px'}} id={key} key={key} draggable="true" onDragStart={(e) => this.props.drag(e, this.props.items[key])}>
+            <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={this.props.items[key].name} className='itemborder'/>
+              <p className='item-name'>{this.props.items[key].name}</p>
 
-          <ItemTooltip placement="top" isOpen={this.isToolTipOpen(key)} target={key} toggle={() => this.toggle(key)}
-                  name={this.props.items[key].name}/>
-          </div>);
+            <ItemTooltip placement="top" isOpen={this.isToolTipOpen(key)} target={key} toggle={() => this.toggle(key)}
+              name={this.props.items[key].name}/>
+            </div>);
+            //}
+          }
         }
       }
     });
@@ -70,7 +72,7 @@ class ItemPanel extends Component {
           <strong>Items</strong>
         </CardHeader>
         <CardBody>
-        <Input type="text" id="search" name="searchNameItems" onChange={this.handleChanges} placeholder="Item Name" />
+        <Input type="text" id="searchNameItems" name="searchNameItems" onChange={this.handleChanges} placeholder="Item Name" />
           {this.placeItems()}
         </CardBody>
       </Card>

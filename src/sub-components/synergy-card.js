@@ -46,13 +46,15 @@ class SynergyCard extends Component {
         }
         }
 
+        let image = this.props.trait.patch_data.icon.substring(0, this.props.trait.patch_data.icon.indexOf('dds')).toLowerCase();
+
         return(
             <div>
                 <table>
                     <tbody>
                         <tr>
                             <td style={{width: '70px'}}>
-                            <img src={require(`../data/traits/` + this.props.trait.name.toLowerCase() + `.png`)} alt={this.props.trait.name} className='black-icon'/>
+                            <img src={"https://raw.communitydragon.org/latest/game/"+image+'png'} alt={this.props.trait.name} className='black-icon'/>
                             </td>
                             <td>{this.props.trait.patch_data.name}</td>
                         </tr>

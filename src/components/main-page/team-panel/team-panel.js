@@ -42,12 +42,27 @@ class TeamPanel extends Component {
     for (let teamMember in this.props.team) {
     //Object.keys(this.props.team).forEach((key, index) => {
       let c = this.props.team[teamMember];
+      let citems = [];
+      for (let item in c.items) {
+        let image = c.items[item].patch_data.icon.substring(0, c.items[item].patch_data.icon.indexOf('dds'));
+        citems.push(<td><img src={"https://raw.communitydragon.org/latest/game/" + image.toLowerCase() + `png`} width={20} height={20}/></td>)
+      }
+
       team.push(
-        <div style={{position: 'relative'}}>
-          <img src={require(`../../../data/champions/` + this.props.team[teamMember].champion.championId + `.png`)} alt={c.champion.name} className={c.champion.cost === 1 ? 'cost1champion1' : c.champion.cost === 2 ? 'cost2champion1' : c.champion.cost === 3 ? 'cost3champion1' : c.champion.cost === 4 ? 'cost4champion1' : 'cost5champion1'} height='75px' width='75px'/>
-            
-            <p className="cost1">${c.champion.cost}</p>
-        </div>
+        <td key={this.props.team[teamMember].champion.championId + team.length}>
+          <div style={{position: 'relative'}} onDrop={(e) => this.props.drop(e, this.props.team[teamMember].champion.championId)} onDragOver={this.allowDrop}>
+            <img src={require(`../../../data/champions/` + this.props.team[teamMember].champion.championId + `.png`)} alt={c.champion.name} className={c.champion.cost === 1 ? 'cost1champion1' : c.champion.cost === 2 ? 'cost2champion1' : c.champion.cost === 3 ? 'cost3champion1' : c.champion.cost === 4 ? 'cost4champion1' : 'cost5champion1'} height='75px' width='75px'/>
+              
+              <p className="cost1">${c.champion.cost}</p>
+              <table>
+                <tbody>
+                  <tr>
+                    {citems}
+                  </tr>
+                </tbody>
+              </table>
+          </div>
+        </td>
       );
 
       team1.push(
@@ -121,7 +136,13 @@ class TeamPanel extends Component {
     return(
       <Card name="pool" style={{height: '90%'}}>
         <CardBody>
-          {this.createTeam()}
+          <table>
+            <tbody>
+              <tr>
+                {this.createTeam()}
+              </tr>
+            </tbody>
+          </table>
         </CardBody>
       </Card>
     );

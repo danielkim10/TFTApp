@@ -45,8 +45,6 @@ export default class Main extends Component {
         searchNameChamps: "",
         searchNameItems: "",
       },
-      itemDrawerOpen: false,
-      championDrawerOpen: false,
     }
     this.randomButton = this.randomButton.bind(this);
     this.findSynergies = this.findSynergies.bind(this);
@@ -56,8 +54,6 @@ export default class Main extends Component {
     this.handleSave = this.handleSave.bind(this);
     this.copy = this.copy.bind(this);
     this.toggle = this.toggle.bind(this);
-    this.toggleChampionDrawer = this.toggleChampionDrawer.bind(this);
-    this.toggleItemDrawer = this.toggleItemDrawer.bind(this);
     this.addToTeam = this.addToTeam.bind(this);
     this.drag = this.drag.bind(this);
     this.drop = this.drop.bind(this);
@@ -88,7 +84,7 @@ export default class Main extends Component {
       traits_arr[traits[trait].key] = traits[trait];
     }
 
-    fetch("https://raw.communitydragon.org/11.15/cdragon/tft/en_us.json").then(res => res.json()).then(res => {
+    fetch("https://raw.communitydragon.org/latest/cdragon/tft/en_us.json").then(res => res.json()).then(res => {
       console.log(res);
       for (let champion in res.setData[5].champions) {
         if (champions_arr[res.setData[5].champions[champion].apiName] !== undefined) {
@@ -98,7 +94,14 @@ export default class Main extends Component {
 
       for (let item in res.items) {
         if (items_arr['i' + res.items[item].id] !== undefined) {
-          items_arr['i' + res.items[item].id].patch_data = res.items[item];
+          if (items_arr['i' + res.items[item].id].name.replaceAll(' ', '').toLowerCase() === res.items[item].name.replaceAll(' ', '').toLowerCase()) {
+            items_arr['i' + res.items[item].id].patch_data = res.items[item];
+          }
+          else {
+            if (items_arr['i' + res.items[item].id].patch_data === undefined) {
+              items_arr['i' + res.items[item].id].patch_data = res.items[item];
+            }
+          }
         }
       }
 
@@ -116,14 +119,6 @@ export default class Main extends Component {
     console.log(traits_arr)
 
     
-  }
-
-  toggleChampionDrawer = () => {
-    this.setState({...this.state, championDrawerOpen: !this.state.championDrawerOpen});
-  }
-
-  toggleItemDrawer = () => {
-    this.setState({...this.state, itemDrawerOpen: !this.state.itemDrawerOpen});
   }
 
   compare = (a, b) => {
@@ -161,7 +156,7 @@ export default class Main extends Component {
     Object.keys(traits).forEach((key, index) => {
       traits[key].count = 0;
     });
-    this.setState({team: {}, traits: traits, draggedItem: {}});
+    this.setState({team: [], traits: traits, draggedItem: {}, text: {teamName: "", searchNameChamps: "", searchNameItems: ""}});
   }
 
   randomButton = (e) => {
@@ -404,7 +399,24 @@ export default class Main extends Component {
   }
   drop = (e, id) => {
     e.preventDefault();
-    // let data = e.dataTransfer.getData("text");
+    let data = e.dataTransfer.getData("text");
+
+    console.log("dropped item: " + id);
+    console.log(this.state.team);
+    let team = this.state.team;
+
+    for (let teamMember in this.state.team) {
+      if (this.state.team[teamMember].champion.championId === id) {
+        console.log('asdf');
+
+        if (this.state.team[teamMember].items.length < 3) {
+          team[teamMember].items.push(this.state.draggedItem);
+        }
+        else {
+
+        }
+      }
+    }
 
     // if (this.state.team[id].items.length === 0) {
     //   if (this.applyItemEffects(this.state.draggedItem, id)) {
@@ -423,7 +435,7 @@ export default class Main extends Component {
     // }
     // else {
     // }
-    this.setState({draggedItem: {}});
+    this.setState({team: team, draggedItem: {}});
   }
 
   applyItemEffects = (item, key) => {
@@ -531,10 +543,11 @@ export default class Main extends Component {
                   <Alert color={this.state.alertVariant} isOpen={this.state.showAlert}>{this.state.alertMessage}</Alert>
                 </div>
                 <Input type="text" id="search" name="teamName" onChange={this.handleChanges} placeholder="Team Name"/>
+                
+                <TeamPanel team={this.state.team} items={this.state.items} champions={this.state.champions} drop={this.drop}/>
                 <ChampionPanel champions={this.state.champions} addToTeam={this.addToTeam} drag={this.drag}/>
                 <ItemPanel items={this.state.items} itemsBasic={this.state.itemsBasic} drag={this.drag}/>
                 <HexagonGrid team={this.state.team}/>
-                <TeamPanel team={this.state.team} items={this.state.items} champions={this.state.champions} classes={this.state.classes} origins={this.state.origins} drop={this.drop}/>
                 <SynergiesPanel traits={this.state.traits}/>
                 </td>
                 <td style={{width: '16%'}}></td>

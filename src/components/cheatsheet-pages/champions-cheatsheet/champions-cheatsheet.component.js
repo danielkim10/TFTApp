@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Input } from 'reactstrap';
-import { ability_desc_parse } from '../../../api-helper/string-parsing.js';
+import { ability_desc_parse, ability_icon_parse } from '../../../api-helper/string-parsing.js';
 import SynergyCard from '../../../sub-components/synergy-card.js';
 import '../../../css/colors.css'
 
@@ -48,6 +48,7 @@ class ChampionsCheatSheet extends Component {
           traits_arr[res.setData[5].traits[trait].apiName].patch_data = res.setData[5].traits[trait];
         }
       }
+      console.log(champions_arr);
       this.setState({champions: champions_arr, championNumber: champions_arr.length, traits: traits_arr});
     });
   }
@@ -67,9 +68,8 @@ class ChampionsCheatSheet extends Component {
   }
 
   championCard = (champion) => {
-    console.log(champion);
-
     let abilityVariables = [];
+    let championTraitsSmall = [];
     let championTraits = [];
     for (let variable in champion.patch_data.ability.variables) {
       if (!(champion.patch_data.ability.variables[variable].value[1] === champion.patch_data.ability.variables[variable].value[2] && champion.patch_data.ability.variables[variable].value[1] === champion.patch_data.ability.variables[variable].value[2])) {
@@ -80,21 +80,20 @@ class ChampionsCheatSheet extends Component {
     }
 
     for (let trait in champion.traits) {
+      let image = this.state.traits[champion.traits[trait]].patch_data.icon.substring(0, this.state.traits[champion.traits[trait]].patch_data.icon.indexOf('dds')).toLowerCase();
+      championTraitsSmall.push(
+        <tr key={trait}>
+          <td>
+            <img src={"https://raw.communitydragon.org/latest/game/"+image+'png'} width={20} height={20}/>
+            {this.state.traits[champion.traits[trait]].name}
+          </td>
+        </tr>
+      );
       championTraits.push(
         <SynergyCard key={trait} champions={this.state.champions} trait={this.state.traits[champion.traits[trait]]}/>
       );
     }
     
-    console.log(champion.patch_data.ability.icon.indexOf('Icons2D'));
-    console.log(champion.patch_data.ability.icon.indexOf('.dds'));
-    let icon = champion.patch_data.ability.icon.substring(champion.patch_data.ability.icon.indexOf('Icons2D/')+8, champion.patch_data.ability.icon.indexOf('.dds')).toLowerCase();
-    console.log(icon);
-    icon = icon.replace('tft5_', '');
-    icon = icon.replace('.tft_set5', '');
-    console.log("https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/characters/" + this.state.champion.name.replace(' ', '').replace('\'', '').toLowerCase() + "/hud/icons2d/" + icon + ".png");
-
-    // to fix manually: akshan, garen, karma, khazix, lee, mf, nid, rakan, rell, syndra, teemo, vel
-
     return (
       <div>
         <div>
@@ -113,6 +112,13 @@ class ChampionsCheatSheet extends Component {
                       <tr>
                         <td>Cost: {this.state.champion.cost}</td>
                       </tr>
+                    </tbody>
+                  </table>
+                </td>
+                <td>
+                  <table>
+                    <tbody>
+                        {championTraitsSmall}
                     </tbody>
                   </table>
                 </td>
@@ -146,7 +152,7 @@ class ChampionsCheatSheet extends Component {
                   <table>
                     <tbody>
                     <tr>
-                      <td style={{width: '60px'}}><img src={"https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/characters/" + this.state.champion.name.replace(' ', '').replace('\'', '').toLowerCase() + "/hud/icons2d/" + icon + ".png"} alt={this.state.champion.patch_data.ability.name}/></td>
+                      <td style={{width: '60px'}}><img src={ability_icon_parse(this.state.champion.patch_data)} alt={this.state.champion.patch_data.ability.name}/></td>
                       <td>
                         <table>
                           <tbody>

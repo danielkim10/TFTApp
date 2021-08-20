@@ -22,11 +22,18 @@ class ItemsCheatSheet extends Component {
       items_arr['i' + items[item].id] = items[item];
     }
 
-    fetch("https://raw.communitydragon.org/11.15/cdragon/tft/en_us.json").then(res => res.json()).then(res => {
+    fetch("https://raw.communitydragon.org/latest/cdragon/tft/en_us.json").then(res => res.json()).then(res => {
       console.log(res);
       for (let item in res.items) {
         if (items_arr['i' + res.items[item].id] !== undefined) {
-          items_arr['i' + res.items[item].id].patch_data = res.items[item];
+          if (items_arr['i' + res.items[item].id].name.replaceAll(' ', '').toLowerCase() === res.items[item].name.replaceAll(' ', '').toLowerCase()) {
+            items_arr['i' + res.items[item].id].patch_data = res.items[item];
+          }
+          else {
+            if (items_arr['i' + res.items[item].id].patch_data === undefined) {
+              items_arr['i' + res.items[item].id].patch_data = res.items[item];
+            }
+          }
         }
       }
 
@@ -68,6 +75,7 @@ class ItemsCheatSheet extends Component {
 
     if (item.isRadiant) {
       let itemStats = [];
+      let image = item.patch_data.icon.substring(0, item.patch_data.icon.indexOf('dds'));
       Object.keys(item.patch_data.effects).forEach((key, index) => {
         if (basicStats[key] !== undefined) {
           itemStats.push(<p key={key+item.id}>+{item.patch_data.effects[key]} {basicStats[key]}</p>)
@@ -77,7 +85,7 @@ class ItemsCheatSheet extends Component {
       return (
         <div>
           <Button onClick={this.clear}>Clear</Button>
-          <img src={require(`../../../data/items/` + item.id + `.png`)} alt={item.name} width={50} height={50}/>
+          <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={item.name} width={50} height={50}/>
           <p className='test-whitespace'>{item_desc_parse(item)}</p>
           {itemStats}
         </div>
@@ -85,6 +93,7 @@ class ItemsCheatSheet extends Component {
     }
     else if (item.isElusive) {
       let itemStats = [];
+      let image = item.patch_data.icon.substring(0, item.patch_data.icon.indexOf('dds'));
       Object.keys(item.patch_data.effects).forEach((key, index) => {
         if (basicStats[key] !== undefined) {
           itemStats.push(<p key={key+item.id}>+{item.patch_data.effects[key]} {basicStats[key]}</p>)
@@ -94,7 +103,7 @@ class ItemsCheatSheet extends Component {
       return (
         <div>
           <Button onClick={this.clear}>Clear</Button>
-          <img src={require(`../../../data/items/` + item.id + `.png`)} alt={item.name} width={50} height={50}/>
+          <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={item.name} width={50} height={50}/>
           <p>{item_desc_parse(item)}</p>
           {itemStats}
         </div>
@@ -103,13 +112,18 @@ class ItemsCheatSheet extends Component {
 
     else if (item.id < 10) {
       let itemRecipes = [];
+      let image = item.patch_data.icon.substring(0, item.patch_data.icon.indexOf('dds'));
       
       for (let i = 1; i < 10; i++) {
+        let secondItem = this.state.items['i'+i];
+        let secondItemImage = secondItem.patch_data.icon.substring(0, secondItem.patch_data.icon.indexOf('dds'));
+        let advancedItem = this.state.items['i'+Math.min(item.id*10 + i, i*10 + item.id)];
+        let advancedItemImage = advancedItem.patch_data.icon.substring(0, advancedItem.patch_data.icon.indexOf('dds'));
         itemRecipes.push(
           <div key={i}>
-            <img src={require(`../../../data/items/0` + item.id + `.png`)} alt={item.name} width={30} height={30}/>+
-            <img src={require(`../../../data/items/0` + i + `.png`)} alt={item.name} width={30} height={30}/>=
-            <img src={require(`../../../data/items/` + Math.min(item.id*10 + i, i*10 + item.id) + `.png`)} alt={item.name} width={30} height={30}/>
+            <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={item.name} width={30} height={30}/>+
+            <img src={"https://raw.communitydragon.org/latest/game/"+secondItemImage.toLowerCase()+'png'} alt={item.name} width={30} height={30}/>=
+            <img src={"https://raw.communitydragon.org/latest/game/"+advancedItemImage.toLowerCase()+'png'} alt={item.name} width={30} height={30}/>
           </div>
         )
       }
@@ -117,7 +131,7 @@ class ItemsCheatSheet extends Component {
       return (
         <div>
           <Button onClick={this.clear}>Clear</Button>
-          <img src={require(`../../../data/items/0` + item.id + `.png`)} alt={item.name} width={50} height={50}/>
+          <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={item.name} width={50} height={50}/>
           <p>{item_desc_parse(item)}</p>
           {itemRecipes}
         </div>
@@ -125,6 +139,7 @@ class ItemsCheatSheet extends Component {
     }
     else if (item.id >= 10) {
       let itemStats = [];
+      let image = item.patch_data.icon.substring(0, item.patch_data.icon.indexOf('dds'));
       Object.keys(item.patch_data.effects).forEach((key, index) => {
         if (basicStats[key] !== undefined) {
           itemStats.push(<p key={key+item.id}>+{item.patch_data.effects[key]} {basicStats[key]}</p>)
@@ -134,7 +149,7 @@ class ItemsCheatSheet extends Component {
       return (
         <div>
           <Button onClick={this.clear}>Clear</Button>
-          <img src={require(`../../../data/items/` + item.id + `.png`)} alt={item.name} width={50} height={50}/>
+          <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={item.name} width={50} height={50}/>
           <p>{item_desc_parse(item)}</p>
           {itemStats}
         </div>
@@ -175,11 +190,15 @@ class ItemsCheatSheet extends Component {
     const radiantItems = [];
     const otherItems = [];
     Object.keys(this.state.items).forEach((key, index) => {
+      console.log(key);
+      console.log(this.state.items[key].patch_data);
+      let image = this.state.items[key].patch_data.icon.substring(0, this.state.items[key].patch_data.icon.indexOf('dds'));
+
       if (this.state.items[key].isRadiant) {
         let str = parseInt((key.substring(1, key.length)));
         radiantItems.push(
           <div className='champion-spacing' key={key} onClick={(e) => this.selectItem(e, this.state.items[key])}>
-            <img src={require(`../../../data/items/` + str + `.png`)} alt={this.state.items[key].name} width={50} height={50} />
+            <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={this.state.items[key].name} width={50} height={50} />
             <p className='item-name'>{this.state.items[key].name}</p>
           </div>
         );
@@ -189,7 +208,7 @@ class ItemsCheatSheet extends Component {
         let str = parseInt((key.substring(1, key.length)));
         otherItems.push(
           <div className='champion-spacing' key={key} onClick={(e) => this.selectItem(e, this.state.items[key])}>
-            <img src={require(`../../../data/items/` + str + `.png`)} alt={this.state.items[key].name} width={50} height={50} />
+            <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={this.state.items[key].name} width={50} height={50} />
             <p className='item-name'>{this.state.items[key].name}</p>
           </div>
         );
@@ -199,7 +218,7 @@ class ItemsCheatSheet extends Component {
         let str = '0' + key.substring(1, key.length);
         basicItems.push(
           <div className='champion-spacing' key={key} onClick={(e) => this.selectItem(e, this.state.items[key])}>
-            <img src={require(`../../../data/items/` + str + `.png`)} alt={this.state.items[key].name} width={50} height={50} />
+            <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={this.state.items[key].name} width={50} height={50} />
             <p className='item-name'>{this.state.items[key].name}</p>
           </div>
         );
@@ -208,7 +227,7 @@ class ItemsCheatSheet extends Component {
         let str = parseInt((key.substring(1, key.length)));
         advancedItems.push(
           <div className='champion-spacing' key={key} onClick={(e) => this.selectItem(e, this.state.items[key])}>
-            <img src={require(`../../../data/items/` + str + `.png`)} alt={this.state.items[key].name} width={50} height={50} />
+            <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={this.state.items[key].name} width={50} height={50} />
             <p className='item-name'>{this.state.items[key].name}</p>
           </div>
           
