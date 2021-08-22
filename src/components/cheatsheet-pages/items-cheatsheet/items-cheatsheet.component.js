@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Button } from '@material-ui/core';
 import { item_desc_parse } from '../../../api-helper/string-parsing.js';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import '../../../css/colors.css';
 
 import './items-cheatsheet.component.css'
@@ -11,11 +12,13 @@ class ItemsCheatSheet extends Component {
     this.state = {
       items: {},
       selectedItem: {},
+      loading: false,
     };
     this.clear = this.clear.bind(this);
   }
 
   componentDidMount = () => {
+    this.setState({loading: true});
     let items = require("../../../data/items.json");
     let items_arr = {};
     for (let item in items) {
@@ -37,7 +40,7 @@ class ItemsCheatSheet extends Component {
         }
       }
 
-      this.setState({items: items_arr});
+      this.setState({items: items_arr, loading: false});
     });
     console.log(items_arr);
   }
@@ -185,6 +188,7 @@ class ItemsCheatSheet extends Component {
   }
 
   render = () => {
+    let loading = true;
     const basicItems = [];
     const advancedItems = [];
     const radiantItems = [];
@@ -235,13 +239,16 @@ class ItemsCheatSheet extends Component {
       }
     });
 
+    loading = false;
+
     return (
       <table>
         <tbody>
           <tr>
             <td style={{width: '16%'}}></td>
             <td style={{width: '66%'}}>
-              <div>
+              {this.state.loading && loading && <CircularProgress size={24}/>}
+              { !this.state.loading && !loading && <div>
                 {
                   this.state.selectedItem !== undefined ? this.showItemDetail(this.state.selectedItem) : <div/> 
                 }
@@ -269,7 +276,7 @@ class ItemsCheatSheet extends Component {
                     {otherItems}
                   </div>
                 </div>
-              </div>
+              </div>}
             </td>
             <td style={{width: '16%'}}></td>
           </tr>

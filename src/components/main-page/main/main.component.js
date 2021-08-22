@@ -11,6 +11,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import CasinoIcon from '@material-ui/icons/Casino';
 import ClearIcon from '@material-ui/icons/Clear';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import HexagonGrid from '../../../sub-components/hexagon-grid';
 import '../../../css/colors.css';
 import '../../../css/fonts.css';
@@ -60,6 +61,7 @@ export default class Main extends Component {
   }
 
   componentDidMount = () => {
+    this.setState({loading: true});
     let champions = require("../../../data/champions.json");
     let items = require("../../../data/items.json");
     let traits = require("../../../data/traits.json");
@@ -112,7 +114,7 @@ export default class Main extends Component {
         }
 
       }
-      this.setState({champions: champions_arr, items: items_arr, traits: traits_arr});
+      this.setState({champions: champions_arr, items: items_arr, traits: traits_arr, loading: false});
     });
     console.log(champions_arr);
     console.log(items_arr);
@@ -526,7 +528,9 @@ export default class Main extends Component {
               <tr>
                 <td style={{width: '16%'}}></td>
                 <td style={{width: '66%'}}>
-                
+                {this.state.loading && <CircularProgress size={24}/>}
+                { !this.state.loading &&
+                <div>
                 <Button type="button" color="primary" style={{width: '25%'}} onClick={this.randomButton}>
                   <CasinoIcon/> Random
                 </Button>
@@ -549,6 +553,8 @@ export default class Main extends Component {
                 <ItemPanel items={this.state.items} itemsBasic={this.state.itemsBasic} drag={this.drag}/>
                 <HexagonGrid team={this.state.team}/>
                 <SynergiesPanel traits={this.state.traits}/>
+                </div>
+                }
                 </td>
                 <td style={{width: '16%'}}></td>
               </tr>

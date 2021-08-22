@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
-import { Card, CardHeader, CardBody, Row, Col, Input, Button} from 'reactstrap';
+import { Input, Button} from 'reactstrap';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 import MatchBasic from './match-basic.component.js';
 
 class MatchHistory extends Component {
@@ -9,17 +14,20 @@ class MatchHistory extends Component {
 
     this.state = {
       summonerName: "",
-      region: "",
+      platform: "https://na1.api.riotgames.com",
+      region: "https://americas.api.riotgames.com",
       gamedata: {},
       matches: [],
       champions: {},
       items: {},
       traits: {},
       setNumber: 5,
+      loading: false,
     }
 
     this.search = this.search.bind(this);
     this.handleName = this.handleName.bind(this);
+    this.handleRegionSelect = this.handleRegionSelect.bind(this);
   }
 
   compare(a, b) {
@@ -91,51 +99,73 @@ class MatchHistory extends Component {
   }
 
   search(e) {
+    console.log('test');
     //e.preventDefault()
-    //const NA1 = 'https://na1.api.riotgames.com';
-    //const REGION_AMERICA='https://americas.api.riotgames.com';
-    //const EUW1 = 'https://euw1.api.riotgames.com';
-    //const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-    //const summonerUrl = `${NA1}/tft/summoner/v1/summoners/by-name/${this.state.summonerName}?api_key=${process.env.REACT_APP_RIOT_KEY}`;
+    const proxyUrl = 'https://infinite-anchorage-43166.herokuapp.com/';
+    const summonerUrl = '/tft/summoner/v1/summoners/by-name/';
+    const matchListUrl = '/tft/match/v1/matches/by-puuid/{puuid}/ids';
+    const matchUrl = '/tft/match/v1/matches/{matchId}'
+    const leagueUrl = '/tft/league/v1/entries/by-summoner/';
 
-    // let summonerData = fetch(proxyUrl+summonerUrl).then
-    //   (res => res.json()).then(res => {
-    //     console.log(res);
-    //     let puuid = res.puuid;
-    //     let matchesUrl = `${REGION_AMERICA}/tft/match/v1/matches/by-puuid/${puuid}/ids?count=3&api_key=${process.env.REACT_APP_RIOT_KEY}`;
-    //     let summonerMatches = fetch(proxyUrl+matchesUrl).then
-    //         (res2 => res2.json()).then(res2 => {
-    //           console.log(res2);
-    //           let matchIds = res2;
-    //           let matches = [];
-    //           let setNumber = this.state.setNumber;
-    //           for (let i in matchIds) {
-    //             if (setNumber === this.state.setNumber) {
-    //             let matchUrl = `${REGION_AMERICA}/tft/match/v1/matches/${matchIds[i]}?api_key=${process.env.REACT_APP_RIOT_KEY}`;
-    //             let match = fetch(proxyUrl+matchUrl).then
-    //               (res3 => res3.json()).then(res3 => {
-    //                 console.log(res3);
+    //const americas = 'https://americas.api.riotgames.com/
 
-    //                 let patch = this.parseDataVersion(res3.info.game_version);
+    this.setState({loading: true});
 
-    //                 if (parseFloat(patch) > 10.12) {
-    //                   matches[i] = res3;
-    //                 }
-    //                 else {
-    //                   return;
-    //                 }
-    //                 setNumber = res3.metadata.data_version;
-    //                 this.setState({matches: matches});
-    //               })
-    //               .catch(err => console.log('Error: ' + err))
-    //             }
-    //           }
-    //         }
-    //     )
-    //     .catch(err => console.log('Error: ' + err))
-    //   }
-    // )
-    // .catch(err => console.log('Error: ' + err))
+    fetch(`${proxyUrl}${this.state.platform}${summonerUrl}${this.state.summonerName}`, {
+        method: 'GET',
+        headers: {
+            'Accept-Charset': 'application/json;charset=utf-8',
+            'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
+        }
+        
+    })
+    .then(res => res.json())
+    .then(summonerData => {
+        fetch(`${proxyUrl}${this.state.platform}${leagueUrl}${summonerData.id}`, {
+            method: `GET`,
+            headers: {
+                'Accept-Charset': 'application/json;charset=utf-8',
+                'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
+            }
+        }).then(res => res.json()).then(leagueData => {
+            
+            fetch(`${proxyUrl}${this.state.region}/tft/match/v1/matches/by-puuid/${summonerData.puuid}/ids`, {
+                method: `GET`,
+                headers: {
+                    'Accept-Charset': 'application/json;charset=utf-8',
+                    'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
+                }
+            }).then(res => res.json()).then(matchListData => {
+                console.log(summonerData);
+                console.log(leagueData);
+                console.log(matchListData);
+
+                let platform = 'na';
+                if (this.state.platform === 'https://euw1.api.riotgames.com') {
+                    platform = 'euw';
+                }
+
+                let path = `/profile`
+                this.props.history.push({
+                        pathname: path, 
+                        search: `?platform=${platform}&summonerName=${this.state.summonerName.replaceAll(' ', '').toLowerCase()}`, 
+                        state: { 
+                            summonerData: summonerData,
+                            leagueData: leagueData,
+                            matchListData: matchListData
+                        }});
+            }).catch((matchListErr) => {
+                console.error('Match List Error: ' + matchListErr);
+            });
+            this.setState({loading: false, champions: {}});
+        })
+        .catch((leagueErr) => {
+            console.error('Ranked League Error: ' + leagueErr);
+        });
+    })
+    .catch((summonerErr) => {
+        console.error('Summoner Error: ' + summonerErr);
+    });
   }
 
   handleName(event) {
@@ -155,7 +185,14 @@ class MatchHistory extends Component {
     this.setState({ summonerName: this.state.summonerName.replace(" ", "")});
   }
 
+  handleRegionSelect = (e) => {
+    let regionApi = 'https://americas.api.riotgames.com/';
+    if (e.target.value === 'https://euw1.api.riotgames.com') {
+        regionApi = 'https://europe.api.riotgames.com/';
+    }
 
+    this.setState({platform: e.target.value, region: regionApi});
+  }
 
   render() {
     let match = {
@@ -1455,34 +1492,73 @@ class MatchHistory extends Component {
       }
     }
 
-
+    let rank = {
+        "leagueId": "83b9dd01-6753-4081-aa66-b4e503ae0e8b",
+        "queueType": "RANKED_TFT",
+        "tier": "GOLD",
+        "rank": "IV",
+        "summonerId": "EseeFAsed8-yv9dEOjUvpDYSAiZ_RxQ2G-r3_j6il6TtDIo",
+        "summonerName": "Dice Jar",
+        "leaguePoints": 39,
+        "wins": 3,
+        "losses": 23,
+        "veteran": false,
+        "inactive": false,
+        "freshBlood": false,
+        "hotStreak": false
+    }
 
 
     return (
-      <div>
-      <Card>
-        <CardHeader><strong>Search</strong></CardHeader>
-        <CardBody>
-          <Input type="text" id="nameSearch" onChange={this.handleName}/>
-          <Button type="button" color="primary" onClick={this.search}>Search</Button>
-        </CardBody>
-      </Card>
-      <Row>
-        <Col sm={3}>
-          <Card>
-            <CardBody>
-            </CardBody>
-          </Card>
-        </Col>
-        <Col sm={9}>
-          <Card>
-            <CardBody>
-              <MatchBasic gamedata={match} champions={this.state.champions} traits={this.state.traits} items={this.state.items}/>
-            </CardBody>
-          </Card>
-        </Col>
-        </Row>
-      </div>
+        <table style={{width: '100%'}}>
+            <tbody>
+                <tr>
+                    <td style={{width: '16%'}}></td>
+                    <td style={{width: '66%'}}>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Search</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <table>
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <FormControl variant="filled" disabled={this.state.loading}>
+                                                            <InputLabel id="platform-select-label">Platform</InputLabel>
+                                                            <Select 
+                                                                labelId="platform-select-label" 
+                                                                id="platform-select"
+                                                                value={this.state.platform}
+                                                                onChange={this.handleRegionSelect}
+                                                            >
+                                                                <MenuItem value="https://na1.api.riotgames.com">NA</MenuItem>
+                                                                <MenuItem value="https://euw1.api.riotgames.com">EU</MenuItem>
+                                                            </Select>
+                                                        </FormControl>
+                                                    </td>
+                                                    <td><Input type="text" id="nameSearch" onChange={this.handleName} disabled={this.state.loading}/></td>
+                                                    <td><Button type="button" color="primary" onClick={this.search} disabled={this.state.loading}>Search</Button></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        {this.state.loading && <CircularProgress size={24}/>}
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                
+                            </tbody>
+                        </table>
+                    </td>
+                    <td style={{width: '16%'}}></td>
+                </tr>
+            </tbody>
+        </table>
     )
   }
 }

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { sortCostAscending } from '../api-helper/sorting.js';
+import { withRouter } from 'react-router';
 import { synergy_desc_parse, synergy_effect_parse } from '../api-helper/string-parsing.js';
 
 class SynergyCard extends Component {
@@ -10,8 +11,9 @@ class SynergyCard extends Component {
         }
     }
 
-    championRedirect() {
-
+    championRedirect(championId) {
+        let path = '/cheatsheet/champions';
+        this.props.history.push({pathname: path, search: `?champion=${championId}`, state: {data: championId}});
     }
 
     render() {
@@ -26,7 +28,7 @@ class SynergyCard extends Component {
         champions.sort(sortCostAscending);
         for (let champion in champions) {
             championDesc.push(
-                <div className='champion-spacing' onClick={() => this.championRedirect(champions[champion].name)} key={champions[champion].championId}>
+                <div className='champion-spacing' onClick={() => this.championRedirect(champions[champion].championId)} key={champions[champion].championId}>
                     <img src={require(`../data/champions/` + champions[champion].championId + `.png`)} alt={champions[champion].name} className={champions[champion].cost === 1 ? 'cost1champion' : champions[champion].cost === 2 ? 'cost2champion' : champions[champion].cost === 3 ? 'cost3champion' : champions[champion].cost === 4 ? 'cost4champion' : 'cost5champion'}/>
                     <p className='champion-name'>{champions[champion].name}</p>
                     <p className='cost'>${champions[champion].cost}</p>
@@ -79,4 +81,4 @@ class SynergyCard extends Component {
     }
 }
 
-export default SynergyCard
+export default withRouter(SynergyCard)

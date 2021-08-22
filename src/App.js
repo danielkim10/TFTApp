@@ -8,6 +8,7 @@ import ChampionsCheatSheet from "./components/cheatsheet-pages/champions-cheatsh
 import SynergiesCheatSheet from "./components/cheatsheet-pages/synergies-cheatsheet/synergies-cheatsheet.component";
 import ItemsCheatSheet from "./components/cheatsheet-pages/items-cheatsheet/items-cheatsheet.component";
 import MatchHistory from "./components/match-history/matchhistory.component";
+import Profile from "./components/match-history/profile";
 import Teams from "./components/teams/teams.component";
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
         <Route path="/cheatsheet/synergies" component={SynergiesCheatSheet} />
         <Route path="/cheatsheet/items" component={ItemsCheatSheet} />
         <Route path="/matchhistory" component={MatchHistory} />
+        <Route path="/profile" component={Profile} />
         <Route path="/teams" component={Teams} />
       </div>
     </Router>

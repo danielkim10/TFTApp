@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Input } from 'reactstrap';
 import { ability_desc_parse, ability_icon_parse } from '../../../api-helper/string-parsing.js';
 import SynergyCard from '../../../sub-components/synergy-card.js';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import '../../../css/colors.css'
 
 import './champions-cheatsheet.component.css';
@@ -16,12 +17,17 @@ class ChampionsCheatSheet extends Component {
       championList: [],
       searchName: "",
       traits: {},
+      loading: false,
     };
 
     this.handleSearch = this.handleSearch.bind(this);
   }
 
   componentDidMount = () => {
+    this.setState({loading: true});
+    if (this.props.location.state) {
+      console.log(this.props.location.state.data);
+    }
     let champions = require("../../../data/champions.json");
     let traits = require("../../../data/traits.json");
     let champions_arr = {};
@@ -49,7 +55,18 @@ class ChampionsCheatSheet extends Component {
         }
       }
       console.log(champions_arr);
-      this.setState({champions: champions_arr, championNumber: champions_arr.length, traits: traits_arr});
+
+      let champion = {};
+      if (this.props.location.search) {
+        let searchString = this.props.location.search.slice(this.props.location.search.indexOf('=')+1, this.props.location.search.length);
+        console.log(searchString);
+        champion = champions_arr[searchString];
+      }
+      else {
+        let keys = Object.keys(champions_arr);
+        champion = champions_arr[keys[ keys.length * Math.random() << 0]]
+      }
+      this.setState({champions: champions_arr, champion: champion, championNumber: champions_arr.length, traits: traits_arr, loading: false});
     });
   }
 
@@ -84,7 +101,7 @@ class ChampionsCheatSheet extends Component {
       championTraitsSmall.push(
         <tr key={trait}>
           <td>
-            <img src={"https://raw.communitydragon.org/latest/game/"+image+'png'} width={20} height={20}/>
+            <img src={`https://raw.communitydragon.org/latest/game/${image}png`} width={20} height={20}/>
             {this.state.traits[champion.traits[trait]].name}
           </td>
         </tr>
@@ -93,7 +110,7 @@ class ChampionsCheatSheet extends Component {
         <SynergyCard key={trait} champions={this.state.champions} trait={this.state.traits[champion.traits[trait]]}/>
       );
     }
-    
+
     return (
       <div>
         <div>
@@ -101,7 +118,14 @@ class ChampionsCheatSheet extends Component {
             <tbody>
               <tr>
                 <td>
-                  <img src={require(`../../../data/champions/` + champion.championId + `.png`)} alt={champion.name} className={champion.cost === 1 ? 'cost1champion' : champion.cost === 2 ? 'cost2champion' : champion.cost === 3 ? 'cost3champion' : champion.cost === 4 ? 'cost4champion' : 'cost5champion'}/>
+                  <div className="image-cropper">
+                    <img src={require(`../../../data/champions/${champion.championId}.png`)} alt={champion.name} className={champion.cost === 1 ? 'cost1champion' : champion.cost === 2 ? 'cost2champion' : champion.cost === 3 ? 'cost3champion' : champion.cost === 4 ? 'cost4champion' : 'cost5champion'}/>
+                  </div>
+                </td>
+                <td>
+                  <div className="image-cropper-2">
+                    <img src={"https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/loadouts/companions/tooltip_qiyanadog_bassqueen_tier1.png"} className="center-image"/>
+                  </div>
                 </td>
                 <td>
                   <table>
@@ -196,8 +220,8 @@ class ChampionsCheatSheet extends Component {
     Object.keys(this.state.champions).forEach((key, index) => {
       if (this.state.champions[key].name.toLowerCase().includes(this.state.searchName.toLowerCase())) {
         champions.push(
-          <div className='champion-spacing' key={key}>
-            <img src={require(`../../../data/champions/` + key + `.png`)} alt={this.state.champions[key].name} className={this.state.champions[key].cost === 1 ? 'cost1champion' : this.state.champions[key].cost === 2 ? 'cost2champion' : this.state.champions[key].cost === 3 ? 'cost3champion' : this.state.champions[key].cost === 4 ? 'cost4champion' : 'cost5champion'} onClick={() => this.loadChampionData(this.state.champions[key])}/>
+          <div className='champion-spacing' key={key} onClick={() => this.loadChampionData(this.state.champions[key])}>
+            <img src={require(`../../../data/champions/` + key + `.png`)} alt={this.state.champions[key].name} className={this.state.champions[key].cost === 1 ? 'cost1champion' : this.state.champions[key].cost === 2 ? 'cost2champion' : this.state.champions[key].cost === 3 ? 'cost3champion' : this.state.champions[key].cost === 4 ? 'cost4champion' : 'cost5champion'} />
             <p className='champion-name'>{this.state.champions[key].name}</p>
             <p className='cost'>${this.state.champions[key].cost}</p>
           </div>
@@ -210,6 +234,8 @@ class ChampionsCheatSheet extends Component {
           <tr>
             <td style={{width: '16%'}}></td>
             <td style={{width: '66%'}}>
+              {this.state.loading && <CircularProgress size={24}/>}
+              { !this.state.loading &&
               <table>
                 <tbody>
                   <tr>
@@ -227,6 +253,7 @@ class ChampionsCheatSheet extends Component {
                   </tr>
                 </tbody>
               </table>
+              }
             </td>
             <td style={{width: '16%'}}></td>
           </tr>

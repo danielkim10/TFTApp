@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import SynergyCard from '../../../sub-components/synergy-card.js';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import '../../../css/colors.css';
 import './synergies-cheatsheet.component.css';
-
 
 class SynergiesCheatSheet extends Component {
   constructor(props) {
@@ -10,11 +10,14 @@ class SynergiesCheatSheet extends Component {
     this.state = {
       traits: {},
       champions: {},
+      loading: false,
     };
     this.championRedirect = this.championRedirect.bind(this);
   }
 
   componentDidMount = () => {
+    this.setState({loading: true});
+    
     let champions = require("../../../data/champions.json");
     let traits = require("../../../data/traits.json");
 
@@ -44,7 +47,7 @@ class SynergiesCheatSheet extends Component {
         }
 
       }
-      this.setState({champions: champions_arr, traits: traits_arr});
+      this.setState({champions: champions_arr, traits: traits_arr, loading: false});
     });
   }
 
@@ -79,6 +82,7 @@ class SynergiesCheatSheet extends Component {
   }
 
   render = () => {
+    console.log(this.props.location.state);
     let originCards = [];
     let classCards = [];
 
@@ -99,18 +103,24 @@ class SynergiesCheatSheet extends Component {
           <tr>
             <td style={{width: '16%'}}></td>
             <td style={{width: '33%'}}>
+              {this.state.loading && <CircularProgress size={24}/>}
+              { !this.state.loading && 
               <table>
                 <tbody>
                   {originCards}
                 </tbody>
               </table>
+              }
             </td>
             <td style={{width: '33%'}}>
+            {this.state.loading && <CircularProgress size={24}/>}
+            { !this.state.loading && 
               <table>
                 <tbody>
                   {classCards}
                 </tbody>
               </table>
+            }
             </td>
             <td style={{width: '16%'}}></td>
           </tr>

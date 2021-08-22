@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
-import { Card, CardHeader, CardBody } from 'reactstrap';
-import { sortTierMatchDescending } from '../../api-helper/sorting.js'; 
+import { companion_parse } from '../../api-helper/string-parsing.js';
+import { sortTierDescending, sortPlacementAscending, sortTierMatchDescending } from '../../api-helper/sorting.js'; 
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 class MatchBasic extends Component {
   constructor(props) {
@@ -46,19 +50,34 @@ class MatchBasic extends Component {
 
   gameDataParse = () => {
     let players = this.props.gamedata.info.participants;
+    let playersSorted =  [];
     let playerData = [];
+    let myPlayer = [];
     
-    for (let player in players) {
-      playerData.push(this.playerDataParse(players[player]));
+    playersSorted = players.sort(sortPlacementAscending);
+
+    for (let player in playersSorted) {
+      let data = this.playerDataParse(playersSorted[player])
+      if (playersSorted[player].puuid === this.props.puuid) {
+        myPlayer = data;
+      }
+
+      playerData.push(data);
     }
     
+    //https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-tft/global/default/
 
     return (
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
+          {myPlayer}
+        </AccordionSummary>
       <table>
         <tbody>
           {playerData}
         </tbody>
       </table>
+      </Accordion>
     );
   }
 
@@ -69,8 +88,9 @@ class MatchBasic extends Component {
 
     traitsSorted = traits.sort(sortTierMatchDescending);
 
+    
+
     for (let trait in traitsSorted) {
-      console.log(this.props.traits[traits[trait].name]);
       if (this.props.traits[traitsSorted[trait].name] !== undefined) {
         if (traitsSorted[trait].tier_current > 0) {
           let image = this.props.traits[traitsSorted[trait].name].patch_data.icon.substring(0, this.props.traits[traitsSorted[trait].name].patch_data.icon.indexOf('dds')).toLowerCase();
@@ -83,18 +103,42 @@ class MatchBasic extends Component {
     }
 
     let champions = player.units;
-    let championsItemsRowUnsorted = [];
+    let championsSorted = [];
+    championsSorted = champions.sort(sortTierDescending);
     let championsItemsRowSorted = [];
+    
+    let stars = [];
 
-    for (let champion in champions) {
-
+    for (let champion in championsSorted) {
+      stars.push(<td>{championsSorted[champion].tier}</td>)
+      championsItemsRowSorted.push(
+        <td><img src={require(`../../data/champions/` + championsSorted[champion].character_id + `.png`)} width={45} height={45}/></td>
+      );
     }
+
+    //let companion = companion_parse(player.companion);
+    //console.log(companion);
 
     return (
       <tr>
         <td>
           <table>
             <tbody>
+              <tr>
+                <td>Placement: {player.placement}</td>
+                <td>Level: {player.level}</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+          <table>
+            <tbody>
+              <tr>
+                {stars}
+              </tr>
+              <tr>
+                {championsItemsRowSorted}
+              </tr>
               <tr>
                 {traitsRow}
               </tr>
@@ -107,25 +151,19 @@ class MatchBasic extends Component {
 
   render = () => {
     return(
-      <Card>
-        <CardHeader>
-          <p>{new Date(this.state.gamedata.info.game_datetime).toString()}</p>
-        </CardHeader>
-        <CardBody>
-          <table>
-            <tbody>
-              <tr>
-                <td>
+      <div>
+        <p>{new Date(this.state.gamedata.info.game_datetime).toString()}</p>
+        <table>
+          <tbody>
+            <tr>
+              <td>
 
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <p>{this.state.gamedata.info.participants[0].level}</p>
-          <p>{this.state.gamedata.info.participants[0].placement}</p>
-          {this.gameDataParse()}
-        </CardBody>
-      </Card>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        {this.gameDataParse()}
+      </div>
 
     );
   }

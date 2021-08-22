@@ -28,6 +28,32 @@
   margin: 6px;
 }
 
+.image-cropper {
+  width: 60px;
+  height: 60px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.image-cropper-2 {
+  position: relative;
+    height: 50px;
+    width: 50px;
+    overflow: hidden;
+    border-radius: 50%;
+    /*margin: 20px;*/
+    display: flex;
+    justify-content: center;
+}
+
+.center-image{
+  display: block;
+    margin: 0 auto;
+    height: 100%;
+    width: auto;
+}
+
 .cost1champion{
   width: 60px;
   height: 60px;

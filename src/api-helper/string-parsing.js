@@ -1,5 +1,3 @@
-import { FreeBreakfast } from '@material-ui/icons';
-
 var fnv = require('fnv-plus');
 
 export const item_desc_parse = (item) => {
@@ -180,4 +178,16 @@ export const synergy_effect_parse = (string, patch_data) => {
       effects[effect] += string;
     }
     return effects;
+}
+
+export const companion_parse = (companion) => {
+  let skinID = companion.skin_ID;
+  let species = companion.species.toLowerCase();
+
+  fetch(`https://raw.communitydragon.org/latest/game/data/characters/${species}/skins/skin${skinID}.bin.json`).then(res => res.json()).then(res => {  
+    let companionData = res[`Characters/${companion.species}/Skins/Skin${skinID}`];
+    let iconCircle = companionData.iconCircle.substring(0, companionData.iconCircle.indexOf('dds')).toLowerCase();
+
+    return `https://raw.communitydragon.org/latest/game/${iconCircle}png`;
+  });
 }
