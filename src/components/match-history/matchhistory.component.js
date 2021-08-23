@@ -1513,7 +1513,7 @@ class MatchHistory extends Component {
         <table style={{width: '100%'}}>
             <tbody>
                 <tr>
-                    <td style={{width: '16%'}}></td>
+                    <td style={{width: '16%'}}>asdfadsf</td>
                     <td style={{width: '66%'}}>
                         <table>
                             <tbody>
@@ -1555,7 +1555,7 @@ class MatchHistory extends Component {
                             </tbody>
                         </table>
                     </td>
-                    <td style={{width: '16%'}}></td>
+                    <td style={{width: '16%'}}>adsfasdf</td>
                 </tr>
             </tbody>
         </table>

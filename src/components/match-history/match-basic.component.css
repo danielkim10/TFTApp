@@ -1,0 +1,79 @@
+.trait-layering {
+    position: relative;
+    display: inline-block;
+    align-items: center;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+.background {
+    margin-top: 9px;
+    width: 30px;
+    height: 30px;
+}
+
+.trait {
+    position: absolute;
+    margin-top: 8px;
+    margin-left: 1px;
+    width: 20px;
+    height: 20px;
+    /* color: black; */
+    filter: invert(100%);
+    top: 15%;
+    left: 15%;
+}
+
+.first {
+    background-color: #ffcc33;
+}
+
+.second {
+    background-color: #a6a6a6
+}
+
+.third {
+    background-color: #cd7f32
+}
+
+.fourth {
+    background-color: #4d4d4d
+}
+
+.defeat {
+    background-color: #ff6666;
+}
+
+.t1-star {
+    color: gray;
+    font-size: small !important;
+}
+
+.t2-star {
+    color: green;
+    font-size: small !important;
+}
+
+.t3-star {
+    color: blue;
+    font-size: small !important;
+}
+
+.t4-star {
+    color: purple;
+    font-size: small !important;
+}
+
+.t5-star {
+    color: orange;
+    font-size: small !important;
+}
+
+.row-border {
+    border-top-style: solid;
+    border-bottom-style: solid;
+}
+
+.placement-font {
+    font-size: 24px;
+}

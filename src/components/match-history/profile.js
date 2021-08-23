@@ -16,6 +16,13 @@ class Profile extends Component {
     }
 
     componentDidMount = () => {
+        const proxyUrl = 'https://infinite-anchorage-43166.herokuapp.com/';
+        const summonerUrl = '/tft/summoner/v1/summoners/by-puuid/';
+        const leagueUrl = '/tft/league/v1/entries/by-summoner/';
+        const matchUrl = '/tft/match/v1/matches/';
+        const americas = 'https://americas.api.riotgames.com/';
+        const platform = 'https://na1.api.riotgames.com';
+
         this.setState({loading: true});
         let champions = require("../../data/champions.json");
         let items = require("../../data/items.json");
@@ -70,19 +77,37 @@ class Profile extends Component {
             
             if (this.props.location.search) {
                 if (this.props.location.state) {
-                    for (let i = 0; i < 5; i++) {
-                        fetch(`https://infinite-anchorage-43166.herokuapp.com/https://americas.api.riotgames.com/tft/match/v1/matches/${this.props.location.state.matchListData[i]}`, {
+                    for (let i = 0; i < 1; i++) {
+                        fetch(`${proxyUrl}${americas}${matchUrl}${this.props.location.state.matchListData[i]}`, {
                             method: 'GET',
                             headers: {
                                 'Accept-Charset': 'application/json;charset=utf-8',
                                 'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
                             }
                         }).then(res => res.json()).then(match => {
-                            let matches = this.state.matches;
-                            matches.push(match);
-                            matches.sort(sortGametimeDescending);
-                            console.log(matches);
-                            this.setState({matches: matches});
+
+                            for (let j = 0; j < 8; j++) {
+                                fetch(`${proxyUrl}${platform}${summonerUrl}${match.info.participants[j].puuid}`, {
+                                    method: 'GET',
+                                    headers: {
+                                        'Accept-Charset': 'application/json;charset=utf-8',
+                                        'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
+                                    }
+                                }).then(res => res.json()).then(player => {
+                                    //console.log(player.name);
+                                    match.info.participants[j].name = player.name;
+
+                                    if (j === 7) {
+                                        let matches = this.state.matches;
+                                        matches.push(match);
+                                        matches.sort(sortGametimeDescending);
+                                        
+                                        this.setState({matches: matches});
+                                    }
+                                }).catch((err) => {
+                                    console.error("Error retrieving player: " + err);
+                                });
+                            }
                         }).catch((err) => {
                             console.error("Error retrieving match: " + err);
                         });
@@ -95,12 +120,28 @@ class Profile extends Component {
             else {
 
             }
-            
+            console.log(traits_arr);
             this.setState({champions: champions_arr, items: items_arr, traits: traits_arr, loading: false});
         });
     }
 
     createRank = () => {
+        let rankedData = [];
+        if (this.props.location.state.leagueData.length === 2) {
+
+        }
+        else if (this.props.location.state.leagueData.length === 1) {
+                if (this.props.location.state.leagueData[0].queueType === 'RANKED_TFT') {
+
+                }
+                else {
+
+                }
+        }
+        else {
+
+        }
+
         return (
             <table>
                 <tbody>
@@ -115,12 +156,31 @@ class Profile extends Component {
         );
     }
 
+    createHyperRoll = () => {
+        if (this.props.location.state.leagueData.length !== 0) {
+
+        }
+
+        return (
+            <table>
+                <tbody>
+                    <tr>
+                        <td>Hyper Roll</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        );
+    }
+
     createMatches = () => {
         console.log('creating matches');
         let matches = [];
         for (let match in this.state.matches) {
             matches.push(
-                <tr>
+                <tr key={match}>
                     <td><MatchBasic puuid={this.props.location.state.summonerData.puuid} gamedata={this.state.matches[match]} champions={this.state.champions} items={this.state.items} traits={this.state.traits}/></td>
                 </tr>
             );
@@ -133,23 +193,45 @@ class Profile extends Component {
             <table>
                 <tbody>
                     <tr>
-                        <td style={{width: '16%'}}></td>
+                        <td style={{width: '16%'}}>asdfasdf</td>
                         <td style={{width: '66%'}}>
                             <table>
                                 <tbody>
                                     <tr>
-                                        <td style={{width: '33%'}}>
+                                        <td>
+                                            <table>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <img src={`https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${this.props.location.state.summonerData.profileIconId}.jpg`} style={{width: '50px', height: '50px'}}/>
+                                                        </td>
+                                                        <td>{this.props.location.state.summonerData.name}</td>
+                                                        <td>{this.props.location.state.summonerData.summonerLevel}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            
+                                        </td>
+                                        
+                                    </tr>
+                                    <tr>
+                                        <td>
                                             <table>
                                                 <tbody>
                                                     <tr>
                                                         <td>
                                                             {this.createRank()}
                                                         </td>
+                                                        <td>
+                                                            {this.createHyperRoll()}
+                                                        </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                         </td>
-                                        <td style={{width: '66%'}}>
+                                    </tr>
+                                    <tr>
+                                        <td style={{position: 'relative'}}>
                                             <table>
                                                 <tbody>
                                                     {this.createMatches()}
@@ -160,7 +242,7 @@ class Profile extends Component {
                                 </tbody>
                             </table>
                         </td>
-                        <td style={{width: '16%'}}></td>
+                        <td style={{width: '16%'}}>asdfasdf</td>
                     </tr>
                 </tbody>
             </table>
