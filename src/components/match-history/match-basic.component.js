@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { companion_parse } from '../../api-helper/string-parsing.js';
 import { sortTierDescending, sortPlacementAscending, sortTierMatchDescending } from '../../api-helper/sorting.js'; 
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
@@ -85,9 +84,9 @@ class MatchBasic extends Component {
     playersSorted = players.sort(sortPlacementAscending);
 
     for (let player in playersSorted) {
-      let data = this.playerDataParse(playersSorted[player])
+      let data = this.playerDataParse(playersSorted[player], player)
       if (playersSorted[player].puuid === this.props.puuid) {
-        myPlayer = data;
+        myPlayer = this.selfDataParse(playersSorted[player], player);
       }
 
       playerData.push(data);
@@ -97,8 +96,8 @@ class MatchBasic extends Component {
 
     return (
       <Accordion>
-        <AccordionSummary expandIcon={<ExpandMoreIcon/>} style={{margin: '0px'}}>
-          <table>
+        <AccordionSummary expandIcon={<ExpandMoreIcon/>} style={{backgroundColor: '#343a40'}}>
+          <table className='backgrounds'>
             <tbody>
               {myPlayer}
             </tbody>
@@ -149,10 +148,10 @@ class MatchBasic extends Component {
           }
 
           traitsRow.push(
-            <td key={this.props.traits[traits[trait].name]}>
+            <td key={this.props.traits[traits[trait].name].name}>
               <div className='trait-layering'>
-                <img src={traitBg} className='background'/>
-                <img src={"https://raw.communitydragon.org/latest/game/" + image +"png"} className='trait'/>
+                <img src={traitBg} alt={traitStyle} className='background'/>
+                <img src={"https://raw.communitydragon.org/latest/game/" + image +"png"} alt={this.props.traits[traits[trait].name].name} className='trait'/>
               </div>
               
             </td>
@@ -195,27 +194,27 @@ class MatchBasic extends Component {
       }
 
       for (let item in championsSorted[champion].items) {
-        let item_i = championsSorted[champion].items[item];
+        //let item_i = championsSorted[champion].items[item];
         let image = this.props.items['i' + championsSorted[champion].items[item]].patch_data.icon.substring(0, this.props.items['i' + championsSorted[champion].items[item]].patch_data.icon.indexOf('dds')).toLowerCase();
         items.push(
-          <div style={{position: 'relative', display: 'inline-block'}}>
-            <img src={`https://raw.communitydragon.org/latest/game/${image}png`} width={15} height={15}/>
+          <div style={{position: 'relative', display: 'inline-block', minWidth: '15px'}} key={item+image}>
+            <img src={`https://raw.communitydragon.org/latest/game/${image}png`} alt={image} width={15} height={15}/>
             {/*<ItemTooltip placement="top" isOpen={this.isToolTipOpen(this.props.items['i'+item_i].name)} target={this.props.items['i'+item_i].id} toggle={() => this.toggle(this.props.items['i'+item_i].id)} name={this.props.items['i'+item_i].name}/>*/}
           </div>
         );
       }
 
       championsItemsRowSorted.push(
-        <td>
+        <td key={champion+championsSorted[champion].character_id}>
           <table>
             <tbody>
               <tr>
                 <td style={{marginLeft: '10px'}}>{stars}</td>
               </tr>
               <tr>
-                <td><img src={require(`../../data/champions/` + championsSorted[champion].character_id + `.png`)} width={45} height={45}/></td>
+                <td><img src={this.props.champions[championsSorted[champion].character_id].patch_data.icon} alt={championsSorted[champion].name} width={45} height={45}/></td>
               </tr>
-              <tr style={{minWidth: '15px'}}>
+              <tr style={{minHeight: '15px'}}>
                 <td style={{height: '15px'}}>{items}</td>
               </tr>
             </tbody>
@@ -226,69 +225,10 @@ class MatchBasic extends Component {
     return championsItemsRowSorted;
   }
 
-  selfDataParse = (player) => {
-    let traits = player.traits;
-    let traitsSorted = [];
-    traitsSorted = traits.sort(sortTierMatchDescending);
-
-    let champions = player.units;
-    let championsSorted = [];
-    championsSorted = champions.sort(sortTierDescending);
-
+  playerPlacement = (rank) => {
     let rowBackground = '';
     let placement = '';
-    
-    return (
-      <tr>
-        <td>
-          <table>
-            <tbody>
-              <tr>
-                <td className='placement-font'>{placement}</td>
-              </tr>
-              <tr>
-                <td>Level: {player.level}</td>
-              </tr>
-            </tbody>
-          </table>
-        </td>
-        <td>
-          <table>
-            <tbody>
-              <tr>
-                {this.traitsSort(traitsSorted)}
-              </tr>
-            </tbody>
-          </table>
-        </td>
-        <td>
-          <table>
-            <tbody>
-              <tr>
-                {this.championsItemSort(championsSorted)}
-              </tr>
-            </tbody>
-          </table>
-        </td>
-      </tr>
-    );
-  }
-
-  playerDataParse = (player) => {
-    let traits = player.traits;
-    let traitsSorted = [];
-    traitsSorted = traits.sort(sortTierMatchDescending);
-
-    let champions = player.units;
-    let championsSorted = [];
-    championsSorted = champions.sort(sortTierDescending);
-
-    //let companion = companion_parse(player.companion);
-    //console.log(companion);
-
-    let rowBackground = '';
-    let placement = '';
-    switch (player.placement) {
+    switch (rank) {
       case 1:
         rowBackground = 'first';
         placement = '1st';
@@ -307,70 +247,110 @@ class MatchBasic extends Component {
         break;
       default:
         rowBackground = 'defeat';
-        placement = player.placement + 'th';
+        placement = rank + 'th';
         break;
     }
 
-    console.log(player.name);
+    return (
+      <td className={rowBackground}>
+          {placement}
+      </td>
+    );
+  }
 
-    // return (
-    //   <tr>
-    //     <td>
-    //       <table className='row-border'>
-    //         <tbody>
-    //           <tr>
-    //             <td>
-    //               <table className={rowBackground}>
-    //                 <tbody>
-    //                   <tr>
-    //                     <td className='placement-font'>{placement}</td>
-    //                   </tr>
-    //                   <tr>
-    //                     <td>Level: {player.level}</td>
-    //                   </tr>
-    //                   <tr>
-    //                     <td>Name: {player.name}</td>
-    //                   </tr>
-    //                 </tbody>
-    //               </table>
-    //             </td>
-    //             <td>
-    //               <table>
-    //                 <tbody>
-    //                   <tr>
-    //                     {this.traitsSort(traitsSorted)}
-    //                   </tr>
-    //                 </tbody>
-    //               </table>
-    //             </td>
-    //             <td>
-    //               <table>
-    //                 <tbody>
-    //                   <tr>
-    //                     {this.championsItemsSort(championsSorted)}
-    //                   </tr>
-    //                 </tbody>
-    //               </table>
-    //             </td>
-    //           </tr>
-    //         </tbody>
-    //       </table>
-    //     </td>
-    //   </tr>
-    // )
+  selfDataParse = (player, index) => {
+    let traits = player.traits;
+    let traitsSorted = [];
+    traitsSorted = traits.sort(sortTierMatchDescending);
 
-    console.log(player.last_round);
+    let champions = player.units;
+    let championsSorted = [];
+    championsSorted = champions.sort(sortTierDescending);
+
+    let placement = '';
+
+    console.log(this.props.gamedata.info);
+
+    let playerStuff = [];
+    for (let i = 0; i < this.props.gamedata.info.participants.length; i++) {
+      playerStuff.push(
+        <tr key={i}>
+          <td><img src={this.props.gamedata.info.participants[i].companion.image_source} alt={this.props.gamedata.info.participants[i].companion.species} width={25} height={25}/></td><td>{this.props.gamedata.info.participants[i].name}</td>
+          <td><img src={this.props.gamedata.info.participants[i+1].companion.image_source} alt={this.props.gamedata.info.participants[i+1].companion.species} width={25} height={25}/></td><td>{this.props.gamedata.info.participants[i+1].name}</td>
+        </tr>
+      )
+      i++
+    }
+
+    console.log(index);
+    
+    return (
+      <tr>
+        <td>
+          <table>
+            <tbody>
+              <tr>
+                <td className='placement-font'>{placement}</td>
+              </tr>
+              <tr>
+                <td>Level: {player.level}</td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+        <td>
+          <table>
+            <tbody>
+              <tr key={'t'+index}>
+                {this.traitsSort(traitsSorted)}
+              </tr>
+            </tbody>
+          </table>
+        </td>
+        <td>
+          <table>
+            <tbody>
+              <tr key={'c'+index}>
+                {this.championsItemsSort(championsSorted)}
+              </tr>
+            </tbody>
+          </table>
+        </td>
+        <td>
+          <table>
+            <tbody>
+              {playerStuff}
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    );
+  }
+
+  playerDataParse = (player, index) => {
+    let traits = player.traits;
+    let traitsSorted = [];
+    traitsSorted = traits.sort(sortTierMatchDescending);
+
+    let champions = player.units;
+    let championsSorted = [];
+    championsSorted = champions.sort(sortTierDescending);
+
+    //let companion = companion_parse(player.companion);
+    //console.log(companion);
+
+    //console.log(player.name);
+    //console.log(player.last_round);
 
     let last_round = player.last_round - 3;
     let main_round = Math.floor(last_round/6) + 1;
     let sub_round = (last_round % 6) + 1;
 
     return (
-      <tr key={player.name}>
-        <td className={rowBackground}>
-          {placement}
-        </td>
+      <tr key={index}>
+        {this.playerPlacement(player.placement)}
         <td>
+          <img src={player.companion.image_source} alt={player.companion.species} width={25} height={25}/>
           {player.name}
         </td>
         <td>
@@ -382,7 +362,7 @@ class MatchBasic extends Component {
         <td>
           <table>
             <tbody>
-              <tr key={'a'+player.name}>
+              <tr key={'a'+index}>
                 {this.traitsSort(traitsSorted)}
               </tr>
             </tbody>
@@ -391,7 +371,7 @@ class MatchBasic extends Component {
         <td>
           <table>
             <tbody>
-              <tr key={'b'+player.name}>
+              <tr key={'b'+index}>
                 {this.championsItemsSort(championsSorted)}
               </tr>
             </tbody>
@@ -401,21 +381,12 @@ class MatchBasic extends Component {
           {player.gold_left}
         </td>
       </tr>
-    )
+    );
   }
 
   render = () => {
     return(
-      <div>
-        <table>
-          <tbody>
-            <tr>
-              <td>
-
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div className='backgrounds'>
         {this.gameDataParse()}
       </div>
 

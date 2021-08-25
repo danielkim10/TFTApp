@@ -79,3 +79,16 @@
   height: 60px;
   box-shadow: -2px -2px orange, -2px 2px orange, 2px -2px orange, 2px 2px orange;
 }
+
+.stat-column {
+  width: 33%;
+  min-width: 200px;
+}
+
+.side-margin {
+  width: 16% !important;
+}
+
+.main-content {
+  width: 66% !important;
+}

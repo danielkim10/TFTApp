@@ -41,14 +41,14 @@ class ChampionPanel extends Component {
     Object.keys(this.props.champions).forEach((key, index) => {
       if (this.props.champions[key].patch_data !== undefined) {
         if (this.props.champions[key].name.toLowerCase().includes(this.state.searchNameChamps.toLowerCase())) {
-          champions.push(<div style={{ position: 'relative', display: 'inline-block', margin: '4px'}} onClick={() => this.props.addToTeam(this.props.champions[key])} id={key} key={key}>
+          champions.push(<div className='champion-spacing' draggable="true" onDragStart={(e) => this.props.drag(e, this.props.champions[key])} id={key} key={key}>
 
-          <img src={require(`../../../data/champions/` + key + `.png`)} id={key} alt={this.props.champions[key].name} draggable="true" onDragStart={this.props.drag} className={this.props.champions[key].cost === 1 ? 'cost1champion' : this.props.champions[key].cost === 2 ? 'cost2champion' : this.props.champions[key].cost === 3 ? 'cost3champion' : this.props.champions[key].cost === 4 ? 'cost4champion' : 'cost5champion'}/>
+          <img src={this.props.champions[key].patch_data.icon} id={key} alt={this.props.champions[key].name} className={this.props.champions[key].cost === 1 ? 'cost1champion' : this.props.champions[key].cost === 2 ? 'cost2champion' : this.props.champions[key].cost === 3 ? 'cost3champion' : this.props.champions[key].cost === 4 ? 'cost4champion' : 'cost5champion'}/>
             <p className="cost">${this.props.champions[key].cost}</p>
             <p className="champion-name">{this.props.champions[key].name}</p>
 
           <ChampionTooltip placement="top" isOpen={this.isToolTipOpen(key)} target={key} toggle={() => this.toggle(key)}
-                  name={this.props.champions[key].name} cost={this.props.champions[key].cost}/>
+                  champion={this.props.champions[key]}/>
           </div>);
         }
       }

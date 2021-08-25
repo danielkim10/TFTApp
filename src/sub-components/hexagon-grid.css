@@ -1,0 +1,122 @@
+/* Hexagon css borrowed from https://stackoverflow.com/questions/19418486/hexagon-shape-with-a-border-outline */
+
+.hexagon {
+    position: relative;
+    height: 120px;
+    width: 120px;
+    background: black;
+    display: inline-block;
+  }
+  .hexagon:before {
+    position: absolute;
+    content: '';
+  }
+  .hexagon:before {
+    top: 4px;  /* border width */
+    left: 4px;  /* border width */
+    height: calc(100% - 8px);  /* 100% - (2 * border width) */
+    width: calc(100% - 8px);  /* 100% - (2 * border width) */
+    background: white;
+  }
+  .hexagon, .hexagon:before {
+    -webkit-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  }
+
+  .hexagon2 {
+      position: relative;
+      height: 120px;
+      width: 120px;
+      background: black;
+      margin-left: -61px;
+      top: 89px;
+      display: inline-block;
+  }
+  .hexagon2:before {
+    position: absolute;
+    content: '';
+  }
+  .hexagon2:before {
+    top: 4px;  /* border width */
+    left: 4px;  /* border width */
+    height: calc(100% - 8px);  /* 100% - (2 * border width) */
+    width: calc(100% - 8px);  /* 100% - (2 * border width) */
+    background: white;
+  }
+  .hexagon2, .hexagon2:before {
+    -webkit-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  }
+
+  .hexagon3 {
+    position: relative;
+    height: 120px;
+    width: 120px;
+    background: black;
+    margin-left: -61px;
+    display: inline-block;
+}
+.hexagon3:before {
+  position: absolute;
+  content: '';
+}
+.hexagon3:before {
+  top: 4px;  /* border width */
+  left: 4px;  /* border width */
+  height: calc(100% - 8px);  /* 100% - (2 * border width) */
+  width: calc(100% - 8px);  /* 100% - (2 * border width) */
+  background: white;
+}
+.hexagon3, .hexagon3:before {
+  -webkit-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+.hexagon4 {
+    position: relative;
+    height: 120px;
+    width: 120px;
+    background: black;
+    margin-top: 52px;
+    display: inline-block;
+}
+.hexagon4:before {
+  position: absolute;
+  content: '';
+}
+.hexagon4:before {
+  top: 4px;  /* border width */
+  left: 4px;  /* border width */
+  height: calc(100% - 8px);  /* 100% - (2 * border width) */
+  width: calc(100% - 8px);  /* 100% - (2 * border width) */
+  background: white;
+}
+.hexagon4, .hexagon4:before {
+  -webkit-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+.hexagon5 {
+    position: relative;
+    height: 120px;
+    width: 120px;
+    background: black;
+    margin-top: 52px;
+    margin-left: -61px;
+    display: inline-block;
+}
+.hexagon5:before {
+  position: absolute;
+  content: '';
+}
+.hexagon5:before {
+  top: 4px;  /* border width */
+  left: 4px;  /* border width */
+  height: calc(100% - 8px);  /* 100% - (2 * border width) */
+  width: calc(100% - 8px);  /* 100% - (2 * border width) */
+  background: white;
+}
+.hexagon5, .hexagon5:before {
+  -webkit-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}

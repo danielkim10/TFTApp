@@ -41,19 +41,15 @@ class ItemPanel extends Component {
         if (this.props.items[key].name.toLowerCase().includes(this.state.searchNameItems.toLowerCase())) {
           let str = parseInt((key.substring(1, key.length)));
           if (str > 10) {
-            //str = key.substring(1, key.length);
             let image = this.props.items[key].patch_data.icon.substring(0, this.props.items[key].patch_data.icon.indexOf('dds'));
-            console.log("https://raw.communitydragon.org/latest/game/assets/"+image+'png');
             
-            //if (str === 11) {
-            items.push(<div style={{position: 'relative', display: 'inline-block', margin: '4px'}} id={key} key={key} draggable="true" onDragStart={(e) => this.props.drag(e, this.props.items[key])}>
+            items.push(<div className='item-spacing' id={key} key={key} draggable="true" onDragStart={(e) => this.props.drag(e, this.props.items[key])}>
             <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={this.props.items[key].name} className='itemborder'/>
               <p className='item-name'>{this.props.items[key].name}</p>
 
             <ItemTooltip placement="top" isOpen={this.isToolTipOpen(key)} target={key} toggle={() => this.toggle(key)}
               name={this.props.items[key].name}/>
             </div>);
-            //}
           }
         }
       }

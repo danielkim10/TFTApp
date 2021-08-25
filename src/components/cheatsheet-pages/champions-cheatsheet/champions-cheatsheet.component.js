@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Input } from 'reactstrap';
-import { ability_desc_parse, ability_icon_parse } from '../../../api-helper/string-parsing.js';
+import { ability_desc_parse, ability_icon_parse, champion_icon_parse } from '../../../api-helper/string-parsing.js';
 import SynergyCard from '../../../sub-components/synergy-card.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import '../../../css/colors.css'
@@ -46,6 +46,7 @@ class ChampionsCheatSheet extends Component {
       for (let champion in res.setData[5].champions) {
         if (champions_arr[res.setData[5].champions[champion].apiName] !== undefined) {
           champions_arr[res.setData[5].champions[champion].apiName].patch_data = res.setData[5].champions[champion];
+          champions_arr[res.setData[5].champions[champion].apiName].patch_data.icon = champion_icon_parse(champions_arr[res.setData[5].champions[champion].apiName].patch_data.icon);
         }
       }
 
@@ -119,12 +120,7 @@ class ChampionsCheatSheet extends Component {
               <tr>
                 <td>
                   <div className="image-cropper">
-                    <img src={require(`../../../data/champions/${champion.championId}.png`)} alt={champion.name} className={champion.cost === 1 ? 'cost1champion' : champion.cost === 2 ? 'cost2champion' : champion.cost === 3 ? 'cost3champion' : champion.cost === 4 ? 'cost4champion' : 'cost5champion'}/>
-                  </div>
-                </td>
-                <td>
-                  <div className="image-cropper-2">
-                    <img src={"https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/loadouts/companions/tooltip_qiyanadog_bassqueen_tier1.png"} className="center-image"/>
+                    <img src={champion.patch_data.icon} alt={champion.name} className={champion.cost === 1 ? 'cost1champion' : champion.cost === 2 ? 'cost2champion' : champion.cost === 3 ? 'cost3champion' : champion.cost === 4 ? 'cost4champion' : 'cost5champion'}/>
                   </div>
                 </td>
                 <td>
@@ -158,14 +154,14 @@ class ChampionsCheatSheet extends Component {
                   <table>
                     <tbody>
                       <tr>
-                        <td>Attack Damage: {this.state.champion.patch_data.stats.damage}</td>
-                        <td>Attack Speed: {Math.round(this.state.champion.patch_data.stats.attackSpeed*100)/100}</td>
-                        <td>Attack Range: {this.state.champion.patch_data.stats.range}</td>
+                        <td className='stat-column'>Attack Damage: {this.state.champion.patch_data.stats.damage}</td>
+                        <td className='stat-column'>Attack Speed: {Math.round(this.state.champion.patch_data.stats.attackSpeed*100)/100}</td>
+                        <td className='stat-column'>Attack Range: {this.state.champion.patch_data.stats.range}</td>
                       </tr>
                       <tr>
-                        <td>Health: {this.state.champion.patch_data.stats.hp}</td>
-                        <td>Armor: {this.state.champion.patch_data.stats.armor}</td>
-                        <td>Magic Resist: {this.state.champion.patch_data.stats.magicResist}</td>
+                        <td className='stat-column'>Health: {this.state.champion.patch_data.stats.hp}</td>
+                        <td className='stat-column'>Armor: {this.state.champion.patch_data.stats.armor}</td>
+                        <td className='stat-column'>Magic Resist: {this.state.champion.patch_data.stats.magicResist}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -221,7 +217,7 @@ class ChampionsCheatSheet extends Component {
       if (this.state.champions[key].name.toLowerCase().includes(this.state.searchName.toLowerCase())) {
         champions.push(
           <div className='champion-spacing' key={key} onClick={() => this.loadChampionData(this.state.champions[key])}>
-            <img src={require(`../../../data/champions/` + key + `.png`)} alt={this.state.champions[key].name} className={this.state.champions[key].cost === 1 ? 'cost1champion' : this.state.champions[key].cost === 2 ? 'cost2champion' : this.state.champions[key].cost === 3 ? 'cost3champion' : this.state.champions[key].cost === 4 ? 'cost4champion' : 'cost5champion'} />
+            <img src={this.state.champions[key].patch_data.icon} alt={this.state.champions[key].name} className={this.state.champions[key].cost === 1 ? 'cost1champion' : this.state.champions[key].cost === 2 ? 'cost2champion' : this.state.champions[key].cost === 3 ? 'cost3champion' : this.state.champions[key].cost === 4 ? 'cost4champion' : 'cost5champion'} />
             <p className='champion-name'>{this.state.champions[key].name}</p>
             <p className='cost'>${this.state.champions[key].cost}</p>
           </div>
@@ -232,8 +228,8 @@ class ChampionsCheatSheet extends Component {
       <table>
         <tbody>
           <tr>
-            <td style={{width: '16%'}}></td>
-            <td style={{width: '66%'}}>
+            <td className='side-margin'></td>
+            <td className='main-content'>
               {this.state.loading && <CircularProgress size={24}/>}
               { !this.state.loading &&
               <table>
@@ -255,7 +251,7 @@ class ChampionsCheatSheet extends Component {
               </table>
               }
             </td>
-            <td style={{width: '16%'}}></td>
+            <td className='side-margin'></td>
           </tr>
         </tbody>
       </table>

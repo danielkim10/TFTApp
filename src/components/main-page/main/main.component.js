@@ -4,7 +4,6 @@ import { postData } from '../../../api-helper/api';
 import ChampionPanel from '../champion-panel/champion-panel';
 import ItemPanel from '../item-panel/item-panel';
 import SynergiesPanel from '../synergies-panel/synergies-panel';
-import TeamPanel from '../team-panel/team-panel';
 import { SetContext } from '../../../api-helper/set-context.js';
 import { Button } from '@material-ui/core' ;
 import SaveIcon from '@material-ui/icons/Save';
@@ -13,6 +12,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import HexagonGrid from '../../../sub-components/hexagon-grid';
+import { champion_icon_parse } from '../../../api-helper/string-parsing';
 import '../../../css/colors.css';
 import '../../../css/fonts.css';
 import '../../../css/margins.css';
@@ -36,7 +36,7 @@ export default class Main extends Component {
         patch_data: {},
       },
       itemsBasic: [],
-      
+      draggedChampion: {},
       draggedItem: {},
       showAlert: false,
       alertVariant: "danger",
@@ -91,6 +91,7 @@ export default class Main extends Component {
       for (let champion in res.setData[5].champions) {
         if (champions_arr[res.setData[5].champions[champion].apiName] !== undefined) {
           champions_arr[res.setData[5].champions[champion].apiName].patch_data = res.setData[5].champions[champion];
+          champions_arr[res.setData[5].champions[champion].apiName].patch_data.icon = champion_icon_parse(champions_arr[res.setData[5].champions[champion].apiName].patch_data.icon);
         }
       }
 
@@ -144,7 +145,7 @@ export default class Main extends Component {
     
     let team = this.state.team;
     //let isDupe = team[data.championId] === data.championId;
-    team.push({champion: data, tier: 1, items: [], remainingSlots: 3 })
+    team.push({champion: data, tier: 1, items: [], remainingSlots: 3, hexSlot: team.length });
     this.setState({team: team});
     this.findSynergies(this.state.team, data);
   }
@@ -352,11 +353,14 @@ export default class Main extends Component {
 
   findSynergies = (team, champion) => {
     let traits = Object.assign({}, this.state.traits);
-    //Object.keys(this.state.team).forEach((key, index) => {
-      for (let j = 0; j < champion.traits.length; ++j) {
-          traits[champion.traits[j]].count++;
+    for (let i in this.state.team) {
+      if (team[i].champion.name === champion.name) {
+        return;
       }
-    //})
+    }
+    for (let j = 0; j < champion.traits.length; ++j) {
+        traits[champion.traits[j]].count++;
+    }
     this.setState({traits: traits});
   }
 
@@ -399,6 +403,11 @@ export default class Main extends Component {
     e.dataTransfer.setData("text", e.target.id);
     this.setState({draggedItem: item});
   }
+
+  dragChampion = (e, champion) => {
+    e.dataTransfer.setData("text", e.target.id);
+    this.setState({draggedChampion: champion});
+  }
   drop = (e, id) => {
     e.preventDefault();
     let data = e.dataTransfer.getData("text");
@@ -406,10 +415,12 @@ export default class Main extends Component {
     console.log("dropped item: " + id);
     console.log(this.state.team);
     let team = this.state.team;
+    this.findSynergies(team, this.state.draggedChampion);
+    team.push({champion: this.state.draggedChampion, tier: 1, items: [], remainingSlots: 3, hexSlot: id });
+    
 
     for (let teamMember in this.state.team) {
-      if (this.state.team[teamMember].champion.championId === id) {
-        console.log('asdf');
+      if (this.state.team[teamMember].hexSlot === id) {
 
         if (this.state.team[teamMember].items.length < 3) {
           team[teamMember].items.push(this.state.draggedItem);
@@ -419,25 +430,7 @@ export default class Main extends Component {
         }
       }
     }
-
-    // if (this.state.team[id].items.length === 0) {
-    //   if (this.applyItemEffects(this.state.draggedItem, id)) {
-    //     this.state.team[id].items[0] = this.state.draggedItem;
-    //   }
-    // }
-    // else if (this.state.team[id].items.length === 1) {
-    //   if (this.applyItemEffects(this.state.draggedItem, id)) {
-    //     this.state.team[id].items[1] = this.state.draggedItem;
-    //   }
-    // }
-    // else if (this.state.team[id].items.length === 2) {
-    //   if (this.applyItemEffects(this.state.draggedItem, id)) {
-    //     this.state.team[id].items[2] = this.state.draggedItem;
-    //   }
-    // }
-    // else {
-    // }
-    this.setState({team: team, draggedItem: {}});
+    this.setState({team: team, draggedItem: {}, draggedChampion: {}});
   }
 
   applyItemEffects = (item, key) => {
@@ -547,11 +540,11 @@ export default class Main extends Component {
                   <Alert color={this.state.alertVariant} isOpen={this.state.showAlert}>{this.state.alertMessage}</Alert>
                 </div>
                 <Input type="text" id="search" name="teamName" onChange={this.handleChanges} placeholder="Team Name"/>
-                
-                <TeamPanel team={this.state.team} items={this.state.items} champions={this.state.champions} drop={this.drop}/>
-                <ChampionPanel champions={this.state.champions} addToTeam={this.addToTeam} drag={this.drag}/>
+                <HexagonGrid team={this.state.team} drop={this.drop} drag={this.dragChampion}/>
+                {/* <TeamPanel team={this.state.team} items={this.state.items} champions={this.state.champions} drop={this.drop}/> */}
+                <ChampionPanel champions={this.state.champions} addToTeam={this.addToTeam} drag={this.dragChampion}/>
                 <ItemPanel items={this.state.items} itemsBasic={this.state.itemsBasic} drag={this.drag}/>
-                <HexagonGrid team={this.state.team}/>
+                
                 <SynergiesPanel traits={this.state.traits}/>
                 </div>
                 }

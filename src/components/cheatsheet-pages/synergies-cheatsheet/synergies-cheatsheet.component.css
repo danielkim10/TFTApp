@@ -48,3 +48,16 @@
   height: 60px;
   box-shadow: -2px -2px orange, -2px 2px orange, 2px -2px orange, 2px 2px orange;
 }
+
+.side-margins {
+  width: 16% !important;
+}
+
+.main-content {
+  width: 33% !important;
+}
+
+.float-top {
+  display: inline-block;
+  vertical-align: top;
+}

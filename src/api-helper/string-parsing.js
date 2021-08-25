@@ -37,6 +37,22 @@ export const item_desc_parse = (item) => {
   return desc_hashed;
 }
 
+export const champion_icon_parse = (icon) => {
+  if (icon.indexOf('TFT_Set5_Stage2') > -1) {
+    let championId = icon.substring(icon.indexOf('ChampionSplashes/')+17, icon.indexOf('.')).toLowerCase();
+    //console.log(icon);
+    return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/characters/${championId}/hud/${championId}_square.tft_set5_stage2.png`;
+  }
+  else if (icon.indexOf('TFT_Set5') > -1) {
+    let championIconParse = icon.substring(icon.indexOf('ChampionSplashes/')+17, icon.indexOf('.TFT_Set5')).toLowerCase();
+    return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/characters/${championIconParse}/hud/${championIconParse}_square.tft_set5.png`;
+  }
+  else {
+    let championIconParse = icon.substring(icon.indexOf('ChampionSplashes/')+17, icon.indexOf('.dds')).toLowerCase();
+    return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/characters/${championIconParse}/hud/${championIconParse}_square.png`;
+  }
+}
+
 export const ability_desc_parse = (ability) => {
   let description = ability.desc;
   let desc_parsed = '';
@@ -181,13 +197,5 @@ export const synergy_effect_parse = (string, patch_data) => {
 }
 
 export const companion_parse = (companion) => {
-  let skinID = companion.skin_ID;
-  let species = companion.species.toLowerCase();
-
-  fetch(`https://raw.communitydragon.org/latest/game/data/characters/${species}/skins/skin${skinID}.bin.json`).then(res => res.json()).then(res => {  
-    let companionData = res[`Characters/${companion.species}/Skins/Skin${skinID}`];
-    let iconCircle = companionData.iconCircle.substring(0, companionData.iconCircle.indexOf('dds')).toLowerCase();
-
-    return `https://raw.communitydragon.org/latest/game/${iconCircle}png`;
-  });
+  return '{' + fnv.fast1a32hex(companion) + '}';
 }

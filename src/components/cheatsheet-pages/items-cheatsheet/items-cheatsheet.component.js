@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Button } from '@material-ui/core';
 import { item_desc_parse } from '../../../api-helper/string-parsing.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import '../../../css/colors.css';
 
 import './items-cheatsheet.component.css'
 
@@ -13,6 +12,7 @@ class ItemsCheatSheet extends Component {
       items: {},
       selectedItem: {},
       loading: false,
+      error: false,
     };
     this.clear = this.clear.bind(this);
   }
@@ -41,27 +41,18 @@ class ItemsCheatSheet extends Component {
       }
 
       this.setState({items: items_arr, loading: false});
+    }).catch((err) => {
+      this.setState({loading: false, error: true});
+      console.error('Error retrieving patch data:' + err);
     });
     console.log(items_arr);
   }
 
-  compare = (a, b) => {
-    const idA = a.id;
-    const idB = b.id;
-
-    let comparison = 0;
-    if (idA > idB) {
-      comparison = 1;
-    }
-    else if (idA < idB) {
-      comparison = -1;
-    }
-    return comparison;
-  }
-
   selectItem = (e, item) => {
+    e.preventDefault();
     this.setState({selectedItem: item});
   }
+
   showItemDetail = (item) => {
     let basicStats = {
       'AD': 'Attack Damage', 
@@ -74,22 +65,24 @@ class ItemsCheatSheet extends Component {
       'CritChance': '% Critical Strike Chance', 
       '{c4b5579c}': '% Dodge Chance'
     };
-    if (item === undefined) return <div/>
 
     if (item.isRadiant) {
       let itemStats = [];
       let image = item.patch_data.icon.substring(0, item.patch_data.icon.indexOf('dds'));
       Object.keys(item.patch_data.effects).forEach((key, index) => {
         if (basicStats[key] !== undefined) {
-          itemStats.push(<p key={key+item.id}>+{item.patch_data.effects[key]} {basicStats[key]}</p>)
+          itemStats.push(<p className='item-desc-text' key={key+item.id}>+{item.patch_data.effects[key]} {basicStats[key]}</p>)
         }
       });
+
+      itemStats.push(<p className='item-desc-text' key='Radiant'>Radiant - Cannot be crafted</p>);
       
       return (
-        <div>
-          <Button onClick={this.clear}>Clear</Button>
-          <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={item.name} width={50} height={50}/>
-          <p className='test-whitespace'>{item_desc_parse(item)}</p>
+        <div className='item-category-margins'>
+          <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={item.name} className='item-dimensions'/>
+          <span className='item-desc-text'>{item.name}</span>
+          <Button onClick={this.clear} className='item-desc-text'>Clear</Button>
+          <p className='item-desc-text'>{item_desc_parse(item)}</p>
           {itemStats}
         </div>
       );
@@ -99,21 +92,26 @@ class ItemsCheatSheet extends Component {
       let image = item.patch_data.icon.substring(0, item.patch_data.icon.indexOf('dds'));
       Object.keys(item.patch_data.effects).forEach((key, index) => {
         if (basicStats[key] !== undefined) {
-          itemStats.push(<p key={key+item.id}>+{item.patch_data.effects[key]} {basicStats[key]}</p>)
+          itemStats.push(<p className='item-desc-text' key={key+item.id}>+{item.patch_data.effects[key]} {basicStats[key]}</p>)
         }
       });
 
+      itemStats.push(<p className='item-desc-text' key='Elusive'>Elusive - Cannot be crafted</p>);
+
       return (
-        <div>
-          <Button onClick={this.clear}>Clear</Button>
-          <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={item.name} width={50} height={50}/>
-          <p>{item_desc_parse(item)}</p>
+        <div className='item-category-margins'>
+          <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={item.name} className='item-dimensions'/>
+          <span className='item-desc-text'>{item.name}</span>
+          <Button onClick={this.clear} className='item-desc-text'>Clear</Button>
+          <p className='item-desc-text'>{item_desc_parse(item)}</p>
           {itemStats}
+          
         </div>
       );
     }
 
     else if (item.id < 10) {
+      let itemRecipesRow = [];
       let itemRecipes = [];
       let image = item.patch_data.icon.substring(0, item.patch_data.icon.indexOf('dds'));
       
@@ -123,20 +121,38 @@ class ItemsCheatSheet extends Component {
         let advancedItem = this.state.items['i'+Math.min(item.id*10 + i, i*10 + item.id)];
         let advancedItemImage = advancedItem.patch_data.icon.substring(0, advancedItem.patch_data.icon.indexOf('dds'));
         itemRecipes.push(
-          <div key={i}>
-            <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={item.name} width={30} height={30}/>+
-            <img src={"https://raw.communitydragon.org/latest/game/"+secondItemImage.toLowerCase()+'png'} alt={item.name} width={30} height={30}/>=
-            <img src={"https://raw.communitydragon.org/latest/game/"+advancedItemImage.toLowerCase()+'png'} alt={item.name} width={30} height={30}/>
-          </div>
-        )
+          <td key={i}>
+            <table>
+              <tbody>
+                <tr>
+                  <td><img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={item.name} className='item-dimensions-small'/></td>
+                  <td><p className='recipe-operator-text'>+</p></td>
+                  <td><img src={"https://raw.communitydragon.org/latest/game/"+secondItemImage.toLowerCase()+'png'} alt={item.name} className='item-dimensions-small'/></td>
+                  <td><p className='recipe-operator-text'>=</p></td>
+                  <td><img src={"https://raw.communitydragon.org/latest/game/"+advancedItemImage.toLowerCase()+'png'} alt={item.name} className='item-dimensions-small-right'/></td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        );
+        if (i % 3 == 0) {
+          itemRecipesRow.push(<tr key={i}>{itemRecipes}</tr>);
+          itemRecipes = [];
+        }
       }
 
       return (
-        <div>
-          <Button onClick={this.clear}>Clear</Button>
-          <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={item.name} width={50} height={50}/>
-          <p>{item_desc_parse(item)}</p>
-          {itemRecipes}
+        <div className='item-category-margins'>
+          <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={item.name} className='item-dimensions'/>
+          <p className='item-desc-text'>{item.name}</p>
+          <Button onClick={this.clear} className='item-desc-text'>Clear</Button>
+          <span className='item-desc-text'>{item_desc_parse(item)}</span>
+          <table>
+            <tbody>
+              <tr className='item-desc-text'>Recipes</tr>
+              {itemRecipesRow}
+            </tbody>
+          </table>
         </div>
       );
     }
@@ -145,16 +161,33 @@ class ItemsCheatSheet extends Component {
       let image = item.patch_data.icon.substring(0, item.patch_data.icon.indexOf('dds'));
       Object.keys(item.patch_data.effects).forEach((key, index) => {
         if (basicStats[key] !== undefined) {
-          itemStats.push(<p key={key+item.id}>+{item.patch_data.effects[key]} {basicStats[key]}</p>)
+          itemStats.push(<p className='item-desc-text' key={key+item.id}>+{item.patch_data.effects[key]} {basicStats[key]}</p>)
         }
       });
 
+      let buildsFrom = [];
+      for (let id in item.patch_data.from) {
+        let image = this.state.items['i'+item.patch_data.from[id]].patch_data.icon.substring(0, this.state.items['i'+item.patch_data.from[id]].patch_data.icon.indexOf('dds'));
+        buildsFrom.push(
+          <td><img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} key={id} alt={this.state.items['i'+item.patch_data.from[id]].name} className='item-dimensions-small'/></td>
+        )
+      }
+
       return (
-        <div>
-          <Button onClick={this.clear}>Clear</Button>
-          <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={item.name} width={50} height={50}/>
-          <p>{item_desc_parse(item)}</p>
+        <div className='item-category-margins'>
+          <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={item.name} className='item-dimensions'/>
+          <span className='item-desc-text'>{item.name}</span>
+          <Button onClick={this.clear} className='item-desc-text'>Clear</Button>
+          <p className='item-desc-text'>{item_desc_parse(item)}</p>
           {itemStats}
+          <p className='item-desc-text'>Builds from</p>
+          <table>
+            <tbody>
+              <tr>
+                {buildsFrom}
+              </tr>
+            </tbody>
+          </table>
         </div>
       );
     }
@@ -194,47 +227,41 @@ class ItemsCheatSheet extends Component {
     const radiantItems = [];
     const otherItems = [];
     Object.keys(this.state.items).forEach((key, index) => {
-      console.log(key);
       console.log(this.state.items[key].patch_data);
       let image = this.state.items[key].patch_data.icon.substring(0, this.state.items[key].patch_data.icon.indexOf('dds'));
 
       if (this.state.items[key].isRadiant) {
-        let str = parseInt((key.substring(1, key.length)));
         radiantItems.push(
-          <div className='champion-spacing' key={key} onClick={(e) => this.selectItem(e, this.state.items[key])}>
-            <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={this.state.items[key].name} width={50} height={50} />
+          <div className='item-spacing' key={key} onClick={(e) => this.selectItem(e, this.state.items[key])}>
+            <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={this.state.items[key].name} className='item-dimensions' />
             <p className='item-name'>{this.state.items[key].name}</p>
           </div>
         );
       }
 
       else if (this.state.items[key].isElusive) {
-        let str = parseInt((key.substring(1, key.length)));
         otherItems.push(
-          <div className='champion-spacing' key={key} onClick={(e) => this.selectItem(e, this.state.items[key])}>
-            <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={this.state.items[key].name} width={50} height={50} />
+          <div className='item-spacing' key={key} onClick={(e) => this.selectItem(e, this.state.items[key])}>
+            <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={this.state.items[key].name} className='item-dimensions' />
             <p className='item-name'>{this.state.items[key].name}</p>
           </div>
         );
       }
 
       else if (this.state.items[key].id < 10) {
-        let str = '0' + key.substring(1, key.length);
         basicItems.push(
-          <div className='champion-spacing' key={key} onClick={(e) => this.selectItem(e, this.state.items[key])}>
-            <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={this.state.items[key].name} width={50} height={50} />
+          <div className='item-spacing' key={key} onClick={(e) => this.selectItem(e, this.state.items[key])}>
+            <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={this.state.items[key].name} className='item-dimensions' />
             <p className='item-name'>{this.state.items[key].name}</p>
           </div>
         );
       }
       else if (this.state.items[key].id >= 10) {
-        let str = parseInt((key.substring(1, key.length)));
         advancedItems.push(
-          <div className='champion-spacing' key={key} onClick={(e) => this.selectItem(e, this.state.items[key])}>
-            <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={this.state.items[key].name} width={50} height={50} />
+          <div className='item-spacing' key={key} onClick={(e) => this.selectItem(e, this.state.items[key])}>
+            <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={this.state.items[key].name} className='item-dimensions' />
             <p className='item-name'>{this.state.items[key].name}</p>
           </div>
-          
         );
       }
     });
@@ -242,43 +269,44 @@ class ItemsCheatSheet extends Component {
     loading = false;
 
     return (
-      <table>
+      <table className='backgrounds'>
         <tbody>
           <tr>
-            <td style={{width: '16%'}}></td>
-            <td style={{width: '66%'}}>
+            <td className='side-margins'></td>
+            <td className='main-content'>
+              <h1 className='title'>Items Cheatsheet</h1>
               {this.state.loading && loading && <CircularProgress size={24}/>}
               { !this.state.loading && !loading && <div>
                 {
                   this.state.selectedItem !== undefined ? this.showItemDetail(this.state.selectedItem) : <div/> 
                 }
-                <div>
-                  <div style={{backgroundColor: '#ffffff'}}><strong>Basic</strong></div>
+                <div className='item-category-margins'>
+                  <div className='item-category-title'>Basic</div>
                   <div>
                     {basicItems}
                   </div>
                 </div>
-                <div>
-                  <div style={{backgroundColor: '#ffffff'}}><strong>Advanced</strong></div>
+                <div className='item-category-margins'>
+                  <div className='item-category-title'>Advanced</div>
                   <div>
                     {advancedItems}
                   </div>
                 </div>
-                <div>
-                  <div style={{backgroundColor: '#ffffff'}}><strong>Radiant</strong></div>
+                <div className='item-category-margins'>
+                  <div className='item-category-title'>Radiant</div>
                   <div>
                     {radiantItems}
                   </div>
                 </div>
-                <div>
-                  <div style={{backgroundColor: '#ffffff'}}><strong>Elusive</strong></div>
+                <div className='item-category-margins'>
+                  <div className='item-category-title'>Elusive</div>
                   <div>
                     {otherItems}
                   </div>
                 </div>
               </div>}
             </td>
-            <td style={{width: '16%'}}></td>
+            <td className='side-margins'></td>
           </tr>
         </tbody>
       </table>

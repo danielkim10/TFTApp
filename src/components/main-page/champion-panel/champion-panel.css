@@ -9,6 +9,13 @@
     text-align: center;
 }
 
+.champion-spacing {
+  position: relative;
+  display: inline-block;
+  margin: 4px;
+  cursor: pointer;
+}
+
 .cost{
   position: absolute;
   color: white;

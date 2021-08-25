@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import SynergyCard from '../../../sub-components/synergy-card.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { champion_icon_parse } from '../../../api-helper/string-parsing.js';
 import '../../../css/colors.css';
 import './synergies-cheatsheet.component.css';
 
@@ -33,11 +34,12 @@ class SynergiesCheatSheet extends Component {
       traits_arr[traits[trait].key] = traits[trait];
     }
 
-    fetch("https://raw.communitydragon.org/11.15/cdragon/tft/en_us.json").then(res => res.json()).then(res => {
+    fetch("https://raw.communitydragon.org/latest/cdragon/tft/en_us.json").then(res => res.json()).then(res => {
       console.log(res);
       for (let champion in res.setData[5].champions) {
         if (champions_arr[res.setData[5].champions[champion].apiName] !== undefined) {
           champions_arr[res.setData[5].champions[champion].apiName].patch_data = res.setData[5].champions[champion];
+          champions_arr[res.setData[5].champions[champion].apiName].patch_data.icon = champion_icon_parse(champions_arr[res.setData[5].champions[champion].apiName].patch_data.icon);
         }
       }
 
@@ -101,28 +103,28 @@ class SynergiesCheatSheet extends Component {
       <table>
         <tbody>
           <tr>
-            <td style={{width: '16%'}}></td>
-            <td style={{width: '33%'}}>
+            <td className='side-margins'></td>
+            <td className='main-content'>
               {this.state.loading && <CircularProgress size={24}/>}
               { !this.state.loading && 
-              <table>
+              <table className="float-top">
                 <tbody>
                   {originCards}
                 </tbody>
               </table>
               }
             </td>
-            <td style={{width: '33%'}}>
+            <td className='main-content'>
             {this.state.loading && <CircularProgress size={24}/>}
             { !this.state.loading && 
-              <table>
+              <table className="float-top">
                 <tbody>
                   {classCards}
                 </tbody>
               </table>
             }
             </td>
-            <td style={{width: '16%'}}></td>
+            <td className='side-margins'></td>
           </tr>
         </tbody>
       </table>

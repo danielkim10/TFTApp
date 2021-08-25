@@ -1,0 +1,17 @@
+.white-text {
+    color: white;
+}
+
+.div-margins {
+    margin: 15px;
+    border-radius: 12px;
+    border-style: solid;
+    border-color: white;
+}
+
+.champion-spacing{
+    position: relative;
+    display: inline-block;
+    margin: 6px;
+    cursor: pointer;
+  }

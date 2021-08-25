@@ -1512,14 +1512,12 @@ class MatchHistory extends Component {
     return (
         <table style={{width: '100%'}}>
             <tbody>
-                <tr>
-                    <td style={{width: '16%'}}>asdfadsf</td>
-                    <td style={{width: '66%'}}>
+                <tr style={{height: '33%'}}><td></td></tr>
+                <tr style={{height: '66%'}}>
+                    <td style={{width: '33%'}}></td>
+                    <td style={{width: '33%'}}>
                         <table>
                             <tbody>
-                                <tr>
-                                    <td><strong>Search</strong></td>
-                                </tr>
                                 <tr>
                                     <td>
                                         <table>
@@ -1535,11 +1533,11 @@ class MatchHistory extends Component {
                                                                 onChange={this.handleRegionSelect}
                                                             >
                                                                 <MenuItem value="https://na1.api.riotgames.com">NA</MenuItem>
-                                                                <MenuItem value="https://euw1.api.riotgames.com">EU</MenuItem>
+                                                                <MenuItem value="https://euw1.api.riotgames.com">EUW</MenuItem>
                                                             </Select>
                                                         </FormControl>
                                                     </td>
-                                                    <td><Input type="text" id="nameSearch" onChange={this.handleName} disabled={this.state.loading}/></td>
+                                                    <td style={{minWidth: '250px'}}><Input type="text" id="nameSearch" placeholder="Summoner Name" onChange={this.handleName} disabled={this.state.loading}/></td>
                                                     <td><Button type="button" color="primary" onClick={this.search} disabled={this.state.loading}>Search</Button></td>
                                                 </tr>
                                                 <tr>
@@ -1555,8 +1553,9 @@ class MatchHistory extends Component {
                             </tbody>
                         </table>
                     </td>
-                    <td style={{width: '16%'}}>adsfasdf</td>
+                    <td style={{width: '33%'}}></td>
                 </tr>
+                <tr style={{height: '16%'}}><td></td></tr>
             </tbody>
         </table>
     )

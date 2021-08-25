@@ -9,7 +9,7 @@ const Navigation = (props) => {
     return (
       <div>
         <Navbar color="dark" dark expand="md">
-          <NavbarBrand href="/">Main</NavbarBrand>
+          <NavbarBrand href="/">Builder</NavbarBrand>
           <NavbarToggler onClick={toggle} />
           <Collapse isOpen={isOpen} navbar>
             <Nav className="mr-auto" navbar>
@@ -35,25 +35,6 @@ const Navigation = (props) => {
               <NavItem>
                 <NavLink href="/teams">Teams</NavLink>
               </NavItem>
-              <UncontrolledDropdown nav inNavbar>
-                <DropdownToggle nav caret>
-                  Set 1
-                </DropdownToggle>
-                <DropdownMenu right>
-                  <DropdownItem>
-                    Set 1
-                  </DropdownItem>
-                  <DropdownItem>
-                    Set 2 - Rise of the Elements
-                  </DropdownItem>
-                  <DropdownItem>
-                    Set 3 - Galaxies
-                  </DropdownItem>
-                  <DropdownItem>
-                    Set 3 - Galaxies: Return to the Stars
-                  </DropdownItem>
-                </DropdownMenu>
-              </UncontrolledDropdown>
               {/*<NavItem>
                 <NavLink href="/guides">Guides</NavLink>
               </NavItem>*/}

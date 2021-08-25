@@ -1,17 +1,30 @@
-.itemMargins{
+.itemMargins {
   margin-left: 10px;
   margin-top: 10px;
   width: 60px;
   height: 60px;
 }
 
-.champion-spacing{
+.side-margins {
+  width: 16%;
+}
+
+.main-content {
+  width: 66%;
+}
+
+.div-border {
+  border-radius: 12px;
+}
+
+.item-spacing {
   position: relative;
   display: inline-block;
   margin: 6px;
+  cursor: pointer;
 }
 
-.item-name{
+.item-name {
     position: absolute;
     color: white;
     top: 50%;
@@ -22,6 +35,51 @@
     text-align: center;
 }
 
-.test-whitespace{
+.item-dimensions {
+  width: 50px;
+  height: 50px;
+}
+
+.item-dimensions-small {
+  width: 35px;
+  height: 35px;
+}
+
+.item-dimensions-small-right {
+  width: 35px;
+  height: 35px;
+  margin-right: 70px;
+}
+
+.item-desc-text {
+  color: white;
   white-space: pre-line;
+}
+
+.backgrounds {
+  background-color: #404040;
+}
+
+.item-category-title {
+  color: white;
+  font-size: 24px;
+}
+
+.recipe-operator-text {
+  color: white;
+  font-size: 40px;
+}
+
+.item-category-margins {
+  margin-top: 30px;
+  margin-bottom: 30px;
+  border: white;
+  border-style: solid;
+  border-radius: 12px;
+}
+
+.title {
+  color: white;
+  font-size: 24;
+  font-weight: 400;
 }

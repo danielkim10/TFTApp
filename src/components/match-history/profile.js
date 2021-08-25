@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { sortTierDescending, sortPlacementAscending, sortTierMatchDescending, sortGametimeDescending } from '../../api-helper/sorting.js';
-import { companion_parse } from '../../api-helper/string-parsing.js';
+import { companion_parse, champion_icon_parse } from '../../api-helper/string-parsing.js';
 import MatchBasic from './match-basic.component.js';
 
 class Profile extends Component {
@@ -50,6 +50,7 @@ class Profile extends Component {
             for (let champion in res.setData[5].champions) {
                 if (champions_arr[res.setData[5].champions[champion].apiName] !== undefined) {
                     champions_arr[res.setData[5].champions[champion].apiName].patch_data = res.setData[5].champions[champion];
+                    champions_arr[res.setData[5].champions[champion].apiName].patch_data.icon = champion_icon_parse(champions_arr[res.setData[5].champions[champion].apiName].patch_data.icon);
                 }
             }
 
@@ -85,31 +86,50 @@ class Profile extends Component {
                                 'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
                             }
                         }).then(res => res.json()).then(match => {
+                            console.log(match);
+
 
                             for (let j = 0; j < 8; j++) {
-                                fetch(`${proxyUrl}${platform}${summonerUrl}${match.info.participants[j].puuid}`, {
-                                    method: 'GET',
-                                    headers: {
-                                        'Accept-Charset': 'application/json;charset=utf-8',
-                                        'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
-                                    }
-                                }).then(res => res.json()).then(player => {
-                                    //console.log(player.name);
-                                    match.info.participants[j].name = player.name;
+                                    fetch(`https://raw.communitydragon.org/latest/game/data/characters/${match.info.participants[j].companion.species.toLowerCase()}/skins/skin${match.info.participants[j].companion.skin_ID}.bin.json`).then(res => res.json()).then(companion => {
+                                        let companionData = companion[`Characters/${match.info.participants[j].companion.species}/Skins/Skin${match.info.participants[j].companion.skin_ID}`];
+                                        if (companionData === undefined) {
+                                            companionData = companion[companion_parse(`Characters/${match.info.participants[j].companion.species}/Skins/Skin${match.info.participants[j].companion.skin_ID}`.toLowerCase())];
+                                        }
+                                        console.log(companionData);
+                                        let iconCircle = companionData.iconCircle.substring(0, companionData.iconCircle.indexOf('dds')).toLowerCase();
+                                    
+                                        fetch(`${proxyUrl}${platform}${summonerUrl}${match.info.participants[j].puuid}`, {
+                                            method: 'GET',
+                                            headers: {
+                                                'Accept-Charset': 'application/json;charset=utf-8',
+                                                'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
+                                            }
+                                        }).then(res => res.json()).then(player => {
+                                            //console.log(player.name);
+                                            match.info.participants[j].name = player.name;
+                                            match.info.participants[j].companion.image_source = `https://raw.communitydragon.org/latest/game/${iconCircle}png`;
 
-                                    if (j === 7) {
-                                        let matches = this.state.matches;
-                                        matches.push(match);
-                                        matches.sort(sortGametimeDescending);
-                                        
-                                        this.setState({matches: matches});
-                                    }
-                                }).catch((err) => {
-                                    console.error("Error retrieving player: " + err);
-                                });
+                                            if (j === 7) {
+                                                console.log(this.state);
+                                                let matches = this.state.matches;
+                                                matches.push(match);
+                                                matches.sort(sortGametimeDescending);
+                                                console.log(match);
+                                                this.setState({matches: matches});
+                                            }
+                                        }).catch((playerErr) => {
+                                            console.error("Error retrieving player: " + playerErr);
+                                        });
+                                    }).catch((companionErr) => {
+                                        console.error("Error retrieving companion: " + companionErr);
+                                    });
+                                
                             }
-                        }).catch((err) => {
-                            console.error("Error retrieving match: " + err);
+
+
+
+                        }).catch((matchErr) => {
+                            console.error("Error retrieving match: " + matchErr);
                         });
                     }
                 }
@@ -122,6 +142,8 @@ class Profile extends Component {
             }
             console.log(traits_arr);
             this.setState({champions: champions_arr, items: items_arr, traits: traits_arr, loading: false});
+        }).catch((patchDataErr) => {
+            console.error("Error retrieving patch data: " + patchDataErr);
         });
     }
 
@@ -193,7 +215,7 @@ class Profile extends Component {
             <table>
                 <tbody>
                     <tr>
-                        <td style={{width: '16%'}}>asdfasdf</td>
+                        <td style={{width: '16%'}}></td>
                         <td style={{width: '66%'}}>
                             <table>
                                 <tbody>
@@ -242,7 +264,7 @@ class Profile extends Component {
                                 </tbody>
                             </table>
                         </td>
-                        <td style={{width: '16%'}}>asdfasdf</td>
+                        <td style={{width: '16%'}}></td>
                     </tr>
                 </tbody>
             </table>

@@ -9,6 +9,13 @@
     text-align: center;
 }
 
+.item-spacing {
+  position: relative;
+  display: inline-block;
+  margin: 4px;
+  cursor: pointer;
+}
+
 .itemborder{
   width: 50px;
   height: 50px;
