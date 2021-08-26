@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Alert, Input } from 'reactstrap';
 import { postData } from '../../../api-helper/api';
-import ChampionPanel from '../champion-panel/champion-panel';
-import ItemPanel from '../item-panel/item-panel';
-import SynergiesPanel from '../synergies-panel/synergies-panel';
+import ChampionsPanel from '../champions-panel/champions-panel';
+import ItemsPanel from '../items-panel/items-panel';
+import TraitsPanel from '../traits-panel/traits-panel';
 import { SetContext } from '../../../api-helper/set-context.js';
 import { Button } from '@material-ui/core' ;
 import SaveIcon from '@material-ui/icons/Save';
@@ -13,10 +13,8 @@ import FileCopyIcon from '@material-ui/icons/FileCopy';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import HexagonGrid from '../../../sub-components/hexagon-grid';
 import { champion_icon_parse } from '../../../api-helper/string-parsing';
-import '../../../css/colors.css';
-import '../../../css/fonts.css';
-import '../../../css/margins.css';
-import '../../../css/main.css';
+
+import './main.css';
 
 export default class Main extends Component {
   constructor(props) {
@@ -48,7 +46,7 @@ export default class Main extends Component {
       },
     }
     this.randomButton = this.randomButton.bind(this);
-    this.findSynergies = this.findSynergies.bind(this);
+    this.findTraits = this.findTraits.bind(this);
     this.createChampion = this.createChampion.bind(this);
     this.clearTeam = this.clearTeam.bind(this);
     this.handleChanges = this.handleChanges.bind(this);
@@ -127,7 +125,7 @@ export default class Main extends Component {
     let team = this.state.team;
     team.push({champion: data, tier: 1, items: [], remainingSlots: 3, hexSlot: team.length });
     this.setState({team: team});
-    this.findSynergies(this.state.team, data);
+    this.findTraits(this.state.team, data);
   }
 
   removeFromTeam = () => {
@@ -218,7 +216,7 @@ export default class Main extends Component {
       team.push(champion);
     }
     team = this.randomizeItems(team, teamItems);
-    this.findSynergies(team);
+    this.findTraits(team);
     this.setState({team: team}); // temporary
   }
 
@@ -331,7 +329,7 @@ export default class Main extends Component {
     return team;
   }
 
-  findSynergies = (team, champion) => {
+  findTraits = (team, champion) => {
     let traits = Object.assign({}, this.state.traits);
     console.log(champion);
     if (champion.name === undefined) {
@@ -402,7 +400,7 @@ export default class Main extends Component {
     let team = this.state.team;
 
     if (this.state.draggedChampion.name !== undefined) {
-      this.findSynergies(team, this.state.draggedChampion);
+      this.findTraits(team, this.state.draggedChampion);
       team.push({champion: this.state.draggedChampion, tier: 1, items: [], remainingSlots: 3, hexSlot: id });
     }
 
@@ -498,10 +496,6 @@ export default class Main extends Component {
     // return true;
   }
 
-  applySynergyEffects = (key) => {
-
-  }
-
   render = () => {
       return (
         <div>
@@ -531,10 +525,10 @@ export default class Main extends Component {
                 <Input type="text" id="search" name="teamName" onChange={this.handleChanges} placeholder="Team Name"/>
                 <HexagonGrid team={this.state.team} drop={this.drop} drag={this.dragChampion}/>
                 {/* <TeamPanel team={this.state.team} items={this.state.items} champions={this.state.champions} drop={this.drop}/> */}
-                <ChampionPanel champions={this.state.champions} traits={this.state.traits} addToTeam={this.addToTeam} drag={this.dragChampion}/>
-                <ItemPanel items={this.state.items} itemsBasic={this.state.itemsBasic} drag={this.drag}/>
+                <ChampionsPanel champions={this.state.champions} traits={this.state.traits} addToTeam={this.addToTeam} drag={this.dragChampion}/>
+                <ItemsPanel items={this.state.items} itemsBasic={this.state.itemsBasic} drag={this.drag}/>
                 
-                <SynergiesPanel traits={this.state.traits} champions={this.state.champions}/>
+                <TraitsPanel traits={this.state.traits} champions={this.state.champions}/>
                 </div>
                 }
                 </td>

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ability_icon_parse, ability_desc_parse } from '../api-helper/string-parsing';
+import { ability_icon_parse, ability_desc_parse } from '../../api-helper/string-parsing';
 import { Tooltip } from 'reactstrap';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import './champion-tooltips.css';

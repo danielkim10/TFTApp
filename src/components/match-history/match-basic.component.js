@@ -6,9 +6,9 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Star from '@material-ui/icons/Star';
 
-import ChampionTooltip from '../../sub-components/champion-tooltips.js';
-import SynergyTooltip from '../../sub-components/synergies-tooltips.js';
-import ItemTooltip from '../../sub-components/item-tooltips.js';
+import ChampionTooltip from '../../sub-components/champion-tooltips/champion-tooltips.js';
+import TraitTooltip from '../../sub-components/trait-tooltips/trait-tooltips.js';
+import ItemTooltip from '../../sub-components/item-tooltips/item-tooltips.js';
 
 import './match-basic.component.css';
 

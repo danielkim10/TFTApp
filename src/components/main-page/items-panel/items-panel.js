@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { Card, CardHeader, CardBody, Input } from 'reactstrap';
-import ItemTooltip from '../../../sub-components/item-tooltips.js';
+import ItemTooltip from '../../../sub-components/item-tooltips/item-tooltips.js';
 
-import './item-panel.css';
+import './items-panel.css';
 
-class ItemPanel extends Component {
+class ItemsPanel extends Component {
   constructor(props) {
     super(props);
 
@@ -76,4 +76,4 @@ class ItemPanel extends Component {
   }
 }
 
-export default ItemPanel;
+export default ItemsPanel;

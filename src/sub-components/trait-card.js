@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { sortCostAscending } from '../api-helper/sorting.js';
 import { withRouter } from 'react-router';
-import { synergy_desc_parse, synergy_effect_parse } from '../api-helper/string-parsing.js';
-import './synergy-card.css';
+import { trait_desc_parse, trait_effect_parse } from '../api-helper/string-parsing.js';
+import './trait-card.css';
 
-class SynergyCard extends Component {
+class TraitCard extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -40,9 +40,9 @@ class SynergyCard extends Component {
         let stat_string = "";
         let desc_hashed = "";
         if (this.props.trait.patch_data.desc.indexOf('<expandRow>') !== -1) {
-            desc_hashed = synergy_desc_parse(this.props.trait.patch_data);
+            desc_hashed = trait_desc_parse(this.props.trait.patch_data);
             stat_string = this.props.trait.patch_data.desc.substring(this.props.trait.patch_data.desc.indexOf('<expandRow>') + 11, this.props.trait.patch_data.desc.length - 12);
-            let effects = synergy_effect_parse(stat_string, this.props.trait.patch_data);
+            let effects = trait_effect_parse(stat_string, this.props.trait.patch_data);
             for (let effect in effects) {
                 bonuses_hashed.push(<tr key={effect}><td key={effect} className='white-text'>{effects[effect]}</td></tr>)
             }
@@ -81,4 +81,4 @@ class SynergyCard extends Component {
     }
 }
 
-export default withRouter(SynergyCard)
+export default withRouter(TraitCard)

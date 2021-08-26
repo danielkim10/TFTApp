@@ -21,8 +21,8 @@ const Navigation = (props) => {
                   <DropdownItem href="/cheatsheet/champions">
                     Champions
                   </DropdownItem>
-                  <DropdownItem href="/cheatsheet/synergies">
-                    Synergies
+                  <DropdownItem href="/cheatsheet/traits">
+                    Traits
                   </DropdownItem>
                   <DropdownItem href="/cheatsheet/items">
                     Items

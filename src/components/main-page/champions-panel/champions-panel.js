@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { Card, CardHeader, CardBody, Input } from 'reactstrap';
-import ChampionTooltip from '../../../sub-components/champion-tooltips.js';
+import ChampionTooltip from '../../../sub-components/champion-tooltips/champion-tooltips.js';
 
-import './champion-panel.css';
+import './champions-panel.css';
 
-class ChampionPanel extends Component {
+class ChampionsPanel extends Component {
   constructor(props) {
     super(props);
 
@@ -80,4 +80,4 @@ class ChampionPanel extends Component {
   }
 }
 
-export default ChampionPanel
+export default ChampionsPanel

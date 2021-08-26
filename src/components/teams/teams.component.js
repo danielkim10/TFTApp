@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { getSetData } from '../../api-helper/api.js';
-import '../../css/main.css';
 import './teams.component.css';
 
 class Teams extends Component {

@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import SynergyCard from '../../../sub-components/synergy-card.js';
+import TraitCard from '../../../sub-components/trait-card.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { champion_icon_parse } from '../../../api-helper/string-parsing.js';
-import '../../../css/colors.css';
-import './synergies-cheatsheet.component.css';
+import './traits-cheatsheet.component.css';
 
-class SynergiesCheatSheet extends Component {
+class TraitsCheatSheet extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -55,8 +54,8 @@ class SynergiesCheatSheet extends Component {
     })
   }
 
-  createSynergy = (data) => {
-    return <SynergyCard champions={this.state.champions} trait={data}/>
+  createTrait = (data) => {
+    return <TraitCard champions={this.state.champions} trait={data}/>
   }
 
   championRedirect = (key) => {
@@ -94,10 +93,10 @@ class SynergiesCheatSheet extends Component {
     console.log(this.state.champions);
     Object.keys(this.state.traits).forEach((key, index) => {
       if (this.state.traits[key].type === 'origin') {
-        originCards.push(<tr key={key}><td>{this.createSynergy(this.state.traits[key])}</td></tr>);
+        originCards.push(<tr key={key}><td>{this.createTrait(this.state.traits[key])}</td></tr>);
       }
       else {
-        classCards.push(<tr key={key}><td>{this.createSynergy(this.state.traits[key])}</td></tr>);
+        classCards.push(<tr key={key}><td>{this.createTrait(this.state.traits[key])}</td></tr>);
       }
     });
 
@@ -134,4 +133,4 @@ class SynergiesCheatSheet extends Component {
   }
 }
 
-export default SynergiesCheatSheet;
+export default TraitsCheatSheet;

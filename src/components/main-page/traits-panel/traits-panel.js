@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Card, CardBody, Col } from 'reactstrap';
-import SynergiesTooltip from '../../../sub-components/synergies-tooltips.js';
+import TraitTooltip from '../../../sub-components/trait-tooltips/trait-tooltips.js';
 
 class SynergiesPanel extends Component {
   constructor(props) {
@@ -98,7 +98,7 @@ class SynergiesPanel extends Component {
         style={{ backgroundColor: synergiesUnsorted[i].color, borderColor: synergiesUnsorted[i].color }}>
         <CardBody><img src={`https://raw.communitydragon.org/latest/game/${image}png`} alt={synergiesUnsorted[i].synergy.name} width='24px' height='24px' className={synergiesUnsorted[i].iconcolor}/>{synergiesUnsorted[i].synergy.name + ": " + synergiesUnsorted[i].synergy.count + " / " + max}</CardBody>
         </Card>
-        <SynergiesTooltip placement="right" isOpen={this.isToolTipOpen(synergiesUnsorted[i].synergy.key)} target={synergiesUnsorted[i].synergy.key} toggle={() => this.toggle(synergiesUnsorted[i].synergy.key)}
+        <TraitTooltip placement="right" isOpen={this.isToolTipOpen(synergiesUnsorted[i].synergy.key)} target={synergiesUnsorted[i].synergy.key} toggle={() => this.toggle(synergiesUnsorted[i].synergy.key)}
                           trait={synergiesUnsorted[i].synergy} champions={this.props.champions} advancedTooltip={true}/>
         </div>);
     }

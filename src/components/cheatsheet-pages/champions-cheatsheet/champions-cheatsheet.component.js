@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { Input } from 'reactstrap';
 import { ability_desc_parse, ability_icon_parse, champion_icon_parse } from '../../../api-helper/string-parsing.js';
-import SynergyCard from '../../../sub-components/synergy-card.js';
+import TraitCard from '../../../sub-components/trait-card.js';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import '../../../css/colors.css'
 
 import './champions-cheatsheet.component.css';
 
@@ -110,7 +109,7 @@ class ChampionsCheatSheet extends Component {
         </tr>
       );
       championTraits.push(
-        <SynergyCard key={trait} champions={this.state.champions} trait={this.state.traits[champion.traits[trait]]}/>
+        <TraitCard key={trait} champions={this.state.champions} trait={this.state.traits[champion.traits[trait]]}/>
       );
     }
 

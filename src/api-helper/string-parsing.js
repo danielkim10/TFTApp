@@ -133,7 +133,7 @@ export const ability_variables_convert = (ability) => {
   
 }
 
-export const synergy_desc_parse = (patch_data) => {
+export const trait_desc_parse = (patch_data) => {
     let description = patch_data.desc.substring(0, patch_data.desc.indexOf('<br>'));
     let desc_hashed = '';
     let previous_index = 0;
@@ -157,7 +157,7 @@ export const synergy_desc_parse = (patch_data) => {
     return desc_hashed;
 }
 
-export const synergy_effect_parse = (string, patch_data) => {
+export const trait_effect_parse = (string, patch_data) => {
     let effects = [];
     for (let i = 0; i < patch_data.effects.length; i++) {
       effects.push('');
