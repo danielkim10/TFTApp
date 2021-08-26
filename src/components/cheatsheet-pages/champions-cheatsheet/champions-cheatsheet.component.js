@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Input } from 'reactstrap';
-import { ability_desc_parse, ability_icon_parse, champion_icon_parse } from '../../../api-helper/string-parsing.js';
-import TraitCard from '../../../sub-components/trait-card.js';
+import { ability_desc_parse, ability_icon_parse, champion_icon_parse } from '../../../api-helper/string-parsing';
+import { patch_data_url, assets_url } from '../../../api-helper/urls';
+import TraitCard from '../../../sub-components/trait-card/trait-card';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import './champions-cheatsheet.component.css';
@@ -41,7 +42,7 @@ class ChampionsCheatSheet extends Component {
       traits_arr[traits[trait].key] = traits[trait];
     }
 
-    fetch("https://raw.communitydragon.org/latest/cdragon/tft/en_us.json").then(res => res.json()).then(res =>{
+    fetch(patch_data_url()).then(res => res.json()).then(res =>{
       for (let champion in res.setData[5].champions) {
         if (champions_arr[res.setData[5].champions[champion].apiName] !== undefined) {
           champions_arr[res.setData[5].champions[champion].apiName].patch_data = res.setData[5].champions[champion];
@@ -103,7 +104,7 @@ class ChampionsCheatSheet extends Component {
       championTraitsSmall.push(
         <tr key={trait}>
           <td>
-            <img src={`https://raw.communitydragon.org/latest/game/${image}png`} width={20} height={20}/>
+            <img src={assets_url(image)} width={20} height={20}/>
             {this.state.traits[champion.traits[trait]].name}
           </td>
         </tr>

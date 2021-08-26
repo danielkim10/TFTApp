@@ -4,15 +4,15 @@ import { postData } from '../../../api-helper/api';
 import ChampionsPanel from '../champions-panel/champions-panel';
 import ItemsPanel from '../items-panel/items-panel';
 import TraitsPanel from '../traits-panel/traits-panel';
-import { SetContext } from '../../../api-helper/set-context.js';
 import { Button } from '@material-ui/core' ;
 import SaveIcon from '@material-ui/icons/Save';
 import CasinoIcon from '@material-ui/icons/Casino';
 import ClearIcon from '@material-ui/icons/Clear';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import HexagonGrid from '../../../sub-components/hexagon-grid';
+import HexagonGrid from '../../../sub-components/hexagon-grid/hexagon-grid';
 import { champion_icon_parse } from '../../../api-helper/string-parsing';
+import { patch_data_url } from '../../../api-helper/urls';
 
 import './main.css';
 
@@ -81,7 +81,7 @@ export default class Main extends Component {
       traits_arr[traits[trait].key] = traits[trait];
     }
 
-    fetch("https://raw.communitydragon.org/latest/cdragon/tft/en_us.json").then(res => res.json()).then(res => {
+    fetch(patch_data_url()).then(res => res.json()).then(res => {
       console.log(res);
       for (let champion in res.setData[5].champions) {
         if (champions_arr[res.setData[5].champions[champion].apiName] !== undefined) {
@@ -540,5 +540,3 @@ export default class Main extends Component {
       )
   }
 }
-
-Main.contextType = SetContext;

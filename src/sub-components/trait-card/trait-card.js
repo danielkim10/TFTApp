@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { sortCostAscending } from '../api-helper/sorting.js';
+import { sortCostAscending } from '../../api-helper/sorting';
 import { withRouter } from 'react-router';
-import { trait_desc_parse, trait_effect_parse } from '../api-helper/string-parsing.js';
+import { trait_desc_parse, trait_effect_parse } from '../../api-helper/string-parsing';
 import './trait-card.css';
+import { assets_url } from '../../api-helper/urls';
 
 class TraitCard extends Component {
     constructor(props) {
@@ -56,7 +57,7 @@ class TraitCard extends Component {
                     <tbody>
                         <tr>
                             <td style={{width: '70px'}}>
-                            <img src={`https://raw.communitydragon.org/latest/game/${image}png`} alt={this.props.trait.name} className='white-icon'/>
+                            <img src={assets_url(image)} alt={this.props.trait.name} className='white-icon'/>
                             </td>
                             <td className='white-text'>{this.props.trait.patch_data.name}</td>
                         </tr>

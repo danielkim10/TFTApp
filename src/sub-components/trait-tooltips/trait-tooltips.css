@@ -1,0 +1,29 @@
+.cost1champion-tooltip{
+    width: 35px;
+    height: 35px;
+    box-shadow: -2px -2px gray, -2px 2px gray, 2px -2px gray, 2px 2px gray;
+  }
+  .cost2champion-tooltip{
+    width: 35px;
+    height: 35px;
+    box-shadow: -2px -2px green, -2px 2px green, 2px -2px green, 2px 2px green;
+  }
+  .cost3champion-tooltip{
+    width: 35px;
+    height: 35px;
+    box-shadow: -2px -2px blue, -2px 2px blue, 2px -2px blue, 2px 2px blue;
+  }
+  .cost4champion-tooltip{
+    width: 35px;
+    height: 35px;
+    box-shadow: -2px -2px purple, -2px 2px purple, 2px -2px purple, 2px 2px purple;
+  }
+  .cost5champion-tooltip{
+    width: 35px;
+    height: 35px;
+    box-shadow: -2px -2px orange, -2px 2px orange, 2px -2px orange, 2px 2px orange;
+  }
+
+  .tooltipTitle {
+      float:left;
+  }

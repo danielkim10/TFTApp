@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import TraitCard from '../../../sub-components/trait-card.js';
+import TraitCard from '../../../sub-components/trait-card/trait-card';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { champion_icon_parse } from '../../../api-helper/string-parsing.js';
+import { champion_icon_parse } from '../../../api-helper/string-parsing';
+import { patch_data_url } from '../../../api-helper/urls';
 import './traits-cheatsheet.component.css';
 
 class TraitsCheatSheet extends Component {
@@ -33,7 +34,7 @@ class TraitsCheatSheet extends Component {
       traits_arr[traits[trait].key] = traits[trait];
     }
 
-    fetch("https://raw.communitydragon.org/latest/cdragon/tft/en_us.json").then(res => res.json()).then(res => {
+    fetch(patch_data_url()).then(res => res.json()).then(res => {
       console.log(res);
       for (let champion in res.setData[5].champions) {
         if (champions_arr[res.setData[5].champions[champion].apiName] !== undefined) {

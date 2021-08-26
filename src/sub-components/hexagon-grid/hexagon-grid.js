@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { assets_url } from '../../api-helper/urls';
 import './hexagon-grid.css';
 
 class HexagonGrid extends Component {
@@ -64,8 +65,8 @@ class HexagonGrid extends Component {
             }`;
 
             for (let item in this.props.team[champion].items) {
-                let image = this.props.team[champion].items[item].patch_data.icon.substring(0, this.props.team[champion].items[item].patch_data.icon.indexOf('dds'));
-                itemsEquipped.push(<div className='items-equipped'><img src={`https://raw.communitydragon.org/latest/game/${image.toLowerCase()}png`} className='item-size'/></div>);
+                let image = this.props.team[champion].items[item].patch_data.icon.substring(0, this.props.team[champion].items[item].patch_data.icon.indexOf('dds')).toLowerCase();
+                itemsEquipped.push(<div className='items-equipped'><img src={assets_url(image)} className='item-size'/></div>);
                 console.log(this.props.team[champion].items[item]);
             }
         
@@ -77,24 +78,24 @@ class HexagonGrid extends Component {
         for (let i = 0; i < 7; i++) {
             if (i === 0) {
                 hexagonRow1.push(
-                    <div id={'h' + i} className="hexagon" draggable="true" onDragStart={(e) => this.props.drag(e, this.props.team)} onDrop={(e) => this.props.drop(e, i)} onDragOver={this.allowDrop}>
+                    <div id={'h' + i} key={i} className="hexagon" draggable="true" onDragStart={(e) => this.props.drag(e, this.props.team)} onDrop={(e) => this.props.drop(e, i)} onDragOver={this.allowDrop}>
                     </div>
                     );
             }
             else {
-                hexagonRow1.push(<div id={'h' + i} className="hexagon3" draggable="true" onDragStart={(e) => this.props.drag(e, this.props.team)} onDrop={(e) => this.props.drop(e, i)} onDragOver={this.allowDrop}/>);
+                hexagonRow1.push(<div id={'h' + i} key={i} className="hexagon3" draggable="true" onDragStart={(e) => this.props.drag(e, this.props.team)} onDrop={(e) => this.props.drop(e, i)} onDragOver={this.allowDrop}/>);
             }
-            hexagonRow1.push(<div id={'h' + (i+7)} className="hexagon2" draggable="true" onDragStart={(e) => this.props.drag(e, this.props.team)} onDrop={(e) => this.props.drop(e, (i+7))} onDragOver={this.allowDrop}/>);
+            hexagonRow1.push(<div id={'h' + (i+7)} key={i+7} className="hexagon2" draggable="true" onDragStart={(e) => this.props.drag(e, this.props.team)} onDrop={(e) => this.props.drop(e, (i+7))} onDragOver={this.allowDrop}/>);
         }
 
         for (let i = 14; i < 21; i++) {
             if (i === 14) {
-                hexagonRow2.push(<div id={'h' + i} className="hexagon4" draggable="true" onDragStart={(e) => this.props.drag(e, this.props.team)} onDrop={(e) => this.props.drop(e, i)} onDragOver={this.allowDrop}/>);
+                hexagonRow2.push(<div id={'h' + i} key={i} className="hexagon4" draggable="true" onDragStart={(e) => this.props.drag(e, this.props.team)} onDrop={(e) => this.props.drop(e, i)} onDragOver={this.allowDrop}/>);
             }
             else {
-                hexagonRow2.push(<div id={'h' + i} className="hexagon5" draggable="true" onDragStart={(e) => this.props.drag(e, this.props.team)} onDrop={(e) => this.props.drop(e, i)} onDragOver={this.allowDrop}/>);
+                hexagonRow2.push(<div id={'h' + i} key={i} className="hexagon5" draggable="true" onDragStart={(e) => this.props.drag(e, this.props.team)} onDrop={(e) => this.props.drop(e, i)} onDragOver={this.allowDrop}/>);
             }
-            hexagonRow2.push(<div id={'h' + (i+7)} className="hexagon2" draggable="true" onDragStart={(e) => this.props.drag(e, this.props.team)} onDrop={(e) => this.props.drop(e, (i+7))} onDragOver={this.allowDrop}/>);
+            hexagonRow2.push(<div id={'h' + (i+7)} key={i+7} className="hexagon2" draggable="true" onDragStart={(e) => this.props.drag(e, this.props.team)} onDrop={(e) => this.props.drop(e, (i+7))} onDragOver={this.allowDrop}/>);
         }
 
         return (

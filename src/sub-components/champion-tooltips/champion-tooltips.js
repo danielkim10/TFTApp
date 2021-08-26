@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
 import { ability_icon_parse, ability_desc_parse } from '../../api-helper/string-parsing';
-import { Tooltip } from 'reactstrap';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import './champion-tooltips.css';
+import { assets_url } from '../../api-helper/urls';
 
 class ChampionTooltip extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-//
     }
   }
 
@@ -28,66 +27,63 @@ class ChampionTooltip extends Component {
       let image = this.props.traits[trait].patch_data.icon.substring(0, this.props.traits[trait].patch_data.icon.indexOf('dds')).toLowerCase();
       championTraitsSmall.push(<tr key={trait}>
         <td>
-          <img src={`https://raw.communitydragon.org/latest/game/${image}png`} className='trait-image-size'/>{this.props.traits[trait].name}
+          <img src={assets_url(image)} className='trait-image-size'/>{this.props.traits[trait].name}
         </td>
       </tr>
       );
     }
 
     return (
-       <Tooltip placement="top" style={{minWidth: '500px', alignItems: 'left'}} isOpen={this.props.isOpen} target={this.props.target} toggle={this.props.toggle}>
-         <table>
-           <tbody>
-             <tr>
-               <td><p className='tooltipTitle'>{this.props.champion.name}</p></td>
-               <td><MonetizationOnIcon/></td>
-               <td><p className='tooltipTitle'>{this.props.champion.cost}</p></td>
-             </tr>
-            {championTraitsSmall}
-            <tr>
-              <td>
-                <table>
-                  <tbody>
-                    <tr>
-                      <td style={{width: '40px'}}>
-                        <img src={ability_icon_parse(this.props.champion.patch_data)} className='ability-image-size' alt={this.props.champion.patch_data.ability.name}/>
-                      </td>
-                      <td>
-                        <table>
-                          <tbody>
-                            <tr>
-                              <td>{this.props.champion.patch_data.ability.name}</td>
-                            </tr>
-                            <tr>
-                              <td>Mana: {this.props.champion.patch_data.stats.initialMana}/{this.props.champion.patch_data.stats.mana}</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <table>
-                  <tbody>
-                    <tr>
-                      <td className='test-whitespace'>{ability_desc_parse(this.props.champion.patch_data.ability)}</td>
-                    </tr>
-                    <tr>
-                      <td>{abilityVariables}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </td>
-            </tr>
-           </tbody>
-         </table>
-        
-       </Tooltip>
-    )
+      <table>
+        <tbody>
+          <tr>
+            <td><p className='tooltipTitle'>{this.props.champion.name}</p></td>
+            <td><MonetizationOnIcon/></td>
+            <td><p className='tooltipTitle'>{this.props.champion.cost}</p></td>
+          </tr>
+        {championTraitsSmall}
+        <tr>
+          <td>
+            <table>
+              <tbody>
+                <tr>
+                  <td style={{width: '40px'}}>
+                    <img src={ability_icon_parse(this.props.champion.patch_data)} className='ability-image-size' alt={this.props.champion.patch_data.ability.name}/>
+                  </td>
+                  <td>
+                    <table>
+                      <tbody>
+                        <tr>
+                          <td>{this.props.champion.patch_data.ability.name}</td>
+                        </tr>
+                        <tr>
+                          <td>Mana: {this.props.champion.patch_data.stats.initialMana}/{this.props.champion.patch_data.stats.mana}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table>
+              <tbody>
+                <tr>
+                  <td className='test-whitespace'>{ability_desc_parse(this.props.champion.patch_data.ability)}</td>
+                </tr>
+                <tr>
+                  <td>{abilityVariables}</td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    );
   }
 }
 

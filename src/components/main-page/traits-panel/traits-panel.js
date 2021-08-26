@@ -1,33 +1,13 @@
 import React, { Component } from 'react';
-import { Card, CardBody, Col } from 'reactstrap';
-import TraitTooltip from '../../../sub-components/trait-tooltips/trait-tooltips.js';
+import TraitTooltip from '../../../sub-components/trait-tooltips/trait-tooltips';
+import Tooltip from '@material-ui/core/Tooltip';
+import { assets_url } from '../../../api-helper/urls';
 
 class SynergiesPanel extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-    }
-  }
-
-  isToolTipOpen = (target) => {
-    return this.state[target] ? this.state[target].tooltipOpen : false;
-  }
-  toggle = (target) => {
-    if (!this.state[target]) {
-      this.setState({
-        ...this.state,
-        [target]: {
-          tooltipOpen: true
-        }
-      });
-    } else {
-      this.setState({
-        ...this.state,
-        [target]: {
-          tooltipOpen: !this.state[target].tooltipOpen
-        }
-      });
     }
   }
 
@@ -92,22 +72,23 @@ class SynergiesPanel extends Component {
 
       let image = synergiesUnsorted[i].synergy.patch_data.icon.substring(0, synergiesUnsorted[i].synergy.patch_data.icon.indexOf('dds')).toLowerCase();
 
-      synergiesSorted.push(<div key={synergiesUnsorted[i].synergy.key}>
-        <Card id={synergiesUnsorted[i].synergy.key}
-        inverse={synergiesUnsorted[i].color === colors['BLACK_COLOR']}
-        style={{ backgroundColor: synergiesUnsorted[i].color, borderColor: synergiesUnsorted[i].color }}>
-        <CardBody><img src={`https://raw.communitydragon.org/latest/game/${image}png`} alt={synergiesUnsorted[i].synergy.name} width='24px' height='24px' className={synergiesUnsorted[i].iconcolor}/>{synergiesUnsorted[i].synergy.name + ": " + synergiesUnsorted[i].synergy.count + " / " + max}</CardBody>
-        </Card>
-        <TraitTooltip placement="right" isOpen={this.isToolTipOpen(synergiesUnsorted[i].synergy.key)} target={synergiesUnsorted[i].synergy.key} toggle={() => this.toggle(synergiesUnsorted[i].synergy.key)}
-                          trait={synergiesUnsorted[i].synergy} champions={this.props.champions} advancedTooltip={true}/>
-        </div>);
+      synergiesSorted.push(
+        <Tooltip placement='top' title={<TraitTooltip trait={synergiesUnsorted[i].synergy} champions={this.props.champions} advancedTooltip={true}/>} arrow>
+        <div key={synergiesUnsorted[i].synergy.key}
+           id={synergiesUnsorted[i].synergy.key}
+          inverse={synergiesUnsorted[i].color === colors['BLACK_COLOR']}
+          style={{ backgroundColor: synergiesUnsorted[i].color, borderColor: synergiesUnsorted[i].color }}>
+          <img src={assets_url(image)} alt={synergiesUnsorted[i].synergy.name} width='24px' height='24px' className={synergiesUnsorted[i].iconcolor}/>{synergiesUnsorted[i].synergy.name + ": " + synergiesUnsorted[i].synergy.count + " / " + max}
+        </div>
+        </Tooltip>
+      );
     }
     return synergiesSorted;
   }
 
   render = () => {
     return(
-      <Col>{this.createSynergies()}</Col>
+      this.createSynergies()
     );
   }
 }

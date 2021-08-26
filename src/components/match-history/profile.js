@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { sortTierDescending, sortPlacementAscending, sortTierMatchDescending, sortGametimeDescending } from '../../api-helper/sorting.js';
-import { companion_parse, champion_icon_parse } from '../../api-helper/string-parsing.js';
+import { sortTierDescending, sortPlacementAscending, sortTierMatchDescending, sortGametimeDescending } from '../../api-helper/sorting';
+import { companion_parse, champion_icon_parse } from '../../api-helper/string-parsing';
+import { patch_data_url, match_url, summoner_by_puuid_url, host_url, companion_bin_url, companion_icon_url, profile_icon_url } from '../../api-helper/urls';
 import MatchBasic from './match-basic.component.js';
 
 class Profile extends Component {
@@ -16,13 +17,6 @@ class Profile extends Component {
     }
 
     componentDidMount = () => {
-        const proxyUrl = 'https://infinite-anchorage-43166.herokuapp.com/';
-        const summonerUrl = '/tft/summoner/v1/summoners/by-puuid/';
-        const leagueUrl = '/tft/league/v1/entries/by-summoner/';
-        const matchUrl = '/tft/match/v1/matches/';
-        const americas = 'https://americas.api.riotgames.com/';
-        const platform = 'https://na1.api.riotgames.com';
-
         this.setState({loading: true});
         let champions = require("../../data/champions.json");
         let items = require("../../data/items.json");
@@ -45,7 +39,7 @@ class Profile extends Component {
             traits_arr[traits[trait].key] = traits[trait];
         }
 
-        fetch("https://raw.communitydragon.org/latest/cdragon/tft/en_us.json").then(res => res.json()).then(res => {
+        fetch(patch_data_url()).then(res => res.json()).then(res => {
             console.log(res);
             for (let champion in res.setData[5].champions) {
                 if (champions_arr[res.setData[5].champions[champion].apiName] !== undefined) {
@@ -79,7 +73,7 @@ class Profile extends Component {
             if (this.props.location.search) {
                 if (this.props.location.state) {
                     for (let i = 0; i < 1; i++) {
-                        fetch(`${proxyUrl}${americas}${matchUrl}${this.props.location.state.matchListData[i]}`, {
+                        fetch(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.props.location.state.region)}${match_url(this.props.location.state.matchListData[i])}`, {
                             method: 'GET',
                             headers: {
                                 'Accept-Charset': 'application/json;charset=utf-8',
@@ -90,7 +84,7 @@ class Profile extends Component {
 
 
                             for (let j = 0; j < 8; j++) {
-                                    fetch(`https://raw.communitydragon.org/latest/game/data/characters/${match.info.participants[j].companion.species.toLowerCase()}/skins/skin${match.info.participants[j].companion.skin_ID}.bin.json`).then(res => res.json()).then(companion => {
+                                    fetch(companion_bin_url(match.info.participants[j].companion.species.toLowerCase(), match.info.participants[j].companion.skin_ID)).then(res => res.json()).then(companion => {
                                         let companionData = companion[`Characters/${match.info.participants[j].companion.species}/Skins/Skin${match.info.participants[j].companion.skin_ID}`];
                                         if (companionData === undefined) {
                                             companionData = companion[companion_parse(`Characters/${match.info.participants[j].companion.species}/Skins/Skin${match.info.participants[j].companion.skin_ID}`.toLowerCase())];
@@ -98,7 +92,7 @@ class Profile extends Component {
                                         console.log(companionData);
                                         let iconCircle = companionData.iconCircle.substring(0, companionData.iconCircle.indexOf('dds')).toLowerCase();
                                     
-                                        fetch(`${proxyUrl}${platform}${summonerUrl}${match.info.participants[j].puuid}`, {
+                                        fetch(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.props.location.state.platform)}${summoner_by_puuid_url(match.info.participants[j].puuid)}`, {
                                             method: 'GET',
                                             headers: {
                                                 'Accept-Charset': 'application/json;charset=utf-8',
@@ -107,7 +101,7 @@ class Profile extends Component {
                                         }).then(res => res.json()).then(player => {
                                             //console.log(player.name);
                                             match.info.participants[j].name = player.name;
-                                            match.info.participants[j].companion.image_source = `https://raw.communitydragon.org/latest/game/${iconCircle}png`;
+                                            match.info.participants[j].companion.image_source = companion_icon_url(iconCircle);
 
                                             if (j === 7) {
                                                 console.log(this.state);
@@ -225,7 +219,7 @@ class Profile extends Component {
                                                 <tbody>
                                                     <tr>
                                                         <td>
-                                                            <img src={`https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${this.props.location.state.summonerData.profileIconId}.jpg`} style={{width: '50px', height: '50px'}}/>
+                                                            <img src={profile_icon_url(this.props.location.state.summonerData.profileIconId)} style={{width: '50px', height: '50px'}}/>
                                                         </td>
                                                         <td>{this.props.location.state.summonerData.name}</td>
                                                         <td>{this.props.location.state.summonerData.summonerLevel}</td>

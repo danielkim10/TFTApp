@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Tooltip } from 'reactstrap';
-import { trait_desc_parse, trait_effect_parse } from '../../api-helper/string-parsing.js';
-import { sortCostAscending } from '../../api-helper/sorting.js';
+import { trait_desc_parse, trait_effect_parse } from '../../api-helper/string-parsing';
+import { sortCostAscending } from '../../api-helper/sorting';
+
+import './trait-tooltips.css';
 
 class TraitTooltip extends Component {
   constructor(props) {
@@ -14,11 +15,13 @@ class TraitTooltip extends Component {
 
   createSmallTooltip = () => {
     return (
-      <Tooltip placement="top" isOpen={this.props.isOpen} target={this.props.target} toggle={this.props.toggle}>
-        <div>
-          <p className='tooltipTitle'></p>
-        </div>
-      </Tooltip>
+      <table>
+        <tbody>
+          <tr>
+            <td><p className='tooltipTitle'>{this.props.count} {this.props.trait.name}</p></td>
+          </tr>
+        </tbody>
+      </table>
     );
   }
 
@@ -37,7 +40,7 @@ class TraitTooltip extends Component {
     for (let champion in champions) {
         championDesc.push(
             <div className='champion-spacing' onClick={() => this.championRedirect(champions[champion].championId)} key={champions[champion].championId}>
-                <img src={champions[champion].patch_data.icon} alt={champions[champion].name} width={20} height={20} className={champions[champion].cost === 1 ? 'cost1champion' : champions[champion].cost === 2 ? 'cost2champion' : champions[champion].cost === 3 ? 'cost3champion' : champions[champion].cost === 4 ? 'cost4champion' : 'cost5champion'}/>
+                <img src={champions[champion].patch_data.icon} alt={champions[champion].name} className={champions[champion].cost === 1 ? 'cost1champion-tooltip' : champions[champion].cost === 2 ? 'cost2champion-tooltip' : champions[champion].cost === 3 ? 'cost3champion-tooltip' : champions[champion].cost === 4 ? 'cost4champion-tooltip' : 'cost5champion-tooltip'}/>
             </div>);
     }
 
@@ -54,25 +57,24 @@ class TraitTooltip extends Component {
     }
 
     return (
-      <Tooltip placement="top" isOpen={this.props.isOpen} target={this.props.target} toggle={this.props.toggle}>
-        <table>
-          <tbody>
-            <tr>
-              <td><p className='tooltipTitle'>{this.props.trait.name}</p></td>
-            </tr>
-            <tr>
-              <td><p>{this.props.trait.innate}</p></td>
-            </tr>
-            <tr>
-              <td>{desc_hashed}</td>
-            </tr>
-            <tr>
-              <td>{championDesc}</td>
-            </tr>
-            {bonuses_hashed}
-          </tbody>
-        </table>
-      </Tooltip>
+      <table>
+        <tbody>
+          <tr>
+            <td><p className='tooltipTitle'>{this.props.trait.name}</p></td>
+          </tr>
+          <tr>
+            <td><p>{this.props.trait.innate}</p></td>
+          </tr>
+          <tr>
+            <td>{desc_hashed}</td>
+          </tr>
+          {bonuses_hashed}
+          <tr>
+            <td>{championDesc}</td>
+          </tr>
+          
+        </tbody>
+      </table>
     )
   }
 

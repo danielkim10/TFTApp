@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Card, CardHeader, CardBody, Input } from 'reactstrap';
-import ItemTooltip from '../../../sub-components/item-tooltips/item-tooltips.js';
+import { assets_url } from '../../../api-helper/urls';
+import ItemTooltip from '../../../sub-components/item-tooltips/item-tooltips';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import './items-panel.css';
 
@@ -13,27 +15,6 @@ class ItemsPanel extends Component {
     }
   }
 
-  isToolTipOpen = (target) => {
-    return this.state[target] ? this.state[target].tooltipOpen : false;
-  }
-  toggle = (target) => {
-    if (!this.state[target]) {
-      this.setState({
-        ...this.state,
-        [target]: {
-          tooltipOpen: true
-        }
-      });
-    } else {
-      this.setState({
-        ...this.state,
-        [target]: {
-          tooltipOpen: !this.state[target].tooltipOpen
-        }
-      });
-    }
-  }
-
   placeItems = () => {
     let items = [];
     Object.keys(this.props.items).forEach((key, index) => {
@@ -41,15 +22,16 @@ class ItemsPanel extends Component {
         if (this.props.items[key].name.toLowerCase().includes(this.state.searchNameItems.toLowerCase())) {
           let str = parseInt((key.substring(1, key.length)));
           if (str > 10) {
-            let image = this.props.items[key].patch_data.icon.substring(0, this.props.items[key].patch_data.icon.indexOf('dds'));
+            let image = this.props.items[key].patch_data.icon.substring(0, this.props.items[key].patch_data.icon.indexOf('dds')).toLowerCase();
             
-            items.push(<div className='item-spacing' id={key} key={key} draggable="true" onDragStart={(e) => this.props.drag(e, this.props.items[key])}>
-            <img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} alt={this.props.items[key].name} className='itemborder'/>
-              <p className='item-name'>{this.props.items[key].name}</p>
-
-            <ItemTooltip placement="top" isOpen={this.isToolTipOpen(key)} target={key} toggle={() => this.toggle(key)}
-              name={this.props.items[key].name}/>
-            </div>);
+            items.push(
+              <Tooltip placement='top' title={<ItemTooltip item={this.props.items[key]}/>} key={key} arrow>
+                <div className='item-spacing' id={key} key={key} draggable="true" onDragStart={(e) => this.props.drag(e, this.props.items[key])}>
+                  <img src={assets_url(image)} alt={this.props.items[key].name} className='itemborder'/>
+                  <p className='item-name'>{this.props.items[key].name}</p>
+                </div>
+              </Tooltip>
+            );
           }
         }
       }

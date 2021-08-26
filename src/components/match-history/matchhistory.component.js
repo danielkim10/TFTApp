@@ -5,7 +5,7 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import MatchBasic from './match-basic.component.js';
+import { patch_data_url, host_url, summoner_by_name_url, ranked_league_url, match_list_url } from '../../api-helper/urls';
 
 class MatchHistory extends Component {
 
@@ -14,8 +14,8 @@ class MatchHistory extends Component {
 
     this.state = {
       summonerName: "",
-      platform: "https://na1.api.riotgames.com",
-      region: "https://americas.api.riotgames.com",
+      platform: "na1",
+      region: "americas",
       gamedata: {},
       matches: [],
       champions: {},
@@ -66,7 +66,7 @@ class MatchHistory extends Component {
       traits_arr[traits[trait].key] = traits[trait];
     }
 
-    fetch("https://raw.communitydragon.org/latest/cdragon/tft/en_us.json").then(res => res.json()).then(res => {
+    fetch(patch_data_url()).then(res => res.json()).then(res => {
       console.log(res);
       for (let champion in res.setData[5].champions) {
         if (champions_arr[res.setData[5].champions[champion].apiName] !== undefined) {
@@ -99,19 +99,10 @@ class MatchHistory extends Component {
   }
 
   search(e) {
-    console.log('test');
     //e.preventDefault()
-    const proxyUrl = 'https://infinite-anchorage-43166.herokuapp.com/';
-    const summonerUrl = '/tft/summoner/v1/summoners/by-name/';
-    const matchListUrl = '/tft/match/v1/matches/by-puuid/{puuid}/ids';
-    const matchUrl = '/tft/match/v1/matches/{matchId}'
-    const leagueUrl = '/tft/league/v1/entries/by-summoner/';
-
-    //const americas = 'https://americas.api.riotgames.com/
-
     this.setState({loading: true});
 
-    fetch(`${proxyUrl}${this.state.platform}${summonerUrl}${this.state.summonerName}`, {
+    fetch(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.state.platform)}${summoner_by_name_url(this.state.summonerName)}`, {
         method: 'GET',
         headers: {
             'Accept-Charset': 'application/json;charset=utf-8',
@@ -121,7 +112,7 @@ class MatchHistory extends Component {
     })
     .then(res => res.json())
     .then(summonerData => {
-        fetch(`${proxyUrl}${this.state.platform}${leagueUrl}${summonerData.id}`, {
+        fetch(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.state.platform)}${ranked_league_url(summonerData.id)}`, {
             method: `GET`,
             headers: {
                 'Accept-Charset': 'application/json;charset=utf-8',
@@ -129,7 +120,7 @@ class MatchHistory extends Component {
             }
         }).then(res => res.json()).then(leagueData => {
             
-            fetch(`${proxyUrl}${this.state.region}/tft/match/v1/matches/by-puuid/${summonerData.puuid}/ids`, {
+            fetch(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.state.region)}${match_list_url(summonerData.puuid)}`, {
                 method: `GET`,
                 headers: {
                     'Accept-Charset': 'application/json;charset=utf-8',
@@ -140,19 +131,16 @@ class MatchHistory extends Component {
                 console.log(leagueData);
                 console.log(matchListData);
 
-                let platform = 'na';
-                if (this.state.platform === 'https://euw1.api.riotgames.com') {
-                    platform = 'euw';
-                }
-
                 let path = `/profile`
                 this.props.history.push({
                         pathname: path, 
-                        search: `?platform=${platform}&summonerName=${this.state.summonerName.replaceAll(' ', '').toLowerCase()}`, 
+                        search: `?platform=${this.state.platform}&summonerName=${this.state.summonerName.replaceAll(' ', '').toLowerCase()}`, 
                         state: { 
                             summonerData: summonerData,
                             leagueData: leagueData,
-                            matchListData: matchListData
+                            matchListData: matchListData,
+                            platform: this.state.platform,
+                            region: this.state.region
                         }});
             }).catch((matchListErr) => {
                 console.error('Match List Error: ' + matchListErr);
@@ -178,17 +166,14 @@ class MatchHistory extends Component {
     return dataVersionCut;
   }
 
-  /*
-}*/
-
   parseSummonerName = () => {
     this.setState({ summonerName: this.state.summonerName.replace(" ", "")});
   }
 
   handleRegionSelect = (e) => {
-    let regionApi = 'https://americas.api.riotgames.com/';
-    if (e.target.value === 'https://euw1.api.riotgames.com') {
-        regionApi = 'https://europe.api.riotgames.com/';
+    let regionApi = 'americas';
+    if (e.target.value === 'euw1') {
+        regionApi = 'europe';
     }
 
     this.setState({platform: e.target.value, region: regionApi});
@@ -1532,8 +1517,8 @@ class MatchHistory extends Component {
                                                                 value={this.state.platform}
                                                                 onChange={this.handleRegionSelect}
                                                             >
-                                                                <MenuItem value="https://na1.api.riotgames.com">NA</MenuItem>
-                                                                <MenuItem value="https://euw1.api.riotgames.com">EUW</MenuItem>
+                                                                <MenuItem value="na1">NA</MenuItem>
+                                                                <MenuItem value="euw1">EUW</MenuItem>
                                                             </Select>
                                                         </FormControl>
                                                     </td>
