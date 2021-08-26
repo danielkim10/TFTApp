@@ -353,6 +353,11 @@ export default class Main extends Component {
 
   findSynergies = (team, champion) => {
     let traits = Object.assign({}, this.state.traits);
+    console.log(champion);
+    if (champion.name === undefined) {
+      return;
+    }
+
     for (let i in this.state.team) {
       if (team[i].champion.name === champion.name) {
         return;
@@ -415,18 +420,22 @@ export default class Main extends Component {
     console.log("dropped item: " + id);
     console.log(this.state.team);
     let team = this.state.team;
-    this.findSynergies(team, this.state.draggedChampion);
-    team.push({champion: this.state.draggedChampion, tier: 1, items: [], remainingSlots: 3, hexSlot: id });
-    
 
-    for (let teamMember in this.state.team) {
-      if (this.state.team[teamMember].hexSlot === id) {
+    if (this.state.draggedChampion.name !== undefined) {
+      this.findSynergies(team, this.state.draggedChampion);
+      team.push({champion: this.state.draggedChampion, tier: 1, items: [], remainingSlots: 3, hexSlot: id });
+    }
 
-        if (this.state.team[teamMember].items.length < 3) {
-          team[teamMember].items.push(this.state.draggedItem);
-        }
-        else {
+    if (this.state.draggedItem.name !== undefined) {
+      for (let teamMember in this.state.team) {
+        if (this.state.team[teamMember].hexSlot === id) {
 
+          if (this.state.team[teamMember].items.length < 3) {
+            team[teamMember].items.push(this.state.draggedItem);
+          }
+          else {
+
+          }
         }
       }
     }

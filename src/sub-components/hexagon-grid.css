@@ -2,8 +2,8 @@
 
 .hexagon {
     position: relative;
-    height: 120px;
-    width: 120px;
+    height: 90px;
+    width: 90px;
     background: black;
     display: inline-block;
   }
@@ -25,11 +25,11 @@
 
   .hexagon2 {
       position: relative;
-      height: 120px;
-      width: 120px;
+      height: 90px;
+      width: 90px;
       background: black;
-      margin-left: -61px;
-      top: 89px;
+      margin-left: -44px;
+      top: 68px;
       display: inline-block;
   }
   .hexagon2:before {
@@ -50,10 +50,10 @@
 
   .hexagon3 {
     position: relative;
-    height: 120px;
-    width: 120px;
+    height: 90px;
+    width: 90px;
     background: black;
-    margin-left: -61px;
+    margin-left: -45px;
     display: inline-block;
 }
 .hexagon3:before {
@@ -74,10 +74,10 @@
 
 .hexagon4 {
     position: relative;
-    height: 120px;
-    width: 120px;
+    height: 90px;
+    width: 90px;
     background: black;
-    margin-top: 52px;
+    margin-top: 40px;
     display: inline-block;
 }
 .hexagon4:before {
@@ -98,11 +98,11 @@
 
 .hexagon5 {
     position: relative;
-    height: 120px;
-    width: 120px;
+    height: 90px;
+    width: 90px;
     background: black;
-    margin-top: 52px;
-    margin-left: -61px;
+    margin-top: 40px;
+    margin-left: -45px;
     display: inline-block;
 }
 .hexagon5:before {
@@ -119,4 +119,16 @@
 .hexagon5, .hexagon5:before {
   -webkit-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+.item-size {
+    width: 25px;
+    height: 25px;
+}
+
+.items-equipped {
+    position: absolute;
+    display: inline-block;
+    margin-top: -45px;
+    margin-left: -850px;
 }
