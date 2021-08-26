@@ -96,10 +96,10 @@ class SynergiesPanel extends Component {
         <Card id={synergiesUnsorted[i].synergy.key}
         inverse={synergiesUnsorted[i].color === colors['BLACK_COLOR']}
         style={{ backgroundColor: synergiesUnsorted[i].color, borderColor: synergiesUnsorted[i].color }}>
-        <CardBody><img src={"https://raw.communitydragon.org/latest/game/"+image+'png'} alt={synergiesUnsorted[i].synergy.name} width='24px' height='24px' className={synergiesUnsorted[i].iconcolor}/>{synergiesUnsorted[i].synergy.name + ": " + synergiesUnsorted[i].synergy.count + " / " + max}</CardBody>
+        <CardBody><img src={`https://raw.communitydragon.org/latest/game/${image}png`} alt={synergiesUnsorted[i].synergy.name} width='24px' height='24px' className={synergiesUnsorted[i].iconcolor}/>{synergiesUnsorted[i].synergy.name + ": " + synergiesUnsorted[i].synergy.count + " / " + max}</CardBody>
         </Card>
         <SynergiesTooltip placement="right" isOpen={this.isToolTipOpen(synergiesUnsorted[i].synergy.key)} target={synergiesUnsorted[i].synergy.key} toggle={() => this.toggle(synergiesUnsorted[i].synergy.key)}
-                          name={synergiesUnsorted[i].synergy.name} description={synergiesUnsorted[i].synergy.description ? synergiesUnsorted[i].synergy.description : ""} tier={synergiesUnsorted[i].synergy.tier}/>
+                          trait={synergiesUnsorted[i].synergy} champions={this.props.champions} advancedTooltip={true}/>
         </div>);
     }
     return synergiesSorted;

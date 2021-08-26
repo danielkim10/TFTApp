@@ -66,9 +66,6 @@ export default class Main extends Component {
     let items = require("../../../data/items.json");
     let traits = require("../../../data/traits.json");
 
-    // fetch("https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/tftchampions.json").then(res => res.json()).then(res => {
-    //   console.log(res);
-    // })
     let champions_arr = {};
     for (let champion in champions) {
       if (champions[champion].championId.startsWith("TFT5_")) {
@@ -116,6 +113,8 @@ export default class Main extends Component {
 
       }
       this.setState({champions: champions_arr, items: items_arr, traits: traits_arr, loading: false});
+    }).catch((err) => {
+      console.error('Error retrieving patch data: ' + err);
     });
     console.log(champions_arr);
     console.log(items_arr);
@@ -124,27 +123,8 @@ export default class Main extends Component {
     
   }
 
-  compare = (a, b) => {
-    const idA = a.id;
-    const idB = b.id;
-
-    let comparison = 0;
-    if (idA > idB) {
-      comparison = 1;
-    }
-    else if (idA < idB) {
-      comparison = -1;
-    }
-    return comparison;
-  }
-
   addToTeam = (data) => {
-    // const canvas = document.getElementById('canvas');
-    // const ctx = canvas.getContext('2d');
-    // ctx.clearRect(0, 0, 700, 400);
-    
     let team = this.state.team;
-    //let isDupe = team[data.championId] === data.championId;
     team.push({champion: data, tier: 1, items: [], remainingSlots: 3, hexSlot: team.length });
     this.setState({team: team});
     this.findSynergies(this.state.team, data);
@@ -159,7 +139,7 @@ export default class Main extends Component {
     Object.keys(traits).forEach((key, index) => {
       traits[key].count = 0;
     });
-    this.setState({team: [], traits: traits, draggedItem: {}, text: {teamName: "", searchNameChamps: "", searchNameItems: ""}});
+    this.setState({team: [], traits: traits, draggedChampion: {}, draggedItem: {}, text: {teamName: "", searchNameChamps: "", searchNameItems: ""}});
   }
 
   randomButton = (e) => {
@@ -551,10 +531,10 @@ export default class Main extends Component {
                 <Input type="text" id="search" name="teamName" onChange={this.handleChanges} placeholder="Team Name"/>
                 <HexagonGrid team={this.state.team} drop={this.drop} drag={this.dragChampion}/>
                 {/* <TeamPanel team={this.state.team} items={this.state.items} champions={this.state.champions} drop={this.drop}/> */}
-                <ChampionPanel champions={this.state.champions} addToTeam={this.addToTeam} drag={this.dragChampion}/>
+                <ChampionPanel champions={this.state.champions} traits={this.state.traits} addToTeam={this.addToTeam} drag={this.dragChampion}/>
                 <ItemPanel items={this.state.items} itemsBasic={this.state.itemsBasic} drag={this.drag}/>
                 
-                <SynergiesPanel traits={this.state.traits}/>
+                <SynergiesPanel traits={this.state.traits} champions={this.state.champions}/>
                 </div>
                 }
                 </td>

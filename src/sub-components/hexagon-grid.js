@@ -20,6 +20,18 @@ class HexagonGrid extends Component {
     render = () => {
         console.log(this.props.team);
         let itemsEquipped = [];
+        if (this.props.team.length === 0) {
+            for (let i = 0; i < 28; i++) {
+                let styleElem = document.head.appendChild(document.createElement("style"));
+                let styleElem2 = document.head.appendChild(document.createElement("style"));
+            
+                styleElem2.innerHTML = `#h${i} {background: black}`;
+                styleElem.innerHTML = `#h${i}:before {
+                    background: white; 
+                }`;
+            }
+        }
+
         for (let champion in this.props.team) {
             let styleElem = document.head.appendChild(document.createElement("style"));
             let styleElem2 = document.head.appendChild(document.createElement("style"));

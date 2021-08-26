@@ -68,6 +68,8 @@ class ChampionsCheatSheet extends Component {
         champion = champions_arr[keys[ keys.length * Math.random() << 0]]
       }
       this.setState({champions: champions_arr, champion: champion, championNumber: champions_arr.length, traits: traits_arr, loading: false});
+    }).catch((err) => {
+      console.error('Error retrieving patch data: ' + err);
     });
   }
 

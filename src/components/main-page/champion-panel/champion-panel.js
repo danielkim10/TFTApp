@@ -41,6 +41,10 @@ class ChampionPanel extends Component {
     Object.keys(this.props.champions).forEach((key, index) => {
       if (this.props.champions[key].patch_data !== undefined) {
         if (this.props.champions[key].name.toLowerCase().includes(this.state.searchNameChamps.toLowerCase())) {
+          let trait_data = [];
+          for (let i in this.props.champions[key].traits) {
+            trait_data.push(this.props.traits[this.props.champions[key].traits[i]]);
+          }
           champions.push(<div className='champion-spacing' draggable="true" onDragStart={(e) => this.props.drag(e, this.props.champions[key])} id={key} key={key}>
 
           <img src={this.props.champions[key].patch_data.icon} id={key} alt={this.props.champions[key].name} className={this.props.champions[key].cost === 1 ? 'cost1champion' : this.props.champions[key].cost === 2 ? 'cost2champion' : this.props.champions[key].cost === 3 ? 'cost3champion' : this.props.champions[key].cost === 4 ? 'cost4champion' : 'cost5champion'}/>
@@ -48,7 +52,7 @@ class ChampionPanel extends Component {
             <p className="champion-name">{this.props.champions[key].name}</p>
 
           <ChampionTooltip placement="top" isOpen={this.isToolTipOpen(key)} target={key} toggle={() => this.toggle(key)}
-                  champion={this.props.champions[key]}/>
+                  champion={this.props.champions[key]} traits={trait_data}/>
           </div>);
         }
       }

@@ -50,7 +50,9 @@ class SynergiesCheatSheet extends Component {
 
       }
       this.setState({champions: champions_arr, traits: traits_arr, loading: false});
-    });
+    }).catch((err) => {
+      console.error('Error retrieving patch data: ' + err);
+    })
   }
 
   createSynergy = (data) => {
