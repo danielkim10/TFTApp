@@ -26,8 +26,6 @@ class TraitTooltip extends Component {
   }
 
   createAdvancedTooltip = () => {
-    console.log(this.props.synergy);
-
     let championDesc = [];
     let champions = [];
     Object.keys(this.props.champions).forEach((key, index) => {

@@ -41,3 +41,7 @@ export const companion_icon_url = (icon) => {
 export const profile_icon_url = (icon) => {
     return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${icon}.jpg`;
 }
+
+export const trait_bg_url = (style) => {
+    return `https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-tft/global/default/${style}.png`;
+}

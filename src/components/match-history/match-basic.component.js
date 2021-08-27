@@ -5,6 +5,8 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Star from '@material-ui/icons/Star';
+import Tooltip from '@material-ui/core/Tooltip';
+import { assets_url, trait_bg_url } from '../../api-helper/urls.js';
 
 import ChampionTooltip from '../../sub-components/champion-tooltips/champion-tooltips.js';
 import TraitTooltip from '../../sub-components/trait-tooltips/trait-tooltips.js';
@@ -127,33 +129,21 @@ class MatchBasic extends Component {
 
   traitsSort = (traits) => {
     let traitsRow = [];
+    console.log(traits);
     for (let trait in traits) {
       if (this.props.traits[traits[trait].name] !== undefined) {
         if (traits[trait].tier_current > 0) {
           let image = this.props.traits[traits[trait].name].patch_data.icon.substring(0, this.props.traits[traits[trait].name].patch_data.icon.indexOf('dds')).toLowerCase();
-
           let traitStyle = this.props.traits[traits[trait].name].sets[traits[trait].tier_current-1].style;
-          let traitBg = '';
-          if (traitStyle === 'chromatic') {
-            traitBg = "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-tft/global/default/chromatic.png";
-          }
-          else if (traitStyle === 'gold') {
-            traitBg = "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-tft/global/default/gold.png";
-          }
-          else if (traitStyle === 'silver') {
-            traitBg = "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-tft/global/default/silver.png";
-          }
-          else {
-            traitBg = "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-tft/global/default/bronze.png";
-          }
 
           traitsRow.push(
             <td key={this.props.traits[traits[trait].name].name}>
+              <Tooltip placement='top' title={<TraitTooltip trait={this.props.traits[traits[trait].name]} count={traits[trait].num_units} smallTooltip={true}/>} arrow>
               <div className='trait-layering'>
-                <img src={traitBg} alt={traitStyle} className='background'/>
-                <img src={"https://raw.communitydragon.org/latest/game/" + image +"png"} alt={this.props.traits[traits[trait].name].name} className='trait'/>
+                <img src={trait_bg_url(traitStyle)} alt={traitStyle} className='background'/>
+                <img src={assets_url(image)} alt={this.props.traits[traits[trait].name].name} className='trait'/>
               </div>
-              
+              </Tooltip>
             </td>
           );
         }
@@ -197,10 +187,12 @@ class MatchBasic extends Component {
         //let item_i = championsSorted[champion].items[item];
         let image = this.props.items['i' + championsSorted[champion].items[item]].patch_data.icon.substring(0, this.props.items['i' + championsSorted[champion].items[item]].patch_data.icon.indexOf('dds')).toLowerCase();
         items.push(
-          <div style={{position: 'relative', display: 'inline-block', minWidth: '15px'}} key={item+image}>
+          <Tooltip placement='top' title={<ItemTooltip item={this.props.items['i' + championsSorted[champion].items[item]]}/>} key={item+image} arrow>
+            <div style={{position: 'relative', display: 'inline-block', minWidth: '15px'}} key={item+image}>
             <img src={`https://raw.communitydragon.org/latest/game/${image}png`} alt={image} width={15} height={15}/>
             {/*<ItemTooltip placement="top" isOpen={this.isToolTipOpen(this.props.items['i'+item_i].name)} target={this.props.items['i'+item_i].id} toggle={() => this.toggle(this.props.items['i'+item_i].id)} name={this.props.items['i'+item_i].name}/>*/}
-          </div>
+            </div>
+          </Tooltip>
         );
       }
 
@@ -212,7 +204,11 @@ class MatchBasic extends Component {
                 <td style={{marginLeft: '10px'}}>{stars}</td>
               </tr>
               <tr>
-                <td><img src={this.props.champions[championsSorted[champion].character_id].patch_data.icon} alt={championsSorted[champion].name} width={45} height={45}/></td>
+                <td>
+                  <Tooltip placement='top' title={<ChampionTooltip champion={this.props.champions[championsSorted[champion].character_id]}/>} arrow>
+                    <img src={this.props.champions[championsSorted[champion].character_id].patch_data.icon} alt={championsSorted[champion].name} width={45} height={45}/>
+                  </Tooltip>
+                </td>
               </tr>
               <tr style={{minHeight: '15px'}}>
                 <td style={{height: '15px'}}>{items}</td>

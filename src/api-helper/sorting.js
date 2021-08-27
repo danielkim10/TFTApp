@@ -77,3 +77,13 @@ export const sortGametimeDescending = (a,b) => {
     }
     return 0;
 }
+
+export const sortTrait = (a, b) => {
+    if (a.tier < b.tier) {
+        return 1;
+    }
+    else if (a.tier > b.tier) {
+        return -1;
+    }
+    return 0;
+}

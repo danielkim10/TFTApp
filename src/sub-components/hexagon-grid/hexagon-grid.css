@@ -122,13 +122,13 @@
 }
 
 .item-size {
-    width: 25px;
-    height: 25px;
+    width: 20px;
+    height: 20px;
 }
 
 .items-equipped {
     position: absolute;
     display: inline-block;
-    margin-top: -45px;
-    margin-left: -850px;
+    margin-top: -39px;
+    margin-left: -184px;
 }

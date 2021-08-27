@@ -54,6 +54,9 @@ class HexagonGrid extends Component {
                 case 5:
                     color = 'orange';
                     break;
+                default:
+                    color = 'orange';
+                    break;
             }
 
             styleElem2.innerHTML = `#h${this.props.team[champion].hexSlot} {background: ${color}}`;
@@ -64,10 +67,39 @@ class HexagonGrid extends Component {
                 background-size: 85px 85px;
             }`;
 
-            for (let item in this.props.team[champion].items) {
-                let image = this.props.team[champion].items[item].patch_data.icon.substring(0, this.props.team[champion].items[item].patch_data.icon.indexOf('dds')).toLowerCase();
-                itemsEquipped.push(<div className='items-equipped'><img src={assets_url(image)} className='item-size'/></div>);
-                console.log(this.props.team[champion].items[item]);
+            for (let i = 0; i < this.props.team[champion].items.length; i++) {
+                let image = this.props.team[champion].items[i].patch_data.icon.substring(0, this.props.team[champion].items[i].patch_data.icon.indexOf('dds')).toLowerCase();
+                console.log(assets_url(image));
+                itemsEquipped.push(<div id={`h${this.props.team[champion].hexSlot}-${i}`} key={i} className='items-equipped'><img src={assets_url(image)} className='item-size' alt={this.props.team[champion].items[i].name}/></div>);
+                console.log(this.props.team[champion].items[i]);
+
+                let leftMargin = -231;
+                let topMargin = 168;
+
+                if (this.props.team[champion].hexSlot > 20) {
+                    leftMargin = -137 - 91*(27 - this.props.team[champion].hexSlot);
+                    topMargin = 168;
+                }
+                else if (this.props.team[champion].hexSlot > 13) {
+                    leftMargin = -183 - 91*(20 - this.props.team[champion].hexSlot);
+                    topMargin = 99;
+                }
+                else if (this.props.team[champion].hexSlot > 6) {
+                    leftMargin = -137 - 91*(13 - this.props.team[champion].hexSlot);
+                    topMargin = 30;
+                }
+                else {
+                    leftMargin = -183 - 91*(6 - this.props.team[champion].hexSlot);
+                    topMargin = -39;
+                }
+
+                let styleElem3 = document.head.appendChild(document.createElement("style"));
+                styleElem3.innerHTML = `#h${this.props.team[champion].hexSlot}-${i} {
+                    position: absolute; 
+                    display: inline-block; 
+                    margin-left: ${leftMargin}px; 
+                    margin-top: ${topMargin}px;
+                }`;
             }
         
         }
@@ -99,7 +131,7 @@ class HexagonGrid extends Component {
         }
 
         return (
-            <div style={{minHeight: '400px'}}>
+            <div style={{minHeight: '400px', minWidth: '700px'}}>
                 
                 <div style={{display: 'inline-block', width: '100%'}}>
                     {hexagonRow1}

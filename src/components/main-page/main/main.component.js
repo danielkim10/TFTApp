@@ -408,7 +408,23 @@ export default class Main extends Component {
       for (let teamMember in this.state.team) {
         if (this.state.team[teamMember].hexSlot === id) {
 
-          if (this.state.team[teamMember].items.length < 3) {
+          if (this.state.team[teamMember].items.includes(this.state.draggedItem) && this.state.draggedItem.isUnique) {
+
+          }
+
+          if (this.state.team[teamMember].items.includes(this.state.items['i99']) || this.state.team[teamMember].items.includes(this.state.items['i2099'])) {
+            
+          }
+
+          if (this.state.team[teamMember].items.length > 0 && (this.state.draggedItem.id === '99' || this.state.draggedItem.id === '2099')) {
+
+          }
+
+          if (this.state.draggedItem.isElusive || (this.state.draggedItem.isUnique && (this.state.draggedItem.id).toString().includes('8'))) {
+            console.log(this.state.draggedItem);
+          }
+
+          else if (this.state.team[teamMember].items.length < 3) {
             team[teamMember].items.push(this.state.draggedItem);
           }
           else {
@@ -523,12 +539,23 @@ export default class Main extends Component {
                   <Alert color={this.state.alertVariant} isOpen={this.state.showAlert}>{this.state.alertMessage}</Alert>
                 </div>
                 <Input type="text" id="search" name="teamName" onChange={this.handleChanges} placeholder="Team Name"/>
-                <HexagonGrid team={this.state.team} drop={this.drop} drag={this.dragChampion}/>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td style={{width: '20%'}}>
+                        <TraitsPanel traits={this.state.traits} champions={this.state.champions}/>
+                      </td>
+                      <td style={{width: '60%'}}><HexagonGrid team={this.state.team} drop={this.drop} drag={this.dragChampion}/></td>
+                      <td style={{width: '20%'}}></td>
+                    </tr>
+                  </tbody>
+                </table>
+                
                 {/* <TeamPanel team={this.state.team} items={this.state.items} champions={this.state.champions} drop={this.drop}/> */}
                 <ChampionsPanel champions={this.state.champions} traits={this.state.traits} addToTeam={this.addToTeam} drag={this.dragChampion}/>
                 <ItemsPanel items={this.state.items} itemsBasic={this.state.itemsBasic} drag={this.drag}/>
                 
-                <TraitsPanel traits={this.state.traits} champions={this.state.champions}/>
+                
                 </div>
                 }
                 </td>
