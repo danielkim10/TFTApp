@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import { sortTierDescending, sortPlacementAscending, sortTierMatchDescending, sortGametimeDescending } from '../../api-helper/sorting';
+import { sortGametimeDescending } from '../../api-helper/sorting';
 import { companion_parse, champion_icon_parse } from '../../api-helper/string-parsing';
-import { patch_data_url, match_url, summoner_by_puuid_url, host_url, companion_bin_url, companion_icon_url, profile_icon_url } from '../../api-helper/urls';
+import { patch_data_url, match_url, summoner_by_puuid_url, host_url, companion_bin_url, companion_icon_url, profile_icon_url, rank_face_url, rank_crown_url } from '../../api-helper/urls';
 import MatchBasic from './match-basic.component.js';
+
+import './profile.css';
 
 class Profile extends Component {
     constructor(props) {
@@ -142,49 +144,129 @@ class Profile extends Component {
     }
 
     createRank = () => {
-        let rankedData = [];
-        if (this.props.location.state.leagueData.length === 2) {
+        let ranks = {
+            'iron': 1,
+            'bronze': 2,
+            'silver': 3,
+            'gold': 4,
+            'platinum': 5,
+            'diamond': 6,
+            'master': 7,
+            'grandmaster': 8,
+            'challenger': 9
+        };
 
+        let rankedData = this.props.location.state.leagueData;
+        let rankedCards = [];
+        let rankedIndex = rankedData.findIndex(r => r.queueType === 'RANKED_TFT');
+        if (rankedIndex > -1) {
+            let tier = rankedData[rankedIndex].tier.toLowerCase();
+            let rank = 1;
+            if (rankedData[rankedIndex].rank === 'IV') {
+                rank = 4;
+            }
+            else if (rankedData[rankedIndex].rank === 'III') {
+                rank = 3;
+            }
+            else if (rankedData[rankedIndex].rank === 'II') {
+                rank = 2;
+            }
+
+
+            rankedCards.push(
+                <td>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>Ranked</td>
+                            </tr>
+                            <tr>
+                                <td>{rankedData[rankedIndex].tier} {rankedData[rankedIndex].rank}</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <img src={rank_face_url(tier, ranks[tier])} className='ranked-face'/>
+                                    <img src={rank_crown_url(tier, ranks[tier], rank)} className='ranked-crown'/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>{rankedData[rankedIndex].leaguePoints} LP</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {rankedData[rankedIndex].wins} Wins / {rankedData[rankedIndex].losses} Losses
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            );
         }
-        else if (this.props.location.state.leagueData.length === 1) {
-                if (this.props.location.state.leagueData[0].queueType === 'RANKED_TFT') {
 
-                }
-                else {
-
-                }
+        else {
+            rankedCards.push(
+                <td>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>Ranked</td>
+                            </tr>
+                            <tr>
+                                <td>Unranked</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            );
+        }
+        rankedIndex = rankedData.findIndex(r => r.queueType === 'RANKED_TFT_TURBO');
+        if (rankedIndex > -1) {
+            rankedCards.push(
+                <td>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>Hyper Roll</td>
+                            </tr>
+                            <tr>
+                                <td>{rankedData[rankedIndex].ratedTier}</td>
+                            </tr>
+                            <tr>
+                                <td>{rankedData[rankedIndex].ratedRating} Rating</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {rankedData[rankedIndex].wins} Wins / {rankedData[rankedIndex].losses} Losses
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            );
         }
         else {
-
+            rankedCards.push(
+                <td>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>Hyper Roll</td>
+                            </tr>
+                            <tr>
+                                <td>Unrated</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            );
         }
+
 
         return (
             <table>
                 <tbody>
                     <tr>
-                        <td>{this.props.location.state.leagueData[0].queueType}</td>
-                    </tr>
-                    <tr>
-                        <td>{this.props.location.state.leagueData[0].tier} {this.props.location.state.leagueData[0].rank}</td>
-                    </tr>
-                </tbody>
-            </table>
-        );
-    }
-
-    createHyperRoll = () => {
-        if (this.props.location.state.leagueData.length !== 0) {
-
-        }
-
-        return (
-            <table>
-                <tbody>
-                    <tr>
-                        <td>Hyper Roll</td>
-                    </tr>
-                    <tr>
-                        <td></td>
+                        {rankedCards}
                     </tr>
                 </tbody>
             </table>
@@ -219,7 +301,7 @@ class Profile extends Component {
                                                 <tbody>
                                                     <tr>
                                                         <td>
-                                                            <img src={profile_icon_url(this.props.location.state.summonerData.profileIconId)} style={{width: '50px', height: '50px'}}/>
+                                                            <img src={profile_icon_url(this.props.location.state.summonerData.profileIconId)} alt={this.props.location.state.summonerData.profileIconId} style={{width: '50px', height: '50px'}}/>
                                                         </td>
                                                         <td>{this.props.location.state.summonerData.name}</td>
                                                         <td>{this.props.location.state.summonerData.summonerLevel}</td>
@@ -237,9 +319,6 @@ class Profile extends Component {
                                                     <tr>
                                                         <td>
                                                             {this.createRank()}
-                                                        </td>
-                                                        <td>
-                                                            {this.createHyperRoll()}
                                                         </td>
                                                     </tr>
                                                 </tbody>

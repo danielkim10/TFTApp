@@ -94,7 +94,7 @@ class ChampionsCheatSheet extends Component {
     for (let variable in champion.patch_data.ability.variables) {
       if (!(champion.patch_data.ability.variables[variable].value[1] === champion.patch_data.ability.variables[variable].value[2] && champion.patch_data.ability.variables[variable].value[1] === champion.patch_data.ability.variables[variable].value[2])) {
         abilityVariables.push(
-          <p key={variable}>{champion.patch_data.ability.variables[variable].name}: {Math.round(champion.patch_data.ability.variables[variable].value[1]*100)/100}/{Math.round(champion.patch_data.ability.variables[variable].value[2]*100)/100}/{Math.round(champion.patch_data.ability.variables[variable].value[3]*100)/100}</p>
+          <p key={variable} className='white'>{champion.patch_data.ability.variables[variable].name}: {Math.round(champion.patch_data.ability.variables[variable].value[1]*100)/100}/{Math.round(champion.patch_data.ability.variables[variable].value[2]*100)/100}/{Math.round(champion.patch_data.ability.variables[variable].value[3]*100)/100}</p>
         );
       }
     }
@@ -103,8 +103,8 @@ class ChampionsCheatSheet extends Component {
       let image = this.state.traits[champion.traits[trait]].patch_data.icon.substring(0, this.state.traits[champion.traits[trait]].patch_data.icon.indexOf('dds')).toLowerCase();
       championTraitsSmall.push(
         <tr key={trait}>
-          <td>
-            <img src={assets_url(image)} width={20} height={20}/>
+          <td className='white'>
+            <img src={assets_url(image)} alt={this.state.traits[champion.traits[trait]].name} width={20} height={20}/>
             {this.state.traits[champion.traits[trait]].name}
           </td>
         </tr>
@@ -129,10 +129,10 @@ class ChampionsCheatSheet extends Component {
                   <table>
                     <tbody>
                       <tr>
-                        <td><strong>{this.state.champion.name}</strong></td>
+                        <td className='white'><strong>{this.state.champion.name}</strong></td>
                       </tr>
                       <tr>
-                        <td>Cost: {this.state.champion.cost}</td>
+                        <td className='white'>Cost: {this.state.champion.cost}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -156,14 +156,14 @@ class ChampionsCheatSheet extends Component {
                   <table>
                     <tbody>
                       <tr>
-                        <td className='stat-column'>Attack Damage: {this.state.champion.patch_data.stats.damage}</td>
-                        <td className='stat-column'>Attack Speed: {Math.round(this.state.champion.patch_data.stats.attackSpeed*100)/100}</td>
-                        <td className='stat-column'>Attack Range: {this.state.champion.patch_data.stats.range}</td>
+                        <td className='stat-column white'>Attack Damage: {this.state.champion.patch_data.stats.damage}</td>
+                        <td className='stat-column white'>Attack Speed: {Math.round(this.state.champion.patch_data.stats.attackSpeed*100)/100}</td>
+                        <td className='stat-column white'>Attack Range: {this.state.champion.patch_data.stats.range}</td>
                       </tr>
                       <tr>
-                        <td className='stat-column'>Health: {this.state.champion.patch_data.stats.hp}</td>
-                        <td className='stat-column'>Armor: {this.state.champion.patch_data.stats.armor}</td>
-                        <td className='stat-column'>Magic Resist: {this.state.champion.patch_data.stats.magicResist}</td>
+                        <td className='stat-column white'>Health: {this.state.champion.patch_data.stats.hp}</td>
+                        <td className='stat-column white'>Armor: {this.state.champion.patch_data.stats.armor}</td>
+                        <td className='stat-column white'>Magic Resist: {this.state.champion.patch_data.stats.magicResist}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -179,10 +179,10 @@ class ChampionsCheatSheet extends Component {
                         <table>
                           <tbody>
                             <tr>
-                              <td><strong>{this.state.champion.patch_data.ability.name}</strong></td>
+                              <td className='white'><strong>{this.state.champion.patch_data.ability.name}</strong></td>
                             </tr>
                             <tr>
-                              <td>Mana: {this.state.champion.patch_data.stats.initialMana}/{this.state.champion.patch_data.stats.mana}</td>
+                              <td className='white'>Mana: {this.state.champion.patch_data.stats.initialMana}/{this.state.champion.patch_data.stats.mana}</td>
                             </tr>
                           </tbody>
                         </table>
@@ -232,6 +232,7 @@ class ChampionsCheatSheet extends Component {
           <tr>
             <td className='side-margin'></td>
             <td className='main-content'>
+              <h1 className='title'>Champions Cheatsheet</h1>
               {this.state.loading && <CircularProgress size={24}/>}
               { !this.state.loading &&
               <table>
@@ -243,7 +244,7 @@ class ChampionsCheatSheet extends Component {
                           {champions}
                        </div>
                     </td>
-                    <td style={{width: '66%'}}>
+                    <td style={{width: '66%', verticalAlign: 'top'}}>
                       <div>
                           {this.state.champion.name === undefined ? <div/> : this.championCard(this.state.champion)}
                       </div>

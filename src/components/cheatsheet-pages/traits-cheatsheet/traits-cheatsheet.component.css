@@ -58,6 +58,11 @@
 }
 
 .float-top {
-  display: inline-block;
   vertical-align: top;
+}
+
+.title {
+  color: white;
+  font-size: 24;
+  font-weight: 400;
 }

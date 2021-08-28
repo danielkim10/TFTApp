@@ -49,7 +49,7 @@ class ItemsPanel extends Component {
         <CardHeader className='whitebg'>
           <strong>Items</strong>
         </CardHeader>
-        <CardBody>
+        <CardBody style={{height: '350px', overflowY: 'auto'}}>
         <Input type="text" id="searchNameItems" name="searchNameItems" onChange={this.handleChanges} placeholder="Item Name" />
           {this.placeItems()}
         </CardBody>

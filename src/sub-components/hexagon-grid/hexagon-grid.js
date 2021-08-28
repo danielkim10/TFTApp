@@ -19,9 +19,8 @@ class HexagonGrid extends Component {
 
 
     render = () => {
-        console.log(this.props.team);
         let itemsEquipped = [];
-        if (this.props.team.length === 0) {
+        //if (this.props.team.length === 0) {
             for (let i = 0; i < 28; i++) {
                 let styleElem = document.head.appendChild(document.createElement("style"));
                 let styleElem2 = document.head.appendChild(document.createElement("style"));
@@ -31,7 +30,9 @@ class HexagonGrid extends Component {
                     background: white; 
                 }`;
             }
-        }
+        //}
+
+        //console.log(this.props.team);
 
         for (let champion in this.props.team) {
             let styleElem = document.head.appendChild(document.createElement("style"));
@@ -69,9 +70,11 @@ class HexagonGrid extends Component {
 
             for (let i = 0; i < this.props.team[champion].items.length; i++) {
                 let image = this.props.team[champion].items[i].patch_data.icon.substring(0, this.props.team[champion].items[i].patch_data.icon.indexOf('dds')).toLowerCase();
-                console.log(assets_url(image));
-                itemsEquipped.push(<div id={`h${this.props.team[champion].hexSlot}-${i}`} key={i} className='items-equipped'><img src={assets_url(image)} className='item-size' alt={this.props.team[champion].items[i].name}/></div>);
-                console.log(this.props.team[champion].items[i]);
+                itemsEquipped.push(
+                    <div id={`h${this.props.team[champion].hexSlot}-${i}`} key={this.props.team[champion].hexSlot + 'i' + i} className='items-equipped'>
+                        <img src={assets_url(image)} id={`i${this.props.team[champion].hexSlot}-${i}`} className='item-size' alt={this.props.team[champion].items[i].name}/>
+                    </div>
+                );
 
                 let leftMargin = -231;
                 let topMargin = 168;
@@ -93,6 +96,13 @@ class HexagonGrid extends Component {
                     topMargin = -39;
                 }
 
+                if (this.props.team[champion].items.length === 3) {
+                    leftMargin -= 20;   
+                }
+                else if (this.props.team[champion].items.length === 2) {
+                    leftMargin -= 10;
+                }
+
                 let styleElem3 = document.head.appendChild(document.createElement("style"));
                 styleElem3.innerHTML = `#h${this.props.team[champion].hexSlot}-${i} {
                     position: absolute; 
@@ -100,34 +110,41 @@ class HexagonGrid extends Component {
                     margin-left: ${leftMargin}px; 
                     margin-top: ${topMargin}px;
                 }`;
+
+                let styleElem4 = document.head.appendChild(document.createElement("style"));
+                let margin = 20*i;
+                styleElem4.innerHTML = `#i${this.props.team[champion].hexSlot}-${i} {
+                    width: 20px;
+                    height: 20px;
+                    margin-left: ${margin}px;
+                }`;
             }
         
         }
-        console.log(itemsEquipped.length);
 
         let hexagonRow1 = [];
         let hexagonRow2 = [];
         for (let i = 0; i < 7; i++) {
             if (i === 0) {
                 hexagonRow1.push(
-                    <div id={'h' + i} key={i} className="hexagon" draggable="true" onDragStart={(e) => this.props.drag(e, this.props.team)} onDrop={(e) => this.props.drop(e, i)} onDragOver={this.allowDrop}>
+                    <div id={'h' + i} key={i} className="hexagon" draggable="true" onDragStart={(e) => this.props.drag(e, this.props.team[this.props.team.findIndex(tm => tm.hexSlot === i)])} onDrop={(e) => this.props.drop(e, i)} onDragOver={this.allowDrop}>
                     </div>
                     );
             }
             else {
-                hexagonRow1.push(<div id={'h' + i} key={i} className="hexagon3" draggable="true" onDragStart={(e) => this.props.drag(e, this.props.team)} onDrop={(e) => this.props.drop(e, i)} onDragOver={this.allowDrop}/>);
+                hexagonRow1.push(<div id={'h' + i} key={i} className="hexagon3" draggable="true" onDragStart={(e) => this.props.drag(e, this.props.team[this.props.team.findIndex(tm => tm.hexSlot === i)])} onDrop={(e) => this.props.drop(e, i)} onDragOver={this.allowDrop}/>);
             }
-            hexagonRow1.push(<div id={'h' + (i+7)} key={i+7} className="hexagon2" draggable="true" onDragStart={(e) => this.props.drag(e, this.props.team)} onDrop={(e) => this.props.drop(e, (i+7))} onDragOver={this.allowDrop}/>);
+            hexagonRow1.push(<div id={'h' + (i+7)} key={i+7} className="hexagon2" draggable="true" onDragStart={(e) => this.props.drag(e, this.props.team[this.props.team.findIndex(tm => tm.hexSlot === i+7)])} onDrop={(e) => this.props.drop(e, (i+7))} onDragOver={this.allowDrop}/>);
         }
 
         for (let i = 14; i < 21; i++) {
             if (i === 14) {
-                hexagonRow2.push(<div id={'h' + i} key={i} className="hexagon4" draggable="true" onDragStart={(e) => this.props.drag(e, this.props.team)} onDrop={(e) => this.props.drop(e, i)} onDragOver={this.allowDrop}/>);
+                hexagonRow2.push(<div id={'h' + i} key={i} className="hexagon4" draggable="true" onDragStart={(e) => this.props.drag(e, this.props.team[this.props.team.findIndex(tm => tm.hexSlot === i)])} onDrop={(e) => this.props.drop(e, i)} onDragOver={this.allowDrop}/>);
             }
             else {
-                hexagonRow2.push(<div id={'h' + i} key={i} className="hexagon5" draggable="true" onDragStart={(e) => this.props.drag(e, this.props.team)} onDrop={(e) => this.props.drop(e, i)} onDragOver={this.allowDrop}/>);
+                hexagonRow2.push(<div id={'h' + i} key={i} className="hexagon5" draggable="true" onDragStart={(e) => this.props.drag(e, this.props.team[this.props.team.findIndex(tm => tm.hexSlot === i)])} onDrop={(e) => this.props.drop(e, i)} onDragOver={this.allowDrop}/>);
             }
-            hexagonRow2.push(<div id={'h' + (i+7)} key={i+7} className="hexagon2" draggable="true" onDragStart={(e) => this.props.drag(e, this.props.team)} onDrop={(e) => this.props.drop(e, (i+7))} onDragOver={this.allowDrop}/>);
+            hexagonRow2.push(<div id={'h' + (i+7)} key={i+7} className="hexagon2" draggable="true" onDragStart={(e) => this.props.drag(e, this.props.team[this.props.team.findIndex(tm => tm.hexSlot === i+7)])} onDrop={(e) => this.props.drop(e, (i+7))} onDragOver={this.allowDrop}/>);
         }
 
         return (

@@ -7,3 +7,7 @@
     width: 15px;
     height: 15px;
 }
+
+.test-whitespace {
+    white-space: pre-wrap;
+}

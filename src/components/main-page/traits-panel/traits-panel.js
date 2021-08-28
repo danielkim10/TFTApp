@@ -14,9 +14,9 @@ class TraitsPanel extends Component {
     }
   }
 
-  createSynergies = () => {
-    let synergiesUnsorted = [];
-    let synergiesSorted = [];
+  createTraits = () => {
+    let traitsUnsorted = [];
+    let traitsSorted = [];
 
     Object.keys(this.props.traits).forEach((key, index) => {
       let sets = this.props.traits[key].sets.length;
@@ -48,58 +48,58 @@ class TraitsPanel extends Component {
             this.props.traits[key].color = '';
           }
         }
-        synergiesUnsorted.push(this.props.traits[key]);
+        traitsUnsorted.push(this.props.traits[key]);
       }
     })
 
-    console.log(synergiesUnsorted);
-    synergiesUnsorted.sort(sortTrait);
-    for (let i = 0; i < synergiesUnsorted.length; i++) {
+    //console.log(traitsUnsorted);
+    traitsUnsorted.sort(sortTrait);
+    for (let i = 0; i < traitsUnsorted.length; i++) {
       let max = 0;
 
-      for (let j = 0; j < synergiesUnsorted[i].sets.length; j++) {
-        if (synergiesUnsorted[i].color === '') {
-          max = synergiesUnsorted[i].sets[0].min;
+      for (let j = 0; j < traitsUnsorted[i].sets.length; j++) {
+        if (traitsUnsorted[i].color === '') {
+          max = traitsUnsorted[i].sets[0].min;
           break;
         }
-        else if (synergiesUnsorted[i].color === 'chromatic') {
-          max = synergiesUnsorted[i].sets[synergiesUnsorted[i].sets.length-1].min;
+        else if (traitsUnsorted[i].color === 'chromatic') {
+          max = traitsUnsorted[i].sets[traitsUnsorted[i].sets.length-1].min;
           break;
         }
-        else if (synergiesUnsorted[i].color === 'gold') {
-          max = synergiesUnsorted[i].sets[synergiesUnsorted[i].sets.length-1].min;
+        else if (traitsUnsorted[i].color === 'gold') {
+          max = traitsUnsorted[i].sets[traitsUnsorted[i].sets.length-1].min;
           break;
         }
-        else if (synergiesUnsorted[i].color === synergiesUnsorted[i].sets[j].style){
-          max = synergiesUnsorted[i].sets[j+1].min;
+        else if (traitsUnsorted[i].color === traitsUnsorted[i].sets[j].style){
+          max = traitsUnsorted[i].sets[j+1].min;
           break;
         }
       }
 
-      let image = synergiesUnsorted[i].patch_data.icon.substring(0, synergiesUnsorted[i].patch_data.icon.indexOf('dds')).toLowerCase();
+      let image = traitsUnsorted[i].patch_data.icon.substring(0, traitsUnsorted[i].patch_data.icon.indexOf('dds')).toLowerCase();
       let traitBg = '';
-      for (let j = synergiesUnsorted[i].sets.length-1; j >= 0; j--) {
-        if (synergiesUnsorted[i].count >= synergiesUnsorted[i].sets[j].min) {
-          traitBg = synergiesUnsorted[i].sets[j].style;
+      for (let j = traitsUnsorted[i].sets.length-1; j >= 0; j--) {
+        if (traitsUnsorted[i].count >= traitsUnsorted[i].sets[j].min) {
+          traitBg = traitsUnsorted[i].sets[j].style;
           break;
         }
       }
 
-      synergiesSorted.push(
-        <Tooltip placement='top' title={<TraitTooltip trait={synergiesUnsorted[i]} champions={this.props.champions} key={synergiesUnsorted[i].key} advancedTooltip={true}/>} arrow>
-          <div key={synergiesUnsorted[i].key} id={synergiesUnsorted[i].key} className='trait-layering'>
+      traitsSorted.push(
+        <Tooltip placement='top' title={<TraitTooltip trait={traitsUnsorted[i]} champions={this.props.champions} key={traitsUnsorted[i].key} advancedTooltip={true}/>} arrow>
+          <div key={traitsUnsorted[i].key} id={traitsUnsorted[i].key} className='trait-layering'>
             { traitBg !== '' && <img src={trait_bg_url(traitBg)} alt={traitBg} className='background'/>}
-            <img src={assets_url(image)} alt={synergiesUnsorted[i].name} className='trait-icon'/><p className='trait-text'>{synergiesUnsorted[i].name + ": " + synergiesUnsorted[i].count + " / " + max}</p>
+            <img src={assets_url(image)} alt={traitsUnsorted[i].name} className='trait-icon'/><p className='trait-text'>{traitsUnsorted[i].name + ": " + traitsUnsorted[i].count + " / " + max}</p>
           </div>
         </Tooltip>
       );
     }
-    return synergiesSorted;
+    return traitsSorted;
   }
 
   render = () => {
     return(
-      this.createSynergies()
+      this.createTraits()
     );
   }
 }

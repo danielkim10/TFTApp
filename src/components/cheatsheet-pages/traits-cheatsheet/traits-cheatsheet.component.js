@@ -64,27 +64,6 @@ class TraitsCheatSheet extends Component {
     this.props.history.push({pathname: path, data: key});
   }
 
-  toggle = (target) => {
-    if (!this.state[target]) {
-      this.setState({
-        ...this.state,
-        [target]: {
-          tooltipOpen: true
-        }
-      });
-    } else {
-      this.setState({
-        ...this.state,
-        [target]: {
-          tooltipOpen: !this.state[target].tooltipOpen
-        }
-      });
-    }
-  }
-  isToolTipOpen = (target) => {
-    return this.state[target] ? this.state[target].tooltipOpen : false;
-  }
-
   render = () => {
     console.log(this.props.location.state);
     let originCards = [];
@@ -94,10 +73,10 @@ class TraitsCheatSheet extends Component {
     console.log(this.state.champions);
     Object.keys(this.state.traits).forEach((key, index) => {
       if (this.state.traits[key].type === 'origin') {
-        originCards.push(<tr key={key}><td>{this.createTrait(this.state.traits[key])}</td></tr>);
+        originCards.push(<tr key={key}><td style={{verticalAlign: 'top'}}>{this.createTrait(this.state.traits[key])}</td></tr>);
       }
       else {
-        classCards.push(<tr key={key}><td>{this.createTrait(this.state.traits[key])}</td></tr>);
+        classCards.push(<tr key={key}><td style={{verticalAlign: 'top'}}>{this.createTrait(this.state.traits[key])}</td></tr>);
       }
     });
 
@@ -106,7 +85,8 @@ class TraitsCheatSheet extends Component {
         <tbody>
           <tr>
             <td className='side-margins'></td>
-            <td className='main-content'>
+            <td className='main-content float-top'>
+              <h1 className='title'>Traits Cheatsheet</h1>
               {this.state.loading && <CircularProgress size={24}/>}
               { !this.state.loading && 
               <table className="float-top">

@@ -13,6 +13,7 @@ import TraitTooltip from '../../sub-components/trait-tooltips/trait-tooltips.js'
 import ItemTooltip from '../../sub-components/item-tooltips/item-tooltips.js';
 
 import './match-basic.component.css';
+import { LocalConvenienceStoreOutlined } from '@material-ui/icons';
 
 class MatchBasic extends Component {
   constructor(props) {
@@ -29,27 +30,6 @@ class MatchBasic extends Component {
   }
 
   componentDidMount = () => {
-  }
-
-  isToolTipOpen = (target) => {
-    return this.state[target] ? this.state[target].tooltipOpen : false;
-  }
-  toggle = (target) => {
-    if (!this.state[target]) {
-      this.setState({
-        ...this.state,
-        [target]: {
-          tooltipOpen: true
-        }
-      });
-    } else {
-      this.setState({
-        ...this.state,
-        [target]: {
-          tooltipOpen: !this.state[target].tooltipOpen
-        }
-      });
-    }
   }
 
   championIdParse = (id) => {
@@ -100,6 +80,15 @@ class MatchBasic extends Component {
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon/>} style={{backgroundColor: '#343a40'}}>
           <table className='backgrounds'>
+            <thead>
+              <tr>
+                <td style={{minWidth: '150px'}}></td>
+                <td style={{minWidth: '100px'}}></td>
+                <td style={{minWidth: '400px'}}></td>
+                <td style={{minWidth: '600px'}}></td>
+                <td style={{minWidth: '200px'}}></td>
+              </tr>
+            </thead>
             <tbody>
               {myPlayer}
             </tbody>
@@ -129,7 +118,6 @@ class MatchBasic extends Component {
 
   traitsSort = (traits) => {
     let traitsRow = [];
-    console.log(traits);
     for (let trait in traits) {
       if (this.props.traits[traits[trait].name] !== undefined) {
         if (traits[trait].tier_current > 0) {
@@ -139,8 +127,8 @@ class MatchBasic extends Component {
           traitsRow.push(
             <td key={this.props.traits[traits[trait].name].name}>
               <Tooltip placement='top' title={<TraitTooltip trait={this.props.traits[traits[trait].name]} count={traits[trait].num_units} smallTooltip={true}/>} arrow>
-              <div className='trait-layering'>
-                <img src={trait_bg_url(traitStyle)} alt={traitStyle} className='background'/>
+              <div className='trait-layering-mb'>
+                <img src={trait_bg_url(traitStyle)} alt={traitStyle} className='background-mb'/>
                 <img src={assets_url(image)} alt={this.props.traits[traits[trait].name].name} className='trait'/>
               </div>
               </Tooltip>
@@ -190,7 +178,6 @@ class MatchBasic extends Component {
           <Tooltip placement='top' title={<ItemTooltip item={this.props.items['i' + championsSorted[champion].items[item]]}/>} key={item+image} arrow>
             <div style={{position: 'relative', display: 'inline-block', minWidth: '15px'}} key={item+image}>
             <img src={`https://raw.communitydragon.org/latest/game/${image}png`} alt={image} width={15} height={15}/>
-            {/*<ItemTooltip placement="top" isOpen={this.isToolTipOpen(this.props.items['i'+item_i].name)} target={this.props.items['i'+item_i].id} toggle={() => this.toggle(this.props.items['i'+item_i].id)} name={this.props.items['i'+item_i].name}/>*/}
             </div>
           </Tooltip>
         );
@@ -254,6 +241,12 @@ class MatchBasic extends Component {
     );
   }
 
+  timeConvert = (time) => {
+    let t = new Date(1970, 0, 1);
+    t.setUTCSeconds(time/1000);
+    return t;
+  }
+
   selfDataParse = (player, index) => {
     let traits = player.traits;
     let traitsSorted = [];
@@ -262,8 +255,6 @@ class MatchBasic extends Component {
     let champions = player.units;
     let championsSorted = [];
     championsSorted = champions.sort(sortTierDescending);
-
-    let placement = '';
 
     console.log(this.props.gamedata.info);
 
@@ -279,6 +270,49 @@ class MatchBasic extends Component {
     }
 
     console.log(index);
+
+    let gamelength = `${Math.floor(this.props.gamedata.info.game_length/60)}:`;
+    let selflength = `${Math.floor(player.time_eliminated/60)}:`;
+    let selfsec = Math.floor(player.time_eliminated%60);
+    let sec = Math.floor(this.props.gamedata.info.game_length%60);
+    if (sec < 10) {
+      gamelength += '0';
+    }
+    gamelength += sec;
+
+    if (selfsec < 10) {
+      selflength += '0';
+    }
+    selflength += selfsec;
+
+    let time = this.timeConvert(this.props.gamedata.info.game_datetime);
+    
+    console.log(time);
+    let timeString = '';
+    console.log((Date.now()/1000 - time/1000) / 86400);
+    if ((Date.now()/1000 - time/1000) / 86400 > 1) {
+      timeString = `${(new Date(time)).getUTCMonth()+1} ${(new Date(time)).getUTCDate()} ${(new Date(time)).getUTCFullYear()}`
+    }
+    else if ((Date.now()/1000 - time/1000) / 3600 > 1) {
+      timeString = `${Math.floor((Date.now()/1000 - time/1000) / 3600)} hours ago`;
+    }
+    else if ((Date.now()/1000 - time/1000) / 60 > 1) {
+      timeString = `${Math.floor((Date.now()/1000 - time/1000) / 60)} minutes ago`;
+    }
+    else {
+      timeString = `${Math.floor(Date.now()/1000 - time/1000)} seconds ago`;
+    }
+
+    let queue = '';
+    if (this.props.gamedata.info.queue_id === 1100) {
+      queue = 'Ranked';
+    }
+    else if (this.props.gamedata.info.queue_id === 1130) {
+      queue = 'Turbo';
+    }
+    else {
+      queue = 'Normal';
+    }
     
     return (
       <tr>
@@ -286,10 +320,28 @@ class MatchBasic extends Component {
           <table>
             <tbody>
               <tr>
-                <td className='placement-font'>{placement}</td>
+                {this.playerPlacement(player.placement)}
               </tr>
               <tr>
-                <td>Level: {player.level}</td>
+                <td>{queue}</td>
+              </tr>
+              <tr>
+                <td>{selflength} / {gamelength}</td>
+              </tr>
+              <tr>
+                <td>{timeString}</td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+        <td>
+          <table>
+            <tbody>
+              <tr>
+                <td>
+                  <img src={player.companion.image_source} alt={player.companion.species} width={50} height={50}/>
+                  {player.level}
+                </td>
               </tr>
             </tbody>
           </table>

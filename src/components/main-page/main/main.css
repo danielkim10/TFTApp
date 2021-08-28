@@ -53,8 +53,11 @@
   height: 40px;
 }
 
-
 p{
   margin: 0;
   padding: 0;
+}
+
+.test-whitespace {
+  white-space: pre-wrap;
 }

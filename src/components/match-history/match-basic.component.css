@@ -1,4 +1,4 @@
-.trait-layering {
+.trait-layering-mb {
     position: relative;
     display: inline-block;
     align-items: center;
@@ -6,7 +6,7 @@
     margin-right: 2px;
 }
 
-.background {
+.background-mb {
     margin-top: 9px;
     width: 30px;
     height: 30px;

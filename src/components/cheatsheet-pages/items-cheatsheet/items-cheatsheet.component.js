@@ -41,7 +41,11 @@ class ItemsCheatSheet extends Component {
         }
       }
 
-      this.setState({items: items_arr, loading: false});
+      let item = {};
+      let keys = Object.keys(items_arr);
+      item = items_arr[keys[keys.length * Math.random() << 0]];
+
+      this.setState({items: items_arr, selectedItem: item, loading: false});
     }).catch((err) => {
       this.setState({loading: false, error: true});
       console.error('Error retrieving patch data:' + err);
@@ -136,7 +140,7 @@ class ItemsCheatSheet extends Component {
             </table>
           </td>
         );
-        if (i % 3 == 0) {
+        if (i % 3 === 0) {
           itemRecipesRow.push(<tr key={i}>{itemRecipes}</tr>);
           itemRecipes = [];
         }
@@ -200,27 +204,6 @@ class ItemsCheatSheet extends Component {
     this.setState({ selectedItem: {} });
   }
 
-  toggle = (target) => {
-    if (!this.state[target]) {
-      this.setState({
-        ...this.state,
-        [target]: {
-          tooltipOpen: true
-        }
-      });
-    } else {
-      this.setState({
-        ...this.state,
-        [target]: {
-          tooltipOpen: !this.state[target].tooltipOpen
-        }
-      });
-    }
-  }
-  isToolTipOpen = (target) => {
-    return this.state[target] ? this.state[target].tooltipOpen : false;
-  }
-
   render = () => {
     let loading = true;
     const basicItems = [];
@@ -228,7 +211,6 @@ class ItemsCheatSheet extends Component {
     const radiantItems = [];
     const otherItems = [];
     Object.keys(this.state.items).forEach((key, index) => {
-      console.log(this.state.items[key].patch_data);
       let image = this.state.items[key].patch_data.icon.substring(0, this.state.items[key].patch_data.icon.indexOf('dds')).toLowerCase();
 
       if (this.state.items[key].isRadiant) {

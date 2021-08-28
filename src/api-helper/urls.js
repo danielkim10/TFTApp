@@ -45,3 +45,16 @@ export const profile_icon_url = (icon) => {
 export const trait_bg_url = (style) => {
     return `https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-tft/global/default/${style}.png`;
 }
+
+export const rank_face_url = (rank, number) => {
+    return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/content/src/leagueclient/rankedcrests/0${number}_${rank}/images/${rank}_baseface_matte.png`
+}
+
+export const rank_crown_url = (rank, number, division) => {
+    if (number >= 7) {
+        return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/content/src/leagueclient/rankedcrests/0${number}_${rank}/images/${rank}_crown.png`
+    }
+    else {
+        return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/content/src/leagueclient/rankedcrests/0${number}_${rank}/images/${rank}_crown_d${division}.png`
+    }
+}

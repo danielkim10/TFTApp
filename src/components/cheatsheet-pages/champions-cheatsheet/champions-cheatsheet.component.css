@@ -92,3 +92,18 @@
 .main-content {
   width: 66% !important;
 }
+
+.test-whitespace {
+  white-space: pre-wrap;
+  color: white;
+}
+
+.white {
+  color: white;
+}
+
+.title {
+  color: white;
+  font-size: 24;
+  font-weight: 400;
+}

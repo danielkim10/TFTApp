@@ -15,6 +15,10 @@ class ChampionsPanel extends Component {
     };
   }
 
+  allowDrop = (e) => {
+    e.preventDefault();
+  }
+
   placeChampions = () => {
     let champions = [];
     Object.keys(this.props.champions).forEach((key, index) => {
@@ -26,7 +30,7 @@ class ChampionsPanel extends Component {
           }
           champions.push(
             <Tooltip placement='top' title={<ChampionTooltip champion={this.props.champions[key]} traits={trait_data}/>} key={key} arrow>
-              <div className='champion-spacing' draggable="true" onDragStart={(e) => this.props.drag(e, this.props.champions[key])} id={key} key={key}>
+              <div className='champion-spacing' onClick={(e) => this.props.addToTeam(e, this.props.champions[key])} draggable="true" onDragStart={(e) => this.props.drag(e, this.props.champions[key])}  id={key} key={key}>
                 <img src={this.props.champions[key].patch_data.icon} id={key} alt={this.props.champions[key].name} className={this.props.champions[key].cost === 1 ? 'cost1champion' : this.props.champions[key].cost === 2 ? 'cost2champion' : this.props.champions[key].cost === 3 ? 'cost3champion' : this.props.champions[key].cost === 4 ? 'cost4champion' : 'cost5champion'}/>
                 <p className="cost">${this.props.champions[key].cost}</p>
                 <p className="champion-name">{this.props.champions[key].name}</p>
@@ -49,7 +53,7 @@ class ChampionsPanel extends Component {
         <CardHeader className='whitebg'>
           <strong>Champions</strong>
         </CardHeader>
-        <CardBody>
+        <CardBody onDrop={(e) => this.props.drop(e)} onDragOver={this.allowDrop} style={{height: '350px', overflowY: 'auto'}}>
           <Input type="text" id="searchNameChamps" name="searchNameChamps" onChange={this.handleChanges} placeholder="Champion Name" />
           {this.placeChampions()}
         </CardBody>

@@ -27,7 +27,7 @@ class ChampionTooltip extends Component {
       let image = this.props.traits[trait].patch_data.icon.substring(0, this.props.traits[trait].patch_data.icon.indexOf('dds')).toLowerCase();
       championTraitsSmall.push(<tr key={trait}>
         <td>
-          <img src={assets_url(image)} className='trait-image-size'/>{this.props.traits[trait].name}
+          <img src={assets_url(image)} alt={this.props.traits[trait].name} className='trait-image-size'/>{this.props.traits[trait].name}
         </td>
       </tr>
       );
