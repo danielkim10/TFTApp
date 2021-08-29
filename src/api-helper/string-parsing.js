@@ -13,8 +13,6 @@ export const item_desc_parse = (item) => {
 
   description = description.replaceAll('<br>', '\r\n');
 
-  console.log(description);
-
   while (description.indexOf('@') !== -1) {
     previous_index = 0;
     counter = description.indexOf('@');

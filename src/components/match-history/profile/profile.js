@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { sortGametimeDescending } from '../../api-helper/sorting';
-import { companion_parse, champion_icon_parse } from '../../api-helper/string-parsing';
-import { patch_data_url, match_url, summoner_by_puuid_url, host_url, companion_bin_url, companion_icon_url, profile_icon_url, rank_face_url, rank_crown_url } from '../../api-helper/urls';
-import MatchBasic from './match-basic.component.js';
+import { sortGametimeDescending } from '../../../api-helper/sorting';
+import { companion_parse, champion_icon_parse } from '../../../api-helper/string-parsing';
+import { patch_data_url, match_url, summoner_by_puuid_url, host_url, companion_bin_url, companion_icon_url, profile_icon_url, rank_face_url, rank_crown_url } from '../../../api-helper/urls';
+import MatchBasic from '../match-basic/match-basic.component.js';
 
 import './profile.css';
 
@@ -20,9 +20,9 @@ class Profile extends Component {
 
     componentDidMount = () => {
         this.setState({loading: true});
-        let champions = require("../../data/champions.json");
-        let items = require("../../data/items.json");
-        let traits = require("../../data/traits.json");
+        let champions = require("../../../data/champions.json");
+        let items = require("../../../data/items.json");
+        let traits = require("../../../data/traits.json");
 
         let champions_arr = {};
         for (let champion in champions) {
@@ -42,7 +42,6 @@ class Profile extends Component {
         }
 
         fetch(patch_data_url()).then(res => res.json()).then(res => {
-            console.log(res);
             for (let champion in res.setData[5].champions) {
                 if (champions_arr[res.setData[5].champions[champion].apiName] !== undefined) {
                     champions_arr[res.setData[5].champions[champion].apiName].patch_data = res.setData[5].champions[champion];
@@ -68,75 +67,73 @@ class Profile extends Component {
                     traits_arr[res.setData[5].traits[trait].apiName].patch_data = res.setData[5].traits[trait];
                     traits_arr[res.setData[5].traits[trait].apiName].count = 0;
                 }
-
             }
-            console.log(this.props.location);
             
             if (this.props.location.search) {
                 if (this.props.location.state) {
-                    for (let i = 0; i < 1; i++) {
-                        fetch(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.props.location.state.region)}${match_url(this.props.location.state.matchListData[i])}`, {
+                    const matchCount = 2;
+                    let matchList = this.props.location.state.matchListData.slice(0, matchCount);
+                    let matchListUrls = matchList.map((m) => {
+                        let request = new Request(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.props.location.state.region)}${match_url(m)}`, {
                             method: 'GET',
                             headers: {
                                 'Accept-Charset': 'application/json;charset=utf-8',
                                 'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
                             }
-                        }).then(res => res.json()).then(match => {
-                            console.log(match);
-
-
-                            for (let j = 0; j < 8; j++) {
-                                    fetch(companion_bin_url(match.info.participants[j].companion.species.toLowerCase(), match.info.participants[j].companion.skin_ID)).then(res => res.json()).then(companion => {
-                                        let companionData = companion[`Characters/${match.info.participants[j].companion.species}/Skins/Skin${match.info.participants[j].companion.skin_ID}`];
-                                        if (companionData === undefined) {
-                                            companionData = companion[companion_parse(`Characters/${match.info.participants[j].companion.species}/Skins/Skin${match.info.participants[j].companion.skin_ID}`.toLowerCase())];
-                                        }
-                                        console.log(companionData);
-                                        let iconCircle = companionData.iconCircle.substring(0, companionData.iconCircle.indexOf('dds')).toLowerCase();
-                                    
-                                        fetch(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.props.location.state.platform)}${summoner_by_puuid_url(match.info.participants[j].puuid)}`, {
-                                            method: 'GET',
-                                            headers: {
-                                                'Accept-Charset': 'application/json;charset=utf-8',
-                                                'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
-                                            }
-                                        }).then(res => res.json()).then(player => {
-                                            //console.log(player.name);
-                                            match.info.participants[j].name = player.name;
-                                            match.info.participants[j].companion.image_source = companion_icon_url(iconCircle);
-
-                                            if (j === 7) {
-                                                console.log(this.state);
-                                                let matches = this.state.matches;
-                                                matches.push(match);
-                                                matches.sort(sortGametimeDescending);
-                                                console.log(match);
-                                                this.setState({matches: matches});
-                                            }
-                                        }).catch((playerErr) => {
-                                            console.error("Error retrieving player: " + playerErr);
-                                        });
-                                    }).catch((companionErr) => {
-                                        console.error("Error retrieving companion: " + companionErr);
-                                    });
-                                
-                            }
-
-
-
-                        }).catch((matchErr) => {
-                            console.error("Error retrieving match: " + matchErr);
                         });
-                    }
+                        return fetch(request).then(res => res.json()).catch(matchErr => console.error("Error retrieving match:" + matchErr));
+                    });
+
+                    Promise.all(matchListUrls).then(ms => {
+                        console.log(ms);
+                        for (let i = 0; i < ms.length; i++) {
+                            let playersUrls = [];
+                            playersUrls = ms[i].info.participants.map((participant) => {
+                                let request = new Request(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.props.location.state.platform)}${summoner_by_puuid_url(participant.puuid)}`, {
+                                    method: 'GET',
+                                    headers: {
+                                        'Accept-Charset': 'application/json;charset=utf-8',
+                                        'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
+                                    }
+                                });
+                                return fetch(request).then(res => res.json()).catch(playerErr => console.error("Error retrieving player: " + playerErr));
+                            });
+
+                            let companionsUrls = [];
+                            let companionSpecies = [];
+                            let companionSkinIDs = [];
+                            companionsUrls = ms[i].info.participants.map((participant) => {
+                                let request = new Request(companion_bin_url(participant.companion.species.toLowerCase(), participant.companion.skin_ID));
+                                companionSpecies.push(participant.companion.species);
+                                companionSkinIDs.push(participant.companion.skin_ID);
+                                return fetch(request).then(res => res.json()).catch(companionErr => console.error("Error retrieving companion: " + companionErr));
+                            });
+
+                            Promise.all(playersUrls).then(players => {
+                                Promise.all(companionsUrls).then(companions => {
+                                    for (let j = 0; j < players.length; j++) {
+                                        ms[i].info.participants[j].name = players[j].name;
+                                    
+                                        let companionData = companions[j][`Characters/${companionSpecies[j]}/Skins/Skin${companionSkinIDs[j]}`];
+                                        if (companionData === undefined) {
+                                            companionData = companions[j][companion_parse(`Characters/${companionSpecies[j]}/Skins/Skin${companionSkinIDs[j]}`.toLowerCase())];
+                                        }
+                                        let iconCircle = companionData.iconCircle.substring(0, companionData.iconCircle.indexOf('dds')).toLowerCase();
+                                        ms[i].info.participants[j].companion.image_source = companion_icon_url(iconCircle);
+                                    }
+                                    let matches = this.state.matches;
+                                    matches.push(ms[i]);
+                                    matches.sort(sortGametimeDescending);
+                                    this.setState({matches: matches});
+                                });
+                            });
+                        }
+                    });
                 }
                 else {
 
                 }
             }
-            else {
-
-            }
-            console.log(traits_arr);
             this.setState({champions: champions_arr, items: items_arr, traits: traits_arr, loading: false});
         }).catch((patchDataErr) => {
             console.error("Error retrieving patch data: " + patchDataErr);
@@ -174,7 +171,7 @@ class Profile extends Component {
 
 
             rankedCards.push(
-                <td>
+                <td key='0'>
                     <table>
                         <tbody>
                             <tr>
@@ -185,8 +182,8 @@ class Profile extends Component {
                             </tr>
                             <tr>
                                 <td>
-                                    <img src={rank_face_url(tier, ranks[tier])} className='ranked-face'/>
-                                    <img src={rank_crown_url(tier, ranks[tier], rank)} className='ranked-crown'/>
+                                    <img src={rank_face_url(tier, ranks[tier])} alt={tier} className='ranked-face'/>
+                                    <img src={rank_crown_url(tier, ranks[tier], rank)} alt={rank} className='ranked-crown'/>
                                 </td>
                             </tr>
                             <tr>
@@ -205,7 +202,7 @@ class Profile extends Component {
 
         else {
             rankedCards.push(
-                <td>
+                <td key='1'>
                     <table>
                         <tbody>
                             <tr>
@@ -222,7 +219,7 @@ class Profile extends Component {
         rankedIndex = rankedData.findIndex(r => r.queueType === 'RANKED_TFT_TURBO');
         if (rankedIndex > -1) {
             rankedCards.push(
-                <td>
+                <td key='2'>
                     <table>
                         <tbody>
                             <tr>
@@ -246,7 +243,7 @@ class Profile extends Component {
         }
         else {
             rankedCards.push(
-                <td>
+                <td key='3'>
                     <table>
                         <tbody>
                             <tr>
@@ -274,7 +271,6 @@ class Profile extends Component {
     }
 
     createMatches = () => {
-        console.log('creating matches');
         let matches = [];
         for (let match in this.state.matches) {
             matches.push(

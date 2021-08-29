@@ -164,12 +164,10 @@ export default class Main extends Component {
       }
       traits[champion.traits[j]].champions.push(champion.championId);
     }
-    console.log(traits);
     this.setState({traits: traits});
   }
 
   removeTraits = (team, champion) => {
-    console.log(champion);
     let traits = JSON.parse(JSON.stringify(this.state.traits));
     if (champion === undefined) {
       return;
@@ -177,7 +175,7 @@ export default class Main extends Component {
 
     for (let i = 0; i < champion.traits.length; i++) {
       traits[champion.traits[i]].champions.splice(traits[champion.traits[i]].champions.findIndex(c => c === champion.championId), 1);
-      if (traits[champion.traits[i]].champions.findIndex(c => c = champion.championId) < 0) {
+      if (traits[champion.traits[i]].champions.findIndex(c => c === champion.championId) < 0) {
         traits[champion.traits[i]].count -= 1;
       }
     }

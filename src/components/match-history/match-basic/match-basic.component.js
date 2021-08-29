@@ -1,19 +1,18 @@
 import React, { Component } from 'react';
-import { sortTierDescending, sortPlacementAscending, sortTierMatchDescending } from '../../api-helper/sorting.js'; 
+import { sortTierDescending, sortPlacementAscending, sortTierMatchDescending, sortTraitMatch } from '../../../api-helper/sorting'; 
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Star from '@material-ui/icons/Star';
 import Tooltip from '@material-ui/core/Tooltip';
-import { assets_url, trait_bg_url } from '../../api-helper/urls.js';
+import { assets_url, trait_bg_url } from '../../../api-helper/urls';
 
-import ChampionTooltip from '../../sub-components/champion-tooltips/champion-tooltips.js';
-import TraitTooltip from '../../sub-components/trait-tooltips/trait-tooltips.js';
-import ItemTooltip from '../../sub-components/item-tooltips/item-tooltips.js';
+import ChampionTooltip from '../../../sub-components/champion-tooltips/champion-tooltips';
+import TraitTooltip from '../../../sub-components/trait-tooltips/trait-tooltips';
+import ItemTooltip from '../../../sub-components/item-tooltips/item-tooltips';
 
 import './match-basic.component.css';
-import { LocalConvenienceStoreOutlined } from '@material-ui/icons';
 
 class MatchBasic extends Component {
   constructor(props) {
@@ -30,6 +29,9 @@ class MatchBasic extends Component {
   }
 
   componentDidMount = () => {
+    console.log(this.props.champions);
+    console.log(this.props.traits);
+    console.log(this.props.items);
   }
 
   championIdParse = (id) => {
@@ -83,10 +85,10 @@ class MatchBasic extends Component {
             <thead>
               <tr>
                 <td style={{minWidth: '150px'}}></td>
-                <td style={{minWidth: '100px'}}></td>
+                <td style={{minWidth: '75px'}}></td>
                 <td style={{minWidth: '400px'}}></td>
-                <td style={{minWidth: '600px'}}></td>
-                <td style={{minWidth: '200px'}}></td>
+                <td style={{minWidth: '550px'}}></td>
+                <td style={{minWidth: '275px'}}></td>
               </tr>
             </thead>
             <tbody>
@@ -118,9 +120,10 @@ class MatchBasic extends Component {
 
   traitsSort = (traits) => {
     let traitsRow = [];
+    traits = traits.sort(sortTraitMatch);
     for (let trait in traits) {
       if (this.props.traits[traits[trait].name] !== undefined) {
-        if (traits[trait].tier_current > 0) {
+        if (traits[trait].style > 0) {
           let image = this.props.traits[traits[trait].name].patch_data.icon.substring(0, this.props.traits[traits[trait].name].patch_data.icon.indexOf('dds')).toLowerCase();
           let traitStyle = this.props.traits[traits[trait].name].sets[traits[trait].tier_current-1].style;
 
@@ -134,6 +137,7 @@ class MatchBasic extends Component {
               </Tooltip>
             </td>
           );
+
         }
       }
     }
@@ -173,14 +177,16 @@ class MatchBasic extends Component {
 
       for (let item in championsSorted[champion].items) {
         //let item_i = championsSorted[champion].items[item];
-        let image = this.props.items['i' + championsSorted[champion].items[item]].patch_data.icon.substring(0, this.props.items['i' + championsSorted[champion].items[item]].patch_data.icon.indexOf('dds')).toLowerCase();
-        items.push(
-          <Tooltip placement='top' title={<ItemTooltip item={this.props.items['i' + championsSorted[champion].items[item]]}/>} key={item+image} arrow>
-            <div style={{position: 'relative', display: 'inline-block', minWidth: '15px'}} key={item+image}>
-            <img src={`https://raw.communitydragon.org/latest/game/${image}png`} alt={image} width={15} height={15}/>
-            </div>
-          </Tooltip>
-        );
+        if (championsSorted[champion].items[item] !== 10006) {
+          let image = this.props.items['i' + championsSorted[champion].items[item]].patch_data.icon.substring(0, this.props.items['i' + championsSorted[champion].items[item]].patch_data.icon.indexOf('dds')).toLowerCase();
+          items.push(
+            <Tooltip placement='top' title={<ItemTooltip item={this.props.items['i' + championsSorted[champion].items[item]]}/>} key={item+image} arrow>
+              <div style={{position: 'relative', display: 'inline-block', minWidth: '15px'}} key={item+image}>
+              <img src={`https://raw.communitydragon.org/latest/game/${image}png`} alt={image} width={15} height={15}/>
+              </div>
+            </Tooltip>
+          );
+        }
       }
 
       championsItemsRowSorted.push(
@@ -256,8 +262,6 @@ class MatchBasic extends Component {
     let championsSorted = [];
     championsSorted = champions.sort(sortTierDescending);
 
-    console.log(this.props.gamedata.info);
-
     let playerStuff = [];
     for (let i = 0; i < this.props.gamedata.info.participants.length; i++) {
       playerStuff.push(
@@ -268,8 +272,6 @@ class MatchBasic extends Component {
       )
       i++
     }
-
-    console.log(index);
 
     let gamelength = `${Math.floor(this.props.gamedata.info.game_length/60)}:`;
     let selflength = `${Math.floor(player.time_eliminated/60)}:`;
@@ -286,12 +288,25 @@ class MatchBasic extends Component {
     selflength += selfsec;
 
     let time = this.timeConvert(this.props.gamedata.info.game_datetime);
-    
-    console.log(time);
     let timeString = '';
-    console.log((Date.now()/1000 - time/1000) / 86400);
+
+    let months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
+
     if ((Date.now()/1000 - time/1000) / 86400 > 1) {
-      timeString = `${(new Date(time)).getUTCMonth()+1} ${(new Date(time)).getUTCDate()} ${(new Date(time)).getUTCFullYear()}`
+      timeString = `${months[(new Date(time)).getUTCMonth()]} ${(new Date(time)).getUTCDate()} ${(new Date(time)).getUTCFullYear()}`
     }
     else if ((Date.now()/1000 - time/1000) / 3600 > 1) {
       timeString = `${Math.floor((Date.now()/1000 - time/1000) / 3600)} hours ago`;

@@ -87,3 +87,13 @@ export const sortTrait = (a, b) => {
     }
     return 0;
 }
+
+export const sortTraitMatch = (a, b) => {
+    if (a.style < b.style) {
+        return 1;
+    }
+    else if (a.style > b.style) {
+        return -1;
+    }
+    return 0;
+}

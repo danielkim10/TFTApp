@@ -1,11 +1,16 @@
 import React, { Component } from 'react';
-import { Input, Button} from 'reactstrap';
+import { Button} from 'reactstrap';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import { patch_data_url, host_url, summoner_by_name_url, ranked_league_url, match_list_url } from '../../api-helper/urls';
+import Alert from '@material-ui/lab/Alert';
+import TextField from '@material-ui/core/TextField';
+import { patch_data_url, host_url, summoner_by_name_url, ranked_league_url, match_list_url } from '../../../api-helper/urls';
+import { errorHandler } from '../../../api-helper/api';
+
+import './match-history.component.css';
 
 class MatchHistory extends Component {
 
@@ -23,6 +28,8 @@ class MatchHistory extends Component {
       traits: {},
       setNumber: 5,
       loading: false,
+      error: false,
+      errorMessage: '',
     }
 
     this.search = this.search.bind(this);
@@ -45,9 +52,9 @@ class MatchHistory extends Component {
   }
 
   componentDidMount() {
-      let champions = require("../../data/champions.json");
-      let items = require("../../data/items.json");
-      let traits = require("../../data/traits.json");
+      let champions = require("../../../data/champions.json");
+      let items = require("../../../data/items.json");
+      let traits = require("../../../data/traits.json");
 
       let champions_arr = {};
     for (let champion in champions) {
@@ -101,7 +108,7 @@ class MatchHistory extends Component {
   search(e) {
     //e.preventDefault()
     this.setState({loading: true});
-
+    console.log(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.state.platform)}${summoner_by_name_url(this.state.summonerName)}`);
     fetch(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.state.platform)}${summoner_by_name_url(this.state.summonerName)}`, {
         method: 'GET',
         headers: {
@@ -110,8 +117,16 @@ class MatchHistory extends Component {
         }
         
     })
-    .then(res => res.json())
+    .then(res => {
+        if (!res.ok) {
+            let errorStr = errorHandler(res.status);
+            this.setState({error: true, loading: false, errorMessage: errorStr});
+            throw Error(errorStr);
+        }
+        return res.json();
+    })
     .then(summonerData => {
+        console.log(summonerData);
         fetch(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.state.platform)}${ranked_league_url(summonerData.id)}`, {
             method: `GET`,
             headers: {
@@ -145,7 +160,6 @@ class MatchHistory extends Component {
             }).catch((matchListErr) => {
                 console.error('Match List Error: ' + matchListErr);
             });
-            this.setState({loading: false, champions: {}});
         })
         .catch((leagueErr) => {
             console.error('Ranked League Error: ' + leagueErr);
@@ -1509,21 +1523,59 @@ class MatchHistory extends Component {
                                             <tbody>
                                                 <tr>
                                                     <td>
-                                                        <FormControl variant="filled" disabled={this.state.loading}>
-                                                            <InputLabel id="platform-select-label">Platform</InputLabel>
-                                                            <Select 
-                                                                labelId="platform-select-label" 
-                                                                id="platform-select"
-                                                                value={this.state.platform}
-                                                                onChange={this.handleRegionSelect}
-                                                            >
-                                                                <MenuItem value="na1">NA</MenuItem>
-                                                                <MenuItem value="euw1">EUW</MenuItem>
-                                                            </Select>
-                                                        </FormControl>
+                                                        <table>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>
+                                                                        <h1 className='title'>Summoner Search</h1>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>
+                                                                        {this.state.error && <Alert severity="error">{this.state.errorMessage}</Alert>}
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                        
                                                     </td>
-                                                    <td style={{minWidth: '250px'}}><Input type="text" id="nameSearch" placeholder="Summoner Name" onChange={this.handleName} disabled={this.state.loading}/></td>
-                                                    <td><Button type="button" color="primary" onClick={this.search} disabled={this.state.loading}>Search</Button></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <table>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>
+                                                                        <FormControl variant="filled" disabled={this.state.loading}>
+                                                                            <InputLabel id="platform-select-label">Platform</InputLabel>
+                                                                            <Select 
+                                                                                labelId="platform-select-label" 
+                                                                                id="platform-select"
+                                                                                value={this.state.platform}
+                                                                                onChange={this.handleRegionSelect}
+                                                                            >
+                                                                                <MenuItem value="na1">NA</MenuItem>
+                                                                                <MenuItem value="euw1">EUW</MenuItem>
+                                                                            </Select>
+                                                                        </FormControl>
+                                                                    </td>
+                                                                    <td style={{minWidth: '250px'}}>
+                                                                        <TextField id="nameSearch" placeholder="Summoner Name" onChange={this.handleName} disabled={this.state.loading}/>
+                                                                    </td>
+                                                                    <td>
+                                                                        <Button type="button" color="primary" onClick={this.search} disabled={this.state.loading}>Search</Button>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td></td>
+                                                                    <td style={{minWidth: '250px'}}>
+
+                                                                    </td>
+                                                                    <td></td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
                                                 </tr>
                                                 <tr>
                                                     <td>
