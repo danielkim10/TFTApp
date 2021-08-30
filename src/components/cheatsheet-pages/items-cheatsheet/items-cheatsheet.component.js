@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Button } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 import { item_desc_parse } from '../../../api-helper/string-parsing';
 import { patch_data_url, assets_url } from '../../../api-helper/urls';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Alert from '@material-ui/lab/Alert';
 
 import './items-cheatsheet.component.css'
 
@@ -14,6 +15,8 @@ class ItemsCheatSheet extends Component {
       selectedItem: {},
       loading: false,
       error: false,
+      errorSeverity: "error",
+      errorMessage: "",
     };
     this.clear = this.clear.bind(this);
   }
@@ -47,8 +50,12 @@ class ItemsCheatSheet extends Component {
 
       this.setState({items: items_arr, selectedItem: item, loading: false});
     }).catch((err) => {
-      this.setState({loading: false, error: true});
-      console.error('Error retrieving patch data:' + err);
+      this.setState({
+        loading: false, 
+        error: true, 
+        errorSeverity: "error", 
+        errorMessage: `Error retrieving patch data: ${err}. Try refreshing the page.`
+      });
     });
     console.log(items_arr);
   }
@@ -86,7 +93,7 @@ class ItemsCheatSheet extends Component {
         <div className='item-category-margins'>
           <img src={assets_url(image)} alt={item.name} className='item-dimensions'/>
           <span className='item-desc-text'>{item.name}</span>
-          <Button onClick={this.clear} className='item-desc-text'>Clear</Button>
+          <Button onClick={this.clear} className='button'><span className='button-text'>Clear</span></Button>
           <p className='item-desc-text'>{item_desc_parse(item)}</p>
           {itemStats}
         </div>
@@ -107,7 +114,7 @@ class ItemsCheatSheet extends Component {
         <div className='item-category-margins'>
           <img src={assets_url(image)} alt={item.name} className='item-dimensions'/>
           <span className='item-desc-text'>{item.name}</span>
-          <Button onClick={this.clear} className='item-desc-text'>Clear</Button>
+          <Button onClick={this.clear} className='button'><span className='button-text'>Clear</span></Button>
           <p className='item-desc-text'>{item_desc_parse(item)}</p>
           {itemStats}
           
@@ -150,7 +157,7 @@ class ItemsCheatSheet extends Component {
         <div className='item-category-margins'>
           <img src={assets_url(image)} alt={item.name} className='item-dimensions'/>
           <p className='item-desc-text'>{item.name}</p>
-          <Button onClick={this.clear} className='item-desc-text'>Clear</Button>
+          <Button onClick={this.clear} className='button'><span className='button-text'>Clear</span></Button>
           <span className='item-desc-text'>{item_desc_parse(item)}</span>
           <table>
             <tbody>
@@ -182,7 +189,7 @@ class ItemsCheatSheet extends Component {
         <div className='item-category-margins'>
           <img src={assets_url(image)} alt={item.name} className='item-dimensions'/>
           <span className='item-desc-text'>{item.name}</span>
-          <Button onClick={this.clear} className='item-desc-text'>Clear</Button>
+          <Button onClick={this.clear} className='button'><span className='button-text'>Clear</span></Button>
           <p className='item-desc-text'>{item_desc_parse(item)}</p>
           {itemStats}
           <p className='item-desc-text'>Builds from</p>
@@ -205,7 +212,6 @@ class ItemsCheatSheet extends Component {
   }
 
   render = () => {
-    let loading = true;
     const basicItems = [];
     const advancedItems = [];
     const radiantItems = [];
@@ -249,8 +255,6 @@ class ItemsCheatSheet extends Component {
       }
     });
 
-    loading = false;
-
     return (
       <table className='backgrounds'>
         <tbody>
@@ -258,8 +262,9 @@ class ItemsCheatSheet extends Component {
             <td className='side-margins'></td>
             <td className='main-content'>
               <h1 className='title'>Items Cheatsheet</h1>
-              {this.state.loading && loading && <CircularProgress size={24}/>}
-              { !this.state.loading && !loading && <div>
+              {this.state.loading && <CircularProgress className='circular-progress'/>}
+              {this.state.error && <Alert severity={this.state.errorSeverity}>{this.state.errorMessage}</Alert>}
+              { !this.state.loading && <div>
                 {
                   this.state.selectedItem !== undefined ? this.showItemDetail(this.state.selectedItem) : <div/> 
                 }

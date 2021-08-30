@@ -81,3 +81,27 @@
 .backgrounds {
     background-color: #343a40;
 }
+
+.text {
+    color: white;
+}
+
+.black-circle {
+    background-color: black;
+    border-color: black;
+    position: absolute;
+    border-radius: 50%;
+    border-style: solid;
+    width: 20px;
+    height: 20px;
+    margin-top: -15px;
+    margin-left: 30px;
+}
+
+.level-align {
+    position: absolute;
+    margin-top: -17px;
+    margin-left: 36px;
+    font-weight: 500;
+    color: yellow;
+}

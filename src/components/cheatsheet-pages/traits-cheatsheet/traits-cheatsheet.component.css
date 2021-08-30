@@ -61,6 +61,11 @@
   vertical-align: top;
 }
 
+.circular-progress {
+  color: white;
+  size: 24;
+}
+
 .title {
   color: white;
   font-size: 24;

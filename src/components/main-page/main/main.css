@@ -5,9 +5,7 @@
 .tooltipLocked{
   color: gray;
 }
-.whitebg{
-  background-color: white;
-}
+
 .icon40{
   width: 40px;
   height: 40px;
@@ -60,4 +58,35 @@ p{
 
 .test-whitespace {
   white-space: pre-wrap;
+}
+
+.side-margins {
+  width: 16%;
+}
+
+.main-content {
+  width: 66%;
+}
+
+.button-row {
+  
+  justify-items: center;
+}
+
+.button-width {
+  width: 30%;
+  margin: 5px !important;
+  background-color: royalblue !important;
+}
+
+.icon-color {
+  color: white;
+  margin: 2px;
+}
+
+.team-name {
+  background-color: white !important;
+  border-radius: 5px;
+  color: 'primary';
+  width: 100%;
 }

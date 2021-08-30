@@ -1,5 +1,16 @@
 import React, { Component } from 'react';
-import { getSetData } from '../../api-helper/api.js';
+import { getSetData } from '../../api-helper/api';
+import { sortTrait } from '../../api-helper/sorting';
+import Alert from '@material-ui/lab/Alert';
+import { champion_icon_parse } from '../../api-helper/string-parsing';
+import { patch_data_url } from '../../api-helper/urls';
+import Tooltip from '@material-ui/core/Tooltip';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+
+import ChampionTooltip from '../../sub-components/champion-tooltips/champion-tooltips';
+import ItemTooltip from '../../sub-components/item-tooltips/item-tooltips';
+import TraitTooltip from '../../sub-components/trait-tooltips/trait-tooltips';
+
 import './teams.component.css';
 
 class Teams extends Component {
@@ -7,104 +18,145 @@ class Teams extends Component {
     super(props);
     this.state = {
       teams: [],
-      synergies: {},
+      
+      champions: {},
+      traits: {},
+      items: {},
+      loading: true,
+      error: false,
+      errorSeverity: "",
+      errorMessage: "",
     }
   }
 
   componentDidMount() {
-    getSetData("teams", 1).then(data => {
-      this.setState({teams: data.map(team => team)});
-    })
-  }
+    this.setState({loading: true});
+    let champions = require("../../data/champions.json");
+    let items = require("../../data/items.json");
+    let traits = require("../../data/traits.json");
 
-  compareSynergy(a, b) {
-    const idA = a.tier;
-    const idB = b.tier;
-
-    let comparison = 0;
-    if (idA < idB) {
-      comparison = 1;
+    let champions_arr = {};
+    for (let champion in champions) {
+      if (champions[champion].championId.startsWith("TFT5_")) {
+        champions_arr[champions[champion].championId] = champions[champion]; 
+      }
     }
-    else if (idA > idB) {
-      comparison = -1;
-    }
-    return comparison;
-  }
 
-  toggle(target) {
-    if (!this.state[target]) {
-      this.setState({
-        ...this.state,
-        [target]: {
-          tooltipOpen: true
+    let items_arr = {};
+    for (let item in items) {
+      items_arr['i' + items[item].id] = items[item];
+    }
+
+    let traits_arr = {};
+    for (let trait in traits) {
+      traits_arr[traits[trait].key] = traits[trait];
+    }
+
+    fetch(patch_data_url()).then(res => res.json()).then(res => {
+      console.log(res);
+      for (let champion in res.setData[5].champions) {
+        if (champions_arr[res.setData[5].champions[champion].apiName] !== undefined) {
+          champions_arr[res.setData[5].champions[champion].apiName].patch_data = res.setData[5].champions[champion];
+          champions_arr[res.setData[5].champions[champion].apiName].patch_data.icon = champion_icon_parse(champions_arr[res.setData[5].champions[champion].apiName].patch_data.icon);
         }
-      });
-    } else {
-      this.setState({
-        ...this.state,
-        [target]: {
-          tooltipOpen: !this.state[target].tooltipOpen
+      }
+
+      for (let item in res.items) {
+        if (items_arr['i' + res.items[item].id] !== undefined) {
+          if (items_arr['i' + res.items[item].id].name.replaceAll(' ', '').toLowerCase() === res.items[item].name.replaceAll(' ', '').toLowerCase()) {
+            items_arr['i' + res.items[item].id].patch_data = res.items[item];
+          }
+          else {
+            if (items_arr['i' + res.items[item].id].patch_data === undefined) {
+              items_arr['i' + res.items[item].id].patch_data = res.items[item];
+            }
+          }
         }
+      }
+
+      for (let trait in res.setData[5].traits) {
+        if (traits_arr[res.setData[5].traits[trait].apiName] !== undefined) {
+          traits_arr[res.setData[5].traits[trait].apiName].patch_data = res.setData[5].traits[trait];
+          traits_arr[res.setData[5].traits[trait].apiName].count = 0;
+          traits_arr[res.setData[5].traits[trait].apiName].champions = [];
+        }
+
+      }
+      getSetData("teams", 5).then(data => {
+        this.setState({teams: data.map(team => team), champions: champions_arr, items: items_arr, traits: traits_arr, loading: false});
       });
-    }
+    }).catch((err) => {
+      this.setState({
+        loading: false,
+        error: true,
+        errorSeverity: "error",
+        errorMessage: `Error retrieving patch data: ${err}. Try refreshing the page.`
+      })
+    });
   }
-  isToolTipOpen(target) {
-    return this.state[target] ? this.state[target].tooltipOpen : false;
+
+  imageError = () => {
+    this.setState({
+      error: true, 
+      errorSeverity: "warning", 
+      errorMessage: "Warning: Some images failed to load. Refreshing the page may solve the problem."
+    });
   }
 
   render() {
     let teams = [];
 
-    for (let i = 0; i < this.state.teams.length; ++i) {
-      // let teamMembers = [];
-      // let synergiesSorted = [];
-      // let synergies = [];
-      // Object.keys(this.state.teams[i].synergies).forEach((key, index) => {
-      //   synergiesSorted.push(this.state.teams[i].synergies[key]);
-      // });
-      // synergiesSorted.sort(this.compareSynergy);
+    for (let i = 0; i < this.state.teams.length; i++) {
+      let teamMembers = [];
+      let synergies = [];
+      for (let j = 0; j < this.state.teams[i].team.length; j++) {
+        let items = [];
+        for (let item in this.state.teams[i].team[j].items) {
+          let image = this.state.items['i' + this.state.teams[i].team[j].items[item].id].patch_data.icon.substring(0, this.state.items['i' + this.state.teams[i].team[j].items[item].id].patch_data.icon.indexOf('dds')).toLowerCase();
+          items.push(
+            <Tooltip placement='top' title={<ItemTooltip item={this.state.items['i' + this.state.teams[i].team[j].items[item].id]}/>} key={item+image} arrow>
+              <div style={{position: 'relative', display: 'inline-block', minWidth: '15px'}}>
+                <img src={`https://raw.communitydragon.org/latest/game/${image}png`} alt={image} width={15} height={15}/>
+              </div>
+            </Tooltip>
+          );
+        }
 
-      // Object.keys(this.state.teams[i].team["0"]).forEach((key, index) => {
-      //   let itemDiv = [];
-      //   if (this.state.teams[i].team["0"][key].items.length === 3) {
-      //     itemDiv.push(<img src={this.state.teams[i].team["0"][key].items[0].image} className='item-image-3items-left'/>)
-      //     itemDiv.push(<img src={this.state.teams[i].team["0"][key].items[1].image} className='item-image'/>)
-      //     itemDiv.push(<img src={this.state.teams[i].team["0"][key].items[2].image} className='item-image-3items-right'/>)
-      //   }
-      //   else if (this.state.teams[i].team["0"][key].items.length === 2) {
-      //     itemDiv.push(<img src={this.state.teams[i].team["0"][key].items[0].image} className='item-image-2items-left'/>)
-      //     itemDiv.push(<img src={this.state.teams[i].team["0"][key].items[1].image} className='item-image-2items-right'/>)
-      //   }
-      //   else if (this.state.teams[i].team["0"][key].items.length === 1) {
-      //     itemDiv.push(<img src={this.state.teams[i].team["0"][key].items[0].image} className='item-image-1item'/>)
-      //   }
 
-      //   teamMembers.push(<div className='champion-row'><div><img src={this.state.teams[i].team["0"][key].champion.icon} className='champion-image'/></div>{itemDiv}</div>);
-      // });
-
-      // for (let j = 0; j < synergiesSorted.length; ++j) {
-      //   let tierAdjust = synergiesSorted[j].tier === 0 ? 0 : synergiesSorted[j].tier - 1;
-      //   synergies.push(
-      //     <div style={{display: 'inline-block'}}>
-      //       <img src={this.state.synergies[synergiesSorted[j].synergy].image} width={20} height={20} style={{filter: 'invert(100%)'}} id={synergiesSorted[j].synergy + '-' + i}/>
-      //       <Tooltip placement="top" isOpen={this.isToolTipOpen(synergiesSorted[j].synergy + '-' + i)} target={synergiesSorted[j].synergy + '-' + i} toggle={() => this.toggle(synergiesSorted[j].synergy + '-' + i)}>
-      //         <p style={{fontSize: '12px'}}>{this.state.synergies[synergiesSorted[j].synergy].name}</p>
-      //         <p style={{fontSize: '11px'}}>{this.state.synergies[synergiesSorted[j].synergy].description}</p>
-      //         <p className={synergiesSorted[j].tier < 1 ? 'tooltipLocked' : ''}>{this.state.synergies[synergiesSorted[j].synergy].bonuses[0].needed + ": " + this.state.synergies[synergiesSorted[j].synergy].bonuses[0].effect}</p>
-      //         <p className={synergiesSorted[j].tier < 2 ? 'tooltipLocked' : ''}>{this.state.synergies[synergiesSorted[j].synergy].bonuses.length > 1 ? this.state.synergies[synergiesSorted[j].synergy].bonuses[1].needed + ": " + this.state.synergies[synergiesSorted[j].synergy].bonuses[1].effect : ""}</p>
-      //         <p className={synergiesSorted[j].tier < 3 ? 'tooltipLocked' : ''}>{this.state.synergies[synergiesSorted[j].synergy].bonuses.length > 2 ? this.state.synergies[synergiesSorted[j].synergy].bonuses[2].needed + ": " + this.state.synergies[synergiesSorted[j].synergy].bonuses[2].effect : ""}</p>
-      //         <p className={synergiesSorted[j].tier < 4 ? 'tooltipLocked' : ''}>{this.state.synergies[synergiesSorted[j].synergy].bonuses.length > 3 ? this.state.synergies[synergiesSorted[j].synergy].bonuses[3].needed + ": " + this.state.synergies[synergiesSorted[j].synergy].bonuses[3].effect : ""}</p>
-      //       </Tooltip>
-      //     </div>)
-      // }
-
-      // teams.push(<div><Row><Card style={{width: '50%'}}><CardHeader>{this.state.teams[i].name} Created in patch {this.state.teams[i].patch}</CardHeader><CardBody>{teamMembers}</CardBody></Card><Card style={{width: '50%'}}><CardBody>{synergies}</CardBody></Card></Row></div>)
+        teamMembers.push(
+          <table key={j + this.state.teams[i]._id}>
+            <tbody>
+              <tr>
+                <td>
+                <Tooltip placement='top' title={<ChampionTooltip champion={this.state.champions[this.state.teams[i].team[j].champion.championId]}/>} arrow>
+                  <img src={this.state.champions[this.state.teams[i].team[j].champion.championId].patch_data.icon} alt={this.state.teams[i].team[j].champion.name} width={45} height={45}/>
+                </Tooltip>
+                </td>
+              </tr>
+              <tr>
+                <td>{items}</td>
+              </tr>
+            </tbody>
+          </table>
+        );
+      }
+      teams.push(
+        <table key={i}>
+          <tbody>
+            <tr>
+              <td style={{display: 'inline-block'}}>{teamMembers}</td>
+              <td><VisibilityIcon/></td>
+            </tr>
+          </tbody>
+        </table>
+      );
     }
       return (
-        <div>
+        <div className='text-color'>
+          {this.state.error && <Alert severity={this.state.errorSeverity}>{this.state.errorMessage}</Alert>}
           <div>
-            <p>Teams</p>
-            <p>Click on a team to open it in the builder</p>
+            <h1>Teams</h1>
+            <h2>Click on a team to open it in the builder</h2>
           </div>
           <div>
             {teams}

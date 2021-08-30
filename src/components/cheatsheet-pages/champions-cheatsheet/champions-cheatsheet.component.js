@@ -3,6 +3,7 @@ import { Input } from 'reactstrap';
 import { ability_desc_parse, ability_icon_parse, champion_icon_parse } from '../../../api-helper/string-parsing';
 import { patch_data_url, assets_url } from '../../../api-helper/urls';
 import TraitCard from '../../../sub-components/trait-card/trait-card';
+import Alert from '@material-ui/lab/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import './champions-cheatsheet.component.css';
@@ -18,6 +19,9 @@ class ChampionsCheatSheet extends Component {
       searchName: "",
       traits: {},
       loading: false,
+      error: false,
+      errorSeverity: "error",
+      errorMessage: "",
     };
 
     this.handleSearch = this.handleSearch.bind(this);
@@ -212,6 +216,14 @@ class ChampionsCheatSheet extends Component {
     );
   }
 
+  imageError = () => {
+    this.setState({
+      error: true, 
+      errorSeverity: "warning", 
+      errorMessage: "Warning: Some images failed to load. Refreshing the page may solve the problem."
+    });
+  }
+
   render = () => {
     const champions = [];
 
@@ -219,7 +231,7 @@ class ChampionsCheatSheet extends Component {
       if (this.state.champions[key].name.toLowerCase().includes(this.state.searchName.toLowerCase())) {
         champions.push(
           <div className='champion-spacing' key={key} onClick={() => this.loadChampionData(this.state.champions[key])}>
-            <img src={this.state.champions[key].patch_data.icon} alt={this.state.champions[key].name} className={this.state.champions[key].cost === 1 ? 'cost1champion' : this.state.champions[key].cost === 2 ? 'cost2champion' : this.state.champions[key].cost === 3 ? 'cost3champion' : this.state.champions[key].cost === 4 ? 'cost4champion' : 'cost5champion'} />
+            <img src={this.state.champions[key].patch_data.icon} alt={this.state.champions[key].name} className={this.state.champions[key].cost === 1 ? 'cost1champion' : this.state.champions[key].cost === 2 ? 'cost2champion' : this.state.champions[key].cost === 3 ? 'cost3champion' : this.state.champions[key].cost === 4 ? 'cost4champion' : 'cost5champion'} onError={this.imageError}/>
             <p className='champion-name'>{this.state.champions[key].name}</p>
             <p className='cost'>${this.state.champions[key].cost}</p>
           </div>
@@ -233,6 +245,7 @@ class ChampionsCheatSheet extends Component {
             <td className='side-margin'></td>
             <td className='main-content'>
               <h1 className='title'>Champions Cheatsheet</h1>
+              {this.state.error && <Alert severity={this.state.errorSeverity}>{this.state.errorMessage}</Alert>}
               {this.state.loading && <CircularProgress size={24}/>}
               { !this.state.loading &&
               <table>

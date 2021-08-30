@@ -27,7 +27,7 @@ class ItemsPanel extends Component {
             items.push(
               <Tooltip placement='top' title={<ItemTooltip item={this.props.items[key]}/>} key={key} arrow>
                 <div className='item-spacing' id={key} key={key} draggable="true" onDragStart={(e) => this.props.drag(e, this.props.items[key])}>
-                  <img src={assets_url(image)} alt={this.props.items[key].name} className='itemborder'/>
+                  <img src={assets_url(image)} alt={this.props.items[key].name} className='itemborder' onError={this.props.imageError}/>
                   <p className='item-name'>{this.props.items[key].name}</p>
                 </div>
               </Tooltip>

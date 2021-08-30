@@ -65,12 +65,9 @@ class TraitsCheatSheet extends Component {
   }
 
   render = () => {
-    console.log(this.props.location.state);
     let originCards = [];
     let classCards = [];
 
-    console.log(this.state.traits);
-    console.log(this.state.champions);
     Object.keys(this.state.traits).forEach((key, index) => {
       if (this.state.traits[key].type === 'origin') {
         originCards.push(<tr key={key}><td style={{verticalAlign: 'top'}}>{this.createTrait(this.state.traits[key])}</td></tr>);
@@ -87,7 +84,7 @@ class TraitsCheatSheet extends Component {
             <td className='side-margins'></td>
             <td className='main-content float-top'>
               <h1 className='title'>Traits Cheatsheet</h1>
-              {this.state.loading && <CircularProgress size={24}/>}
+              {this.state.loading && <CircularProgress className='circular-progress'/>}
               { !this.state.loading && 
               <table className="float-top">
                 <tbody>
@@ -97,7 +94,7 @@ class TraitsCheatSheet extends Component {
               }
             </td>
             <td className='main-content'>
-            {this.state.loading && <CircularProgress size={24}/>}
+            {this.state.loading && <CircularProgress className='circular-progress'/>}
             { !this.state.loading && 
               <table className="float-top">
                 <tbody>

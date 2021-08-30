@@ -19,8 +19,10 @@ connection.once('open', () => {
 })
 
 const teamsRouter = require('./routes/teams');
+const ratelimitRouter = require('./routes/ratelimit');
 
 app.use('/teams', teamsRouter);
+app.use('/ratelimit', ratelimitRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);

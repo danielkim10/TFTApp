@@ -29,9 +29,6 @@ class MatchBasic extends Component {
   }
 
   componentDidMount = () => {
-    console.log(this.props.champions);
-    console.log(this.props.traits);
-    console.log(this.props.items);
   }
 
   championIdParse = (id) => {
@@ -330,7 +327,7 @@ class MatchBasic extends Component {
     }
     
     return (
-      <tr>
+      <tr className='text'>
         <td>
           <table>
             <tbody>
@@ -355,7 +352,8 @@ class MatchBasic extends Component {
               <tr>
                 <td>
                   <img src={player.companion.image_source} alt={player.companion.species} width={50} height={50}/>
-                  {player.level}
+                  <div className='black-circle'></div>
+                  <div className='level-align'>{player.level}</div>
                 </td>
               </tr>
             </tbody>

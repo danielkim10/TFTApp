@@ -56,6 +56,7 @@
   white-space: pre-line;
 }
 
+
 .backgrounds {
   background-color: #404040;
 }
@@ -82,4 +83,19 @@
   color: white;
   font-size: 24;
   font-weight: 400;
+}
+
+.button {
+  background-color: royalblue !important;
+}
+
+.button-text {
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  color: white;
+}
+
+.circular-progress {
+  size: 24px;
+  color: white;
 }

@@ -50,10 +50,14 @@ class TraitsPanel extends Component {
         }
         traitsUnsorted.push(this.props.traits[key]);
       }
-    })
-
-    //console.log(traitsUnsorted);
+    });
+    
     traitsUnsorted.sort(sortTrait);
+
+    // if (traitsUnsorted.length > 0) {
+    //   this.props.saveTraits(traitsUnsorted);
+    // }
+
     for (let i = 0; i < traitsUnsorted.length; i++) {
       let max = 0;
 
@@ -78,9 +82,11 @@ class TraitsPanel extends Component {
 
       let image = traitsUnsorted[i].patch_data.icon.substring(0, traitsUnsorted[i].patch_data.icon.indexOf('dds')).toLowerCase();
       let traitBg = '';
+      let iconClassName = 'trait-icon-white'
       for (let j = traitsUnsorted[i].sets.length-1; j >= 0; j--) {
         if (traitsUnsorted[i].count >= traitsUnsorted[i].sets[j].min) {
           traitBg = traitsUnsorted[i].sets[j].style;
+          iconClassName = 'trait-icon';
           break;
         }
       }
@@ -88,8 +94,8 @@ class TraitsPanel extends Component {
       traitsSorted.push(
         <Tooltip placement='top' title={<TraitTooltip trait={traitsUnsorted[i]} champions={this.props.champions} key={traitsUnsorted[i].key} advancedTooltip={true}/>} arrow>
           <div key={traitsUnsorted[i].key} id={traitsUnsorted[i].key} className='trait-layering'>
-            { traitBg !== '' && <img src={trait_bg_url(traitBg)} alt={traitBg} className='background'/>}
-            <img src={assets_url(image)} alt={traitsUnsorted[i].name} className='trait-icon'/><p className='trait-text'>{traitsUnsorted[i].name + ": " + traitsUnsorted[i].count + " / " + max}</p>
+            { traitBg !== '' && <img src={trait_bg_url(traitBg)} alt={traitBg} className='background' onError={this.props.imageError}/>}
+            <img src={assets_url(image)} alt={traitsUnsorted[i].name} className={iconClassName} onError={this.props.imageError}/><p className='trait-text'>{traitsUnsorted[i].name + ": " + traitsUnsorted[i].count + " / " + max}</p>
           </div>
         </Tooltip>
       );
@@ -99,7 +105,7 @@ class TraitsPanel extends Component {
 
   render = () => {
     return(
-      this.createTraits()
+        this.createTraits()
     );
   }
 }
