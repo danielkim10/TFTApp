@@ -80,19 +80,19 @@ class HexagonGrid extends Component {
                 let topMargin = 168;
 
                 if (this.props.team[champion].hexSlot > 20) {
-                    leftMargin = -137 - 91*(27 - this.props.team[champion].hexSlot);
+                    leftMargin = -72 - 91*(27 - this.props.team[champion].hexSlot);
                     topMargin = 168;
                 }
                 else if (this.props.team[champion].hexSlot > 13) {
-                    leftMargin = -183 - 91*(20 - this.props.team[champion].hexSlot);
+                    leftMargin = -118 - 91*(20 - this.props.team[champion].hexSlot);
                     topMargin = 99;
                 }
                 else if (this.props.team[champion].hexSlot > 6) {
-                    leftMargin = -137 - 91*(13 - this.props.team[champion].hexSlot);
+                    leftMargin = -72 - 91*(13 - this.props.team[champion].hexSlot);
                     topMargin = 30;
                 }
                 else {
-                    leftMargin = -183 - 91*(6 - this.props.team[champion].hexSlot);
+                    leftMargin = -118 - 91*(6 - this.props.team[champion].hexSlot);
                     topMargin = -39;
                 }
 

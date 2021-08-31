@@ -6,6 +6,7 @@ import { champion_icon_parse } from '../../api-helper/string-parsing';
 import { patch_data_url } from '../../api-helper/urls';
 import Tooltip from '@material-ui/core/Tooltip';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 
 import ChampionTooltip from '../../sub-components/champion-tooltips/champion-tooltips';
 import ItemTooltip from '../../sub-components/item-tooltips/item-tooltips';
@@ -95,6 +96,21 @@ class Teams extends Component {
     });
   }
 
+  viewInBuilder = (e, teamID) => {
+    let path = '/';
+    this.props.history.push({
+      pathname: path,
+      search: `?teamID=${teamID}`,
+      state: {
+        teamID: teamID
+      }
+    });
+  }
+
+  copy = (e) => {
+    console.log('adsf');
+  }
+
   imageError = () => {
     this.setState({
       error: true, 
@@ -145,7 +161,8 @@ class Teams extends Component {
           <tbody>
             <tr>
               <td style={{display: 'inline-block'}}>{teamMembers}</td>
-              <td><VisibilityIcon/></td>
+              <td><VisibilityIcon onClick={(e) => this.viewInBuilder(e, this.state.teams[i]._id)}/></td>
+              <td><FileCopyIcon onClick={this.copy}/></td>
             </tr>
           </tbody>
         </table>

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { postData, errorHandler } from '../../../api-helper/api';
+import { postData, errorHandler, getDataFromId } from '../../../api-helper/api';
 import ChampionsPanel from '../champions-panel/champions-panel';
 import ItemsPanel from '../items-panel/items-panel';
 import TraitsPanel from '../traits-panel/traits-panel';
@@ -116,7 +116,20 @@ export default class Main extends Component {
         }
 
       }
-      this.setState({champions: champions_arr, items: items_arr, traits: traits_arr, loading: false});
+
+      if (this.props.location.search) {
+        if (this.props.location.state) {
+          getDataFromId("teams", this.props.location.state.teamID).then(data => {
+            console.log(data);
+            this.setState({champions: champions_arr, items: items_arr, traits: traits_arr, team: data.team, loading: false}, () => {
+              this.findTraitsInitial(data.team);
+            });
+          });
+        }
+      }
+      else {
+        this.setState({champions: champions_arr, items: items_arr, traits: traits_arr, loading: false});
+      }
     }).catch((err) => {
       console.error('Error retrieving patch data: ' + err);
     });
@@ -156,6 +169,19 @@ export default class Main extends Component {
     this.setState({team: [], traits: traits, draggedChampion: {}, draggedItem: {}, text: {teamName: "", searchNameChamps: "", searchNameItems: ""}});
   }
 
+  findTraitsInitial = (team) => {
+    let traits = JSON.parse(JSON.stringify(this.state.traits));
+    for (let i in team) {
+      for (let j in team[i].champion.traits) {
+        if (!traits[team[i].champion.traits[j]].champions.includes(team[i].champion.championId)) {
+          traits[team[i].champion.traits[j]].count++;
+        }
+        traits[team[i].champion.traits[j]].champions.push(team[i].champion.championId);
+      }
+    }
+    this.setState({traits: traits});
+  }
+
   findTraits = (team, champion) => {
     let traits = JSON.parse(JSON.stringify(this.state.traits));
     if (champion.name === undefined) {
@@ -167,7 +193,7 @@ export default class Main extends Component {
         isDupe = true;
       }
     }
-    for (let j = 0; j < champion.traits.length; ++j) {
+    for (let j = 0; j < champion.traits.length; j++) {
       if (!isDupe) {
         traits[champion.traits[j]].count++;
       }
@@ -251,6 +277,7 @@ export default class Main extends Component {
     if (this.state.draggedChampion.name !== undefined) {
       this.findTraits(team, this.state.draggedChampion);
       team.push({champion: this.state.draggedChampion, tier: 1, items: [], remainingSlots: 3, hexSlot: id });
+      
     }
 
     else if (this.state.draggedChampion.champion !== undefined) {
