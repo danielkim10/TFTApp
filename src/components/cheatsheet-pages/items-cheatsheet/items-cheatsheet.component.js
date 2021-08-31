@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
 import { item_desc_parse } from '../../../helper/string-parsing';
-import { patch_data_url, assets_url } from '../../../api-helper/urls';
+import { patch_data_url, assets_url } from '../../../helper/urls';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Alert from '@material-ui/lab/Alert';
 

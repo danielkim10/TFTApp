@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Card, CardHeader, CardBody, Input } from 'reactstrap';
-import { assets_url } from '../../api-helper/urls';
+import { assets_url } from '../../../helper/urls';
 import ItemTooltip from '../../../sub-components/item-tooltips/item-tooltips';
 import Tooltip from '@material-ui/core/Tooltip';
 
