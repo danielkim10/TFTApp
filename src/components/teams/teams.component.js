@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { getSetData } from '../../api-helper/api';
-import { sortTrait } from '../../api-helper/sorting';
+import { getSetData } from '../../helper/api';
+import { sortTrait } from '../../helper/sorting';
 import Alert from '@material-ui/lab/Alert';
-import { champion_icon_parse } from '../../api-helper/string-parsing';
-import { patch_data_url } from '../../api-helper/urls';
+import { champion_icon_parse } from '../../helper/string-parsing';
+import { patch_data_url } from '../../helper/urls';
 import Tooltip from '@material-ui/core/Tooltip';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import FileCopyIcon from '@material-ui/icons/FileCopy';

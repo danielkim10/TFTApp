@@ -145,8 +145,12 @@ export const trait_desc_parse = (patch_data) => {
         let substring = description.substring(counter+1, counter2);
         let fnvsubstring = '{' + fnv.fast1a32hex(substring.toLowerCase()) + '}';
     
-
-        desc_hashed += description.substring(previous_index, counter) + patch_data.effects[0].variables[fnvsubstring];
+        if (patch_data.effects[0].variables[substring] !== undefined) {
+          desc_hashed += description.substring(previous_index, counter) + patch_data.effects[0].variables[substring];
+        }
+        else {
+          desc_hashed += description.substring(previous_index, counter) + patch_data.effects[0].variables[fnvsubstring];
+        }
 
         previous_index = counter2+1;
         description = description.substring(counter2+1, description.length);

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { ability_icon_parse, ability_desc_parse } from '../../api-helper/string-parsing';
+import { ability_icon_parse, ability_desc_parse } from '../../helper/string-parsing';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import './champion-tooltips.css';
-import { assets_url } from '../../api-helper/urls';
+import { assets_url } from '../../helper/urls';
 
 class ChampionTooltip extends Component {
   constructor(props) {

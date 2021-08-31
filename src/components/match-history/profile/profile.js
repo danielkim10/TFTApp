@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { errorHandler, checkRateLimit } from '../../../api-helper/api';
-import { sortGametimeDescending } from '../../../api-helper/sorting';
-import { companion_parse, champion_icon_parse } from '../../../api-helper/string-parsing';
-import { patch_data_url, match_url, summoner_by_puuid_url, host_url, companion_bin_url, companion_icon_url, profile_icon_url, rank_face_url, rank_crown_url } from '../../../api-helper/urls';
+import { errorHandler, checkRateLimit } from '../../../helper/api';
+import { sortGametimeDescending } from '../../../helper/sorting';
+import { companion_parse, champion_icon_parse } from '../../../helper/string-parsing';
+import { patch_data_url, match_url, summoner_by_puuid_url, host_url, companion_bin_url, companion_icon_url, profile_icon_url, rank_face_url, rank_crown_url } from '../../../helper/urls';
 import MatchBasic from '../match-basic/match-basic.component.js';
 import Alert from '@material-ui/lab/Alert';
 

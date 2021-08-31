@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { item_desc_parse } from '../../api-helper/string-parsing';
+import { item_desc_parse } from '../../helper/string-parsing';
 
 import './item-tooltips.css';
 

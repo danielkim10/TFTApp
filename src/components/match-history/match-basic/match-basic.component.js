@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { sortTierDescending, sortPlacementAscending, sortTierMatchDescending, sortTraitMatch } from '../../../api-helper/sorting'; 
+import { sortTierDescending, sortPlacementAscending, sortTierMatchDescending, sortTraitMatch } from '../../../helper/sorting'; 
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Star from '@material-ui/icons/Star';
 import Tooltip from '@material-ui/core/Tooltip';
-import { assets_url, trait_bg_url } from '../../../api-helper/urls';
+import { assets_url, trait_bg_url } from '../../../helper/urls';
 
 import ChampionTooltip from '../../../sub-components/champion-tooltips/champion-tooltips';
 import TraitTooltip from '../../../sub-components/trait-tooltips/trait-tooltips';

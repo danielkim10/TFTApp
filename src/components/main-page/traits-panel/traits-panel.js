@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import TraitTooltip from '../../../sub-components/trait-tooltips/trait-tooltips';
 import Tooltip from '@material-ui/core/Tooltip';
-import { assets_url, trait_bg_url } from '../../../api-helper/urls';
-import { sortTrait } from '../../../api-helper/sorting';
+import { assets_url, trait_bg_url } from '../../../helper/urls';
+import { sortTrait } from '../../../helper/sorting';
 
 import './traits-panel.css';
 

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Input } from 'reactstrap';
-import { ability_desc_parse, ability_icon_parse, champion_icon_parse } from '../../../api-helper/string-parsing';
-import { patch_data_url, assets_url } from '../../../api-helper/urls';
+import { ability_desc_parse, ability_icon_parse, champion_icon_parse } from '../../../helper/string-parsing';
+import { patch_data_url, assets_url } from '../../../helper/urls';
 import TraitCard from '../../../sub-components/trait-card/trait-card';
 import Alert from '@material-ui/lab/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';

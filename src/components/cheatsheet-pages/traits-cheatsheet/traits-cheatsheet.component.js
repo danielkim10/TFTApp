@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import TraitCard from '../../../sub-components/trait-card/trait-card';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { champion_icon_parse } from '../../../api-helper/string-parsing';
-import { patch_data_url } from '../../../api-helper/urls';
+import { champion_icon_parse } from '../../../helper/string-parsing';
+import { patch_data_url } from '../../../helper/urls';
 import './traits-cheatsheet.component.css';
 
 class TraitsCheatSheet extends Component {
@@ -35,7 +35,6 @@ class TraitsCheatSheet extends Component {
     }
 
     fetch(patch_data_url()).then(res => res.json()).then(res => {
-      console.log(res);
       for (let champion in res.setData[5].champions) {
         if (champions_arr[res.setData[5].champions[champion].apiName] !== undefined) {
           champions_arr[res.setData[5].champions[champion].apiName].patch_data = res.setData[5].champions[champion];
@@ -49,6 +48,7 @@ class TraitsCheatSheet extends Component {
         }
 
       }
+      console.log(traits_arr);
       this.setState({champions: champions_arr, traits: traits_arr, loading: false});
     }).catch((err) => {
       console.error('Error retrieving patch data: ' + err);

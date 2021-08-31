@@ -7,8 +7,8 @@ import Select from '@material-ui/core/Select';
 import Alert from '@material-ui/lab/Alert';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import { patch_data_url, host_url, summoner_by_name_url, ranked_league_url, match_list_url } from '../../../api-helper/urls';
-import { errorHandler, checkRateLimit } from '../../../api-helper/api';
+import { patch_data_url, host_url, summoner_by_name_url, ranked_league_url, match_list_url } from '../../../helper/urls';
+import { errorHandler, checkRateLimit } from '../../../helper/api';
 
 import './match-history.component.css';
 

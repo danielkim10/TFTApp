@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { postData, errorHandler, getDataFromId } from '../../../api-helper/api';
+import { postData, errorHandler, getDataFromId } from '../../../helper/api';
 import ChampionsPanel from '../champions-panel/champions-panel';
 import ItemsPanel from '../items-panel/items-panel';
 import TraitsPanel from '../traits-panel/traits-panel';
@@ -12,8 +12,8 @@ import TextField from '@material-ui/core/TextField';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import CopyDialog from '../../../sub-components/copy-dialog/copy-dialog';
 import HexagonGrid from '../../../sub-components/hexagon-grid/hexagon-grid';
-import { champion_icon_parse } from '../../../api-helper/string-parsing';
-import { patch_data_url } from '../../../api-helper/urls';
+import { champion_icon_parse } from '../../../helper/string-parsing';
+import { patch_data_url } from '../../../helper/urls';
 
 import './main.css';
 

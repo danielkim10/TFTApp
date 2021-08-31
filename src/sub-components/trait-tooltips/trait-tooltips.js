@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { trait_desc_parse, trait_effect_parse } from '../../api-helper/string-parsing';
-import { sortCostAscending } from '../../api-helper/sorting';
+import { trait_desc_parse, trait_effect_parse } from '../../helper/string-parsing';
+import { sortCostAscending } from '../../helper/sorting';
 
 import './trait-tooltips.css';
 

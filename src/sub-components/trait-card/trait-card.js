@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { sortCostAscending } from '../../api-helper/sorting';
+import { sortCostAscending } from '../../helper/sorting';
 import { withRouter } from 'react-router';
-import { trait_desc_parse, trait_effect_parse } from '../../api-helper/string-parsing';
+import { trait_desc_parse, trait_effect_parse } from '../../helper/string-parsing';
 import './trait-card.css';
-import { assets_url } from '../../api-helper/urls';
+import { assets_url } from '../../helper/urls';
 
 class TraitCard extends Component {
     constructor(props) {
@@ -40,6 +40,7 @@ class TraitCard extends Component {
         let bonuses_hashed = [];
         let stat_string = "";
         let desc_hashed = "";
+        console.log(this.props.trait.patch_data.desc);
         if (this.props.trait.patch_data.desc.indexOf('<expandRow>') !== -1) {
             desc_hashed = trait_desc_parse(this.props.trait.patch_data);
             stat_string = this.props.trait.patch_data.desc.substring(this.props.trait.patch_data.desc.indexOf('<expandRow>') + 11, this.props.trait.patch_data.desc.length - 12);

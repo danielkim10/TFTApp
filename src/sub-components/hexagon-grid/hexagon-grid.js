@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { assets_url } from '../../api-helper/urls';
+import { assets_url } from '../../helper/urls';
 import './hexagon-grid.css';
 
 class HexagonGrid extends Component {
