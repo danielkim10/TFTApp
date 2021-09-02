@@ -21,25 +21,25 @@ class ChampionsPanel extends Component {
 
   placeChampions = () => {
     let champions = [];
-    Object.keys(this.props.champions).forEach((key, index) => {
-      if (this.props.champions[key].patch_data !== undefined) {
-        if (this.props.champions[key].name.toLowerCase().includes(this.state.searchNameChamps.toLowerCase())) {
+    for (let champion of Object.values(this.props.champions)) {
+      if (champion.patch_data !== undefined) {
+        if (champion.name.toLowerCase().includes(this.state.searchNameChamps.toLowerCase())) {
           let trait_data = [];
-          for (let i in this.props.champions[key].traits) {
-            trait_data.push(this.props.traits[this.props.champions[key].traits[i]]);
+          for (let i in champion.traits) {
+            trait_data.push(this.props.traits[champion.traits[i]]);
           }
           champions.push(
-            <Tooltip placement='top' title={<ChampionTooltip champion={this.props.champions[key]} traits={trait_data}/>} key={key} arrow>
-              <div className='champion-spacing' onClick={(e) => this.props.addToTeam(e, this.props.champions[key])} draggable="true" onDragStart={(e) => this.props.drag(e, this.props.champions[key])}  id={key} key={key}>
-                <img src={this.props.champions[key].patch_data.icon} id={key} alt={this.props.champions[key].name} className={this.props.champions[key].cost === 1 ? 'cost1champion' : this.props.champions[key].cost === 2 ? 'cost2champion' : this.props.champions[key].cost === 3 ? 'cost3champion' : this.props.champions[key].cost === 4 ? 'cost4champion' : 'cost5champion'} onError={this.props.imageError}/>
-                <p className="cost">${this.props.champions[key].cost}</p>
-                <p className="champion-name">{this.props.champions[key].name}</p>
+            <Tooltip placement='top' title={<ChampionTooltip champion={champion} traits={trait_data}/>} key={champion.championId} arrow>
+              <div className='champion-spacing' onClick={(e) => this.props.addToTeam(e, champion)} draggable="true" onDragStart={(e) => this.props.drag(e, champion)}  id={champion.championId} key={champion.championId}>
+                <img src={champion.patch_data.icon} id={champion.championId} alt={champion.name} className={`cost${champion.cost}champion`} onError={this.props.imageError}/>
+                <p className="cost">${champion.cost}</p>
+                <p className="champion-name">{champion.name}</p>
               </div>
             </Tooltip>
           );
         }
       }
-    });
+    }
     return champions;
   }
 

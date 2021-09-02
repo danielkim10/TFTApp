@@ -15,19 +15,20 @@ class ChampionTooltip extends Component {
   render = () => {
     let abilityVariables = [];
     let championTraitsSmall = [];
-    for (let variable in this.props.champion.patch_data.ability.variables) {
-      if (!(this.props.champion.patch_data.ability.variables[variable].value[1] === this.props.champion.patch_data.ability.variables[variable].value[2] && this.props.champion.patch_data.ability.variables[variable].value[1] === this.props.champion.patch_data.ability.variables[variable].value[2])) {
+    for (let variable of Object.values(this.props.champion.patch_data.ability.variables)) {
+      if (!(variable.value[1] === variable.value[2] && variable.value[1] === variable.value[2])) {
         abilityVariables.push(
-          <p key={variable}>{this.props.champion.patch_data.ability.variables[variable].name}: {Math.round(this.props.champion.patch_data.ability.variables[variable].value[1]*100)/100}/{Math.round(this.props.champion.patch_data.ability.variables[variable].value[2]*100)/100}/{Math.round(this.props.champion.patch_data.ability.variables[variable].value[3]*100)/100}</p>
+          <p key={variable.name}>{variable.name}: {Math.round(variable.value[1]*100)/100}/{Math.round(variable.value[2]*100)/100}/{Math.round(variable.value[3]*100)/100}</p>
         );
       }
     }
-    for (let trait in this.props.traits) {
+
+    for (let trait of Object.values(this.props.traits)) {
       
-      let image = this.props.traits[trait].patch_data.icon.substring(0, this.props.traits[trait].patch_data.icon.indexOf('dds')).toLowerCase();
-      championTraitsSmall.push(<tr key={trait}>
+      let image = trait.patch_data.icon.substring(0, trait.patch_data.icon.indexOf('dds')).toLowerCase();
+      championTraitsSmall.push(<tr key={trait.name}>
         <td>
-          <img src={assets_url(image)} alt={this.props.traits[trait].name} className='trait-image-size'/>{this.props.traits[trait].name}
+          <img src={assets_url(image)} alt={trait.name} className='trait-image-size'/>{trait.name}
         </td>
       </tr>
       );

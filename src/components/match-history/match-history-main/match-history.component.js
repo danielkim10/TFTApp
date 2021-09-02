@@ -7,7 +7,7 @@ import Select from '@material-ui/core/Select';
 import Alert from '@material-ui/lab/Alert';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import { patch_data_url, host_url, summoner_by_name_url, ranked_league_url, match_list_url } from '../../../helper/urls';
+import { host_url, summoner_by_name_url, ranked_league_url, match_list_url } from '../../../helper/urls';
 import { errorHandler, checkRateLimit } from '../../../helper/api';
 
 import './match-history.component.css';
@@ -23,10 +23,6 @@ class MatchHistory extends Component {
       region: "americas",
       gamedata: {},
       matches: [],
-      champions: {},
-      items: {},
-      traits: {},
-      setNumber: 5,
       loading: false,
       error: false,
       errorMessage: '',
@@ -35,173 +31,96 @@ class MatchHistory extends Component {
 
     this.search = this.search.bind(this);
     this.handleName = this.handleName.bind(this);
-    this.handleKey = this.handleKey.bind(this);
     this.handleRegionSelect = this.handleRegionSelect.bind(this);
   }
 
-  componentDidMount() {
-      let champions = require("../../../data/champions.json");
-      let items = require("../../../data/items.json");
-      let traits = require("../../../data/traits.json");
-
-      let champions_arr = {};
-    for (let champion in champions) {
-      if (champions[champion].championId.startsWith("TFT5_")) {
-        champions_arr[champions[champion].championId] = champions[champion]; 
-      }
-    }
-
-    let items_arr = {};
-    for (let item in items) {
-      items_arr['i' + items[item].id] = items[item];
-    }
-
-    let traits_arr = {};
-    for (let trait in traits) {
-      traits_arr[traits[trait].key] = traits[trait];
-    }
-
-    fetch(patch_data_url()).then(res => res.json()).then(res => {
-      console.log(res);
-      for (let champion in res.setData[5].champions) {
-        if (champions_arr[res.setData[5].champions[champion].apiName] !== undefined) {
-          champions_arr[res.setData[5].champions[champion].apiName].patch_data = res.setData[5].champions[champion];
-        }
-      }
-
-      for (let item in res.items) {
-        if (items_arr['i' + res.items[item].id] !== undefined) {
-          if (items_arr['i' + res.items[item].id].name.replaceAll(' ', '').toLowerCase() === res.items[item].name.replaceAll(' ', '').toLowerCase()) {
-            items_arr['i' + res.items[item].id].patch_data = res.items[item];
-          }
-          else {
-            if (items_arr['i' + res.items[item].id].patch_data === undefined) {
-              items_arr['i' + res.items[item].id].patch_data = res.items[item];
-            }
-          }
-        }
-      }
-
-      for (let trait in res.setData[5].traits) {
-        if (traits_arr[res.setData[5].traits[trait].apiName] !== undefined) {
-          traits_arr[res.setData[5].traits[trait].apiName].patch_data = res.setData[5].traits[trait];
-          traits_arr[res.setData[5].traits[trait].apiName].count = 0;
-        }
-
-      }
-      this.setState({champions: champions_arr, items: items_arr, traits: traits_arr});
-    });
+  componentDidMount = () => {
   }
 
-  search(e) {
+  search = async (e) => {
     //e.preventDefault()
     this.setState({loading: true});
 
-    Promise.resolve(checkRateLimit(this.state.platform, 1)).then(rlc1 => {
-        if (rlc1 < 0) {
+    let rateLimitCheck_1 = await Promise.resolve(checkRateLimit(this.state.platform, 1));
+    if (rateLimitCheck_1 < 0) {
+        this.setState({error: true, loading: false, errorMessage: 'You are being rate limited'});
+        throw Error('Rate limiting in effect');
+    }
+    else {
+        let summonerData = await fetch(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.state.platform)}${summoner_by_name_url(this.state.summonerName)}`, {
+            method: 'GET',
+            headers: {
+                'Accept-Charset': 'application/json;charset=utf-8',
+                'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
+            } 
+        })
+        .then(res => {
+            if (!res.ok) {
+                let errorStr = errorHandler(res.status);
+                this.setState({error: true, loading: false, errorMessage: errorStr});
+                throw Error(errorStr);
+            }
+            return res.json();
+        });
+
+        let rateLimitCheck_2 = await Promise.resolve(checkRateLimit(this.state.platform, 1));
+        if (rateLimitCheck_2 < 0) {
             this.setState({error: true, loading: false, errorMessage: 'You are being rate limited'});
             throw Error('Rate limiting in effect');
         }
         else {
-            fetch(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.state.platform)}${summoner_by_name_url(this.state.summonerName)}`, {
-                method: 'GET',
+            let leagueData = await fetch(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.state.platform)}${ranked_league_url(summonerData.id)}`, {
+                method: `GET`,
                 headers: {
                     'Accept-Charset': 'application/json;charset=utf-8',
                     'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
                 }
-                
-            })
-            .then(res => {
+            }).then(res => {
                 if (!res.ok) {
                     let errorStr = errorHandler(res.status);
                     this.setState({error: true, loading: false, errorMessage: errorStr});
                     throw Error(errorStr);
                 }
                 return res.json();
-            })
-            .then(summonerData => {
-                console.log(summonerData);
-
-                Promise.resolve(checkRateLimit(this.state.platform, 1)).then(rlc2 => {
-                    if (rlc2 < 0) {
-                        this.setState({error: true, loading: false, errorMessage: 'You are being rate limited'});
-                        throw Error('Rate limiting in effect');
-                    }
-                    else {
-                        fetch(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.state.platform)}${ranked_league_url(summonerData.id)}`, {
-                            method: `GET`,
-                            headers: {
-                                'Accept-Charset': 'application/json;charset=utf-8',
-                                'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
-                            }
-                        }).then(res => {
-                            if (!res.ok) {
-                                let errorStr = errorHandler(res.status);
-                                this.setState({error: true, loading: false, errorMessage: errorStr});
-                                throw Error(errorStr);
-                            }
-                            return res.json();
-                        }).then(leagueData => {
-                            Promise.resolve(checkRateLimit(this.state.region, 1)).then(rlc3 => {
-                                if (rlc3 < 0) {
-                                    this.setState({error: true, loading: false, errorMessage: 'You are being rate limited'});
-                                    throw Error('Rate limiting in effect');
-                                }
-                                else {
-                                    fetch(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.state.region)}${match_list_url(summonerData.puuid)}`, {
-                                        method: `GET`,
-                                        headers: {
-                                            'Accept-Charset': 'application/json;charset=utf-8',
-                                            'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
-                                        }
-                                    }).then(res => {
-                                        if (!res.ok) {
-                                            let errorStr = errorHandler(res.status);
-                                            this.setState({error: true, loading: false, errorMessage: errorStr});
-                                            throw Error(errorStr);
-                                        }
-                                        return res.json();
-                                    }).then(matchListData => {
-                                        console.log(summonerData);
-                                        console.log(leagueData);
-                                        console.log(matchListData);
-        
-                                        let path = `/profile`
-                                        this.props.history.push({
-                                                pathname: path, 
-                                                search: `?platform=${this.state.platform}&summonerName=${this.state.summonerName.replaceAll(' ', '').toLowerCase()}`, 
-                                                state: { 
-                                                    summonerData: summonerData,
-                                                    leagueData: leagueData,
-                                                    matchListData: matchListData,
-                                                    platform: this.state.platform,
-                                                    region: this.state.region
-                                                }});
-                                    }).catch((matchListErr) => {
-                                        console.error('Match List Error: ' + matchListErr);
-                                    });
-                                }
-                            });
-                        })
-                        .catch((leagueErr) => {
-                            console.error('Ranked League Error: ' + leagueErr);
-                        });
-                    }
-                });
-            })
-            .catch((summonerErr) => {
-                console.error('Summoner Error: ' + summonerErr);
             });
+            let rateLimitCheck_3 = await Promise.resolve(checkRateLimit(this.state.region, 1));
+            if (rateLimitCheck_3 < 0) {
+                this.setState({error: true, loading: false, errorMessage: 'You are being rate limited'});
+                throw Error('Rate limiting in effect');
+            }
+            else {
+                let matchListData = await fetch(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.state.region)}${match_list_url(summonerData.puuid)}`, {
+                    method: `GET`,
+                    headers: {
+                        'Accept-Charset': 'application/json;charset=utf-8',
+                        'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
+                    }
+                }).then(res => {
+                    if (!res.ok) {
+                        let errorStr = errorHandler(res.status);
+                        this.setState({error: true, loading: false, errorMessage: errorStr});
+                        throw Error(errorStr);
+                    }
+                    return res.json();
+                });
+                let path = `/profile`;
+                this.props.history.push({
+                    pathname: path, 
+                    search: `?platform=${this.state.platform}&summonerName=${this.state.summonerName.replaceAll(' ', '').toLowerCase()}`, 
+                    state: { 
+                        summonerData: summonerData,
+                        leagueData: leagueData,
+                        matchListData: matchListData,
+                        platform: this.state.platform,
+                        region: this.state.region
+                    }});
+            }
         }
-    });
+    }
   }
 
-  handleName(event) {
+  handleName = (event) => {
     this.setState({summonerName: event.target.value});
-  }
-
-  handleKey(event) {
-    this.setState({apiKey: event.target.value});
   }
 
   parseDataVersion = (dataVersion, patch) => {
@@ -219,7 +138,7 @@ class MatchHistory extends Component {
     this.setState({platform: e.target.value, region: regionApi});
   }
 
-  render() {
+  render = () => {
 
     let rank = {
         "leagueId": "83b9dd01-6753-4081-aa66-b4e503ae0e8b",
@@ -300,10 +219,6 @@ class MatchHistory extends Component {
                                                                 </tr>
                                                                 <tr>
                                                                     <td></td>
-                                                                    <td className="summoner-search">
-                                                                        <TextField id="api-key" placeholder="API-Key" variant="outlined" onChange={this.handleKey} disabled={this.state.loading} type="password"
-                                                                        helperText="To be used while a personal api key is pending"/>
-                                                                    </td>
                                                                     <td>
                                                                         <Button type="button" className='buttons' onClick={this.loadSample} disabled={this.state.loading}>
                                                                             <span className='button-text'>Load Sample Data</span>

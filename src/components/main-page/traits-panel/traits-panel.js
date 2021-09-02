@@ -18,45 +18,42 @@ class TraitsPanel extends Component {
     let traitsUnsorted = [];
     let traitsSorted = [];
 
-    Object.keys(this.props.traits).forEach((key, index) => {
-      let sets = this.props.traits[key].sets.length;
-      if (this.props.traits[key].count !== 0) {
+    for (let trait of Object.values(this.props.traits)) {
+      let sets = trait.sets.length;
+      if (trait.count !== 0) {
         for (let j = sets-1; j >= 0; j--) {
-          if (this.props.traits[key].count >= this.props.traits[key].sets[j].min) {
-            switch(this.props.traits[key].sets[j].style) {
+          if (trait.count >= trait.sets[j].min) {
+            switch(trait.sets[j].style) {
               case 'chromatic':
-                this.props.traits[key].tier = 4;
-                this.props.traits[key].color = 'chromatic';
+                trait.tier = 4;
+                trait.color = 'chromatic';
                 break;
               case 'gold':
-                this.props.traits[key].tier = 3;
-                this.props.traits[key].color = 'gold';
+                trait.tier = 3;
+                trait.color = 'gold';
                 break;
               case 'silver':
-                this.props.traits[key].tier = 2;
-                this.props.traits[key].color = 'silver';
+                trait.tier = 2;
+                trait.color = 'silver';
                 break;
               default:
-                this.props.traits[key].tier = 1;
-                this.props.traits[key].color = 'bronze';
+                trait.tier = 1;
+                trait.color = 'bronze';
                 break;
             }
             break;
           }
           else {
-            this.props.traits[key].tier = 0;
-            this.props.traits[key].color = '';
+            trait.tier = 0;
+            trait.color = '';
           }
         }
-        traitsUnsorted.push(this.props.traits[key]);
+        traitsUnsorted.push(trait);
       }
-    });
-    
+    }
+
     traitsUnsorted.sort(sortTrait);
 
-    // if (traitsUnsorted.length > 0) {
-    //   this.props.saveTraits(traitsUnsorted);
-    // }
 
     for (let i = 0; i < traitsUnsorted.length; i++) {
       let max = 0;

@@ -28,18 +28,19 @@ class TraitTooltip extends Component {
   createAdvancedTooltip = () => {
     let championDesc = [];
     let champions = [];
-    Object.keys(this.props.champions).forEach((key, index) => {
-        if (this.props.champions[key].traits.includes(this.props.trait.key)) {
-            champions.push(this.props.champions[key]);
-        }
-    });
+
+    for (let champion of Object.values(this.props.champions)) {
+      if (champion.traits.includes(this.props.trait.key)) {
+        champions.push(champion);
+      }
+    }
 
     champions.sort(sortCostAscending);
-    for (let champion in champions) {
-        championDesc.push(
-            <div className='champion-spacing' onClick={() => this.championRedirect(champions[champion].championId)} key={champions[champion].championId}>
-                <img src={champions[champion].patch_data.icon} alt={champions[champion].name} className={champions[champion].cost === 1 ? 'cost1champion-tooltip' : champions[champion].cost === 2 ? 'cost2champion-tooltip' : champions[champion].cost === 3 ? 'cost3champion-tooltip' : champions[champion].cost === 4 ? 'cost4champion-tooltip' : 'cost5champion-tooltip'}/>
-            </div>);
+    for (let champion of Object.values(champions)) {
+      championDesc.push(
+        <div className='champion-spacing' onClick={() => this.championRedirect(champion.championId)} key={champion.championId}>
+            <img src={champion.patch_data.icon} alt={champion.name} className={`cost${champion.cost}champion-tooltip`}/>
+        </div>);
     }
 
     let bonuses_hashed = [];

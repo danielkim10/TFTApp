@@ -21,26 +21,25 @@ class TraitCard extends Component {
     render() {
         let championDesc = [];
         let champions = [];
-        Object.keys(this.props.champions).forEach((key, index) => {
-            if (this.props.champions[key].traits.includes(this.props.trait.key)) {
-                champions.push(this.props.champions[key]);
+        for (let champion of Object.values(this.props.champions)) {
+            if (champion.traits.includes(this.props.trait.key)) {
+                champions.push(champion);
             }
-        });
+        }
 
         champions.sort(sortCostAscending);
-        for (let champion in champions) {
+        for (let champion of Object.values(champions)) {
             championDesc.push(
-                <div className='champion-spacing' onClick={() => this.championRedirect(champions[champion].championId)} key={champions[champion].championId}>
-                    <img src={champions[champion].patch_data.icon} alt={champions[champion].name} className={champions[champion].cost === 1 ? 'cost1champion' : champions[champion].cost === 2 ? 'cost2champion' : champions[champion].cost === 3 ? 'cost3champion' : champions[champion].cost === 4 ? 'cost4champion' : 'cost5champion'}/>
-                    <p className='champion-name'>{champions[champion].name}</p>
-                    <p className='cost'>${champions[champion].cost}</p>
+                <div className='champion-spacing' onClick={() => this.championRedirect(champion.championId)} key={champion.championId}>
+                    <img src={champion.patch_data.icon} alt={champion.name} className={`cost${champion.cost}champion`}/>
+                    <p className='champion-name'>{champion.name}</p>
+                    <p className='cost'>${champion.cost}</p>
                 </div>);
         }
 
         let bonuses_hashed = [];
         let stat_string = "";
         let desc_hashed = "";
-        console.log(this.props.trait.patch_data.desc);
         if (this.props.trait.patch_data.desc.indexOf('<expandRow>') !== -1) {
             desc_hashed = trait_desc_parse(this.props.trait.patch_data);
             stat_string = this.props.trait.patch_data.desc.substring(this.props.trait.patch_data.desc.indexOf('<expandRow>') + 11, this.props.trait.patch_data.desc.length - 12);

@@ -28,11 +28,12 @@ class ItemTooltip extends Component {
     let itemStats = [];
 
     if (this.props.item.isRadiant) {
-      Object.keys(this.props.item.patch_data.effects).forEach((key, index) => {
-        if (basicStats[key] !== undefined) {
-          itemStats.push(<p className='item-desc-text' key={key+this.props.item.id}>+{this.props.item.patch_data.effects[key]} {basicStats[key]}</p>);
+      for (let effect of Object.values(this.props.item.patch_data.effects)) {
+        if (basicStats[effect] !== undefined) {
+          itemStats.push(<p className='item-desc-text' key={effect+this.props.item.id}>+{this.props.item.patch_data.effects[effect]} {basicStats[effect]}</p>);
         }
-      });
+      }
+
       itemStats.push(<p className='item-desc-text' key='Radiant'>Radiant - Cannot be crafted</p>);
 
       return (
@@ -45,11 +46,11 @@ class ItemTooltip extends Component {
     }
 
     else if (this.props.item.isElusive) {
-      Object.keys(this.props.item.patch_data.effects).forEach((key, index) => {
-        if (basicStats[key] !== undefined) {
-          itemStats.push(<p className='item-desc-text' key={key+this.props.item.id}>+{this.props.item.patch_data.effects[key]} {basicStats[key]}</p>)
+      for (let effect of Object.values(this.props.item.patch_data.effects)) {
+        if (basicStats[effect] !== undefined) {
+          itemStats.push(<p className='item-desc-text' key={effect+this.props.item.id}>+{this.props.item.patch_data.effects[effect]} {basicStats[effect]}</p>)
         }
-      });
+      }
 
       itemStats.push(<p className='item-desc-text' key='Elusive'>Elusive - Cannot be crafted</p>);
     
@@ -72,11 +73,11 @@ class ItemTooltip extends Component {
     }
 
     else if (this.props.item.id >= 10) {
-      Object.keys(this.props.item.patch_data.effects).forEach((key, index) => {
-        if (basicStats[key] !== undefined) {
-          itemStats.push(<p className='item-desc-text' key={key+this.props.item.id}>+{this.props.item.patch_data.effects[key]} {basicStats[key]}</p>)
+      for (let effect of Object.values(this.props.item.patch_data.effects)) {
+        if (basicStats[effect] !== undefined) {
+          itemStats.push(<p className='item-desc-text' key={effect+this.props.item.id}>+{this.props.item.patch_data.effects[effect]} {basicStats[effect]}</p>);
         }
-      });
+      }
 
       // let buildsFrom = [];
       // for (let id in this.props.item.patch_data.from) {

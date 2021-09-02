@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import TraitCard from '../../../sub-components/trait-card/trait-card';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { champion_icon_parse } from '../../../helper/string-parsing';
 import { patch_data_url } from '../../../helper/urls';
+import { SET_NUMBER, champions, traits, champion_patch_combine, trait_patch_combine } from '../../../helper/variables';
 import './traits-cheatsheet.component.css';
 
 class TraitsCheatSheet extends Component {
@@ -16,43 +16,24 @@ class TraitsCheatSheet extends Component {
     this.championRedirect = this.championRedirect.bind(this);
   }
 
-  componentDidMount = () => {
+  componentDidMount = async() => {
     this.setState({loading: true});
-    
-    let champions = require("../../../data/champions.json");
-    let traits = require("../../../data/traits.json");
 
-    let champions_arr = {};
-    for (let champion in champions) {
-      if (champions[champion].championId.startsWith("TFT5_")) {
-        champions_arr[champions[champion].championId] = champions[champion]; 
-      }
-    }
+    let champions_arr = champions();
+    let traits_arr = traits();
 
-    let traits_arr = {};
-    for (let trait in traits) {
-      traits_arr[traits[trait].key] = traits[trait];
-    }
+    try {
+      let patchData = await fetch(patch_data_url()).then(res => res.json());
+      let thisSet = patchData.setData[SET_NUMBER];
 
-    fetch(patch_data_url()).then(res => res.json()).then(res => {
-      for (let champion in res.setData[5].champions) {
-        if (champions_arr[res.setData[5].champions[champion].apiName] !== undefined) {
-          champions_arr[res.setData[5].champions[champion].apiName].patch_data = res.setData[5].champions[champion];
-          champions_arr[res.setData[5].champions[champion].apiName].patch_data.icon = champion_icon_parse(champions_arr[res.setData[5].champions[champion].apiName].patch_data.icon);
-        }
-      }
-
-      for (let trait in res.setData[5].traits) {
-        if (traits_arr[res.setData[5].traits[trait].apiName] !== undefined) {
-          traits_arr[res.setData[5].traits[trait].apiName].patch_data = res.setData[5].traits[trait];
-        }
-
-      }
-      console.log(traits_arr);
+      champions_arr = champion_patch_combine(champions_arr, thisSet.champions);
+      traits_arr = trait_patch_combine(traits_arr, thisSet.traits);
+      
       this.setState({champions: champions_arr, traits: traits_arr, loading: false});
-    }).catch((err) => {
-      console.error('Error retrieving patch data: ' + err);
-    })
+
+    } catch (err) {
+      console.error(`Error retrieving patch data: ${err}`);
+    }
   }
 
   createTrait = (data) => {
@@ -68,14 +49,14 @@ class TraitsCheatSheet extends Component {
     let originCards = [];
     let classCards = [];
 
-    Object.keys(this.state.traits).forEach((key, index) => {
-      if (this.state.traits[key].type === 'origin') {
-        originCards.push(<tr key={key}><td style={{verticalAlign: 'top'}}>{this.createTrait(this.state.traits[key])}</td></tr>);
+    for (let trait of Object.values(this.state.traits)) {
+      if (trait.type === 'origin') {
+        originCards.push(<tr key={trait.apiName}><td style={{verticalAlign: 'top'}}>{this.createTrait(trait)}</td></tr>);
       }
       else {
-        classCards.push(<tr key={key}><td style={{verticalAlign: 'top'}}>{this.createTrait(this.state.traits[key])}</td></tr>);
+        classCards.push(<tr key={trait.apiName}><td style={{verticalAlign: 'top'}}>{this.createTrait(trait)}</td></tr>);
       }
-    });
+    }
 
     return (
       <table>

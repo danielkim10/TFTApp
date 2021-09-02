@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Input } from 'reactstrap';
-import { ability_desc_parse, ability_icon_parse, champion_icon_parse } from '../../../helper/string-parsing';
+import { ability_desc_parse, ability_icon_parse } from '../../../helper/string-parsing';
 import { patch_data_url, assets_url } from '../../../helper/urls';
+import { SET_NUMBER, champions, traits, champion_patch_combine, trait_patch_combine } from '../../../helper/variables';
 import TraitCard from '../../../sub-components/trait-card/trait-card';
 import Alert from '@material-ui/lab/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -13,9 +14,7 @@ class ChampionsCheatSheet extends Component {
     super(props);
     this.state = {
       champions: {},
-      championNumber: 0,
       champion: {},
-      championList: [],
       searchName: "",
       traits: {},
       loading: false,
@@ -27,60 +26,32 @@ class ChampionsCheatSheet extends Component {
     this.handleSearch = this.handleSearch.bind(this);
   }
 
-  componentDidMount = () => {
+  componentDidMount = async () => {
     this.setState({loading: true});
-    if (this.props.location.state) {
-      console.log(this.props.location.state.data);
-    }
-    let champions = require("../../../data/champions.json");
-    let traits = require("../../../data/traits.json");
-    let champions_arr = {};
-    for (let champion in champions) {
-      if (champions[champion].championId.startsWith("TFT5_")) {
-        champions_arr[champions[champion].championId] = champions[champion];
-      }
-    }
 
-    let traits_arr = {};
-    for (let trait in traits) {
-      traits_arr[traits[trait].key] = traits[trait];
-    }
+    let champions_arr = champions();
+    let traits_arr = traits();
 
-    fetch(patch_data_url()).then(res => res.json()).then(res =>{
-      for (let champion in res.setData[5].champions) {
-        if (champions_arr[res.setData[5].champions[champion].apiName] !== undefined) {
-          champions_arr[res.setData[5].champions[champion].apiName].patch_data = res.setData[5].champions[champion];
-          champions_arr[res.setData[5].champions[champion].apiName].patch_data.icon = champion_icon_parse(champions_arr[res.setData[5].champions[champion].apiName].patch_data.icon);
-        }
-      }
+    try {
+      let patchData = await fetch(patch_data_url()).then(res => res.json());
+      let thisSet = patchData.setData[SET_NUMBER];
 
-      for (let trait in res.setData[5].traits) {
-        if (traits_arr[res.setData[5].traits[trait].apiName] !== undefined) {
-          traits_arr[res.setData[5].traits[trait].apiName].patch_data = res.setData[5].traits[trait];
-        }
-      }
-      console.log(champions_arr);
+      champions_arr = champion_patch_combine(champions_arr, thisSet.champions);
+      traits_arr = trait_patch_combine(traits_arr, thisSet.traits);
 
       let champion = {};
       if (this.props.location.search) {
         let searchString = this.props.location.search.slice(this.props.location.search.indexOf('=')+1, this.props.location.search.length);
-        console.log(searchString);
         champion = champions_arr[searchString];
       }
       else {
         let keys = Object.keys(champions_arr);
-        champion = champions_arr[keys[ keys.length * Math.random() << 0]]
+        champion = champions_arr[keys[keys.length * Math.random() << 0]]
       }
-      this.setState({champions: champions_arr, champion: champion, championNumber: champions_arr.length, traits: traits_arr, loading: false});
-    }).catch((err) => {
+      this.setState({champions: champions_arr, champion: champion, traits: traits_arr, loading: false});
+    } catch (err) {
       console.error('Error retrieving patch data: ' + err);
-    });
-  }
-
-  randomChampion = () => {
-    let random = Math.floor(Math.random() * this.state.championNumber);
-    console.log(this.state.champions[random]);
-    this.setState({champion: this.state.champions[random]});
+    }
   }
 
   loadChampionData = (champion) => {
@@ -95,26 +66,26 @@ class ChampionsCheatSheet extends Component {
     let abilityVariables = [];
     let championTraitsSmall = [];
     let championTraits = [];
-    for (let variable in champion.patch_data.ability.variables) {
-      if (!(champion.patch_data.ability.variables[variable].value[1] === champion.patch_data.ability.variables[variable].value[2] && champion.patch_data.ability.variables[variable].value[1] === champion.patch_data.ability.variables[variable].value[2])) {
+    for (let variable of Object.values(champion.patch_data.ability.variables)) {
+      if (!(variable.value[1] === variable.value[2] && variable.value[1] === variable.value[2])) {
         abilityVariables.push(
-          <p key={variable} className='white'>{champion.patch_data.ability.variables[variable].name}: {Math.round(champion.patch_data.ability.variables[variable].value[1]*100)/100}/{Math.round(champion.patch_data.ability.variables[variable].value[2]*100)/100}/{Math.round(champion.patch_data.ability.variables[variable].value[3]*100)/100}</p>
+          <p key={variable.name} className='white'>{variable.name}: {Math.round(variable.value[1]*100)/100}/{Math.round(variable.value[2]*100)/100}/{Math.round(variable.value[3]*100)/100}</p>
         );
       }
     }
 
-    for (let trait in champion.traits) {
-      let image = this.state.traits[champion.traits[trait]].patch_data.icon.substring(0, this.state.traits[champion.traits[trait]].patch_data.icon.indexOf('dds')).toLowerCase();
+    for (let trait of Object.values(champion.traits)) {
+      let image = this.state.traits[trait].patch_data.icon.substring(0, this.state.traits[trait].patch_data.icon.indexOf('dds')).toLowerCase();
       championTraitsSmall.push(
         <tr key={trait}>
           <td className='white'>
-            <img src={assets_url(image)} alt={this.state.traits[champion.traits[trait]].name} width={20} height={20}/>
-            {this.state.traits[champion.traits[trait]].name}
+            <img src={assets_url(image)} alt={this.state.traits[trait].name} width={20} height={20}/>
+            {this.state.traits[trait].name}
           </td>
         </tr>
       );
       championTraits.push(
-        <TraitCard key={trait} champions={this.state.champions} trait={this.state.traits[champion.traits[trait]]}/>
+        <TraitCard key={trait} champions={this.state.champions} trait={this.state.traits[trait]}/>
       );
     }
 
@@ -126,7 +97,7 @@ class ChampionsCheatSheet extends Component {
               <tr>
                 <td>
                   <div className="image-cropper">
-                    <img src={champion.patch_data.icon} alt={champion.name} className={champion.cost === 1 ? 'cost1champion' : champion.cost === 2 ? 'cost2champion' : champion.cost === 3 ? 'cost3champion' : champion.cost === 4 ? 'cost4champion' : 'cost5champion'}/>
+                    <img src={champion.patch_data.icon} alt={champion.name} className={`cost${champion.cost}champion`}/>
                   </div>
                 </td>
                 <td>
@@ -227,17 +198,18 @@ class ChampionsCheatSheet extends Component {
   render = () => {
     const champions = [];
 
-    Object.keys(this.state.champions).forEach((key, index) => {
-      if (this.state.champions[key].name.toLowerCase().includes(this.state.searchName.toLowerCase())) {
+    for (let champion of Object.values(this.state.champions)) {
+      if (champion.name.toLowerCase().includes(this.state.searchName.toLowerCase())) {
         champions.push(
-          <div className='champion-spacing' key={key} onClick={() => this.loadChampionData(this.state.champions[key])}>
-            <img src={this.state.champions[key].patch_data.icon} alt={this.state.champions[key].name} className={this.state.champions[key].cost === 1 ? 'cost1champion' : this.state.champions[key].cost === 2 ? 'cost2champion' : this.state.champions[key].cost === 3 ? 'cost3champion' : this.state.champions[key].cost === 4 ? 'cost4champion' : 'cost5champion'} onError={this.imageError}/>
-            <p className='champion-name'>{this.state.champions[key].name}</p>
-            <p className='cost'>${this.state.champions[key].cost}</p>
+          <div className='champion-spacing' key={champion.championId} onClick={() => this.loadChampionData(champion)}>
+            <img src={champion.patch_data.icon} alt={champion.name} className={`cost${champion.cost}champion`} onError={this.imageError}/>
+            <p className='champion-name'>{champion.name}</p>
+            <p className='cost'>${champion.cost}</p>
           </div>
         );
       }
-    });
+    }
+
     return (
       <table>
         <tbody>

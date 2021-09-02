@@ -17,25 +17,24 @@ class ItemsPanel extends Component {
 
   placeItems = () => {
     let items = [];
-    Object.keys(this.props.items).forEach((key, index) => {
-      if (this.props.items[key].patch_data !== undefined) {
-        if (this.props.items[key].name.toLowerCase().includes(this.state.searchNameItems.toLowerCase())) {
-          let str = parseInt((key.substring(1, key.length)));
-          if (str > 10) {
-            let image = this.props.items[key].patch_data.icon.substring(0, this.props.items[key].patch_data.icon.indexOf('dds')).toLowerCase();
+    for (let item of Object.values(this.props.items)) {
+      if (item.patch_data !== undefined) {
+        if (item.name.toLowerCase().includes(this.state.searchNameItems.toLowerCase())) {
+          if (item.id > 10) {
+            let image = item.patch_data.icon.substring(0, item.patch_data.icon.indexOf('dds')).toLowerCase();
             
             items.push(
-              <Tooltip placement='top' title={<ItemTooltip item={this.props.items[key]}/>} key={key} arrow>
-                <div className='item-spacing' id={key} key={key} draggable="true" onDragStart={(e) => this.props.drag(e, this.props.items[key])}>
-                  <img src={assets_url(image)} alt={this.props.items[key].name} className='itemborder' onError={this.props.imageError}/>
-                  <p className='item-name'>{this.props.items[key].name}</p>
+              <Tooltip placement='top' title={<ItemTooltip item={item}/>} key={item.id.toString()} arrow>
+                <div className='item-spacing' id={item.id} key={item.id.toString()} draggable="true" onDragStart={(e) => this.props.drag(e, item)}>
+                  <img src={assets_url(image)} alt={item.name} className='itemborder' onError={this.props.imageError}/>
+                  <p className='item-name'>{item.name}</p>
                 </div>
               </Tooltip>
             );
           }
         }
       }
-    });
+    }
     return items;
   }
 

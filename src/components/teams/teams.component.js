@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { getSetData } from '../../helper/api';
 import { sortTrait } from '../../helper/sorting';
 import Alert from '@material-ui/lab/Alert';
-import { champion_icon_parse } from '../../helper/string-parsing';
 import { patch_data_url } from '../../helper/urls';
+import { SET_NUMBER, champions, items, traits, champion_patch_combine, item_patch_combine, trait_patch_combine } from '../../helper/variables';
 import Tooltip from '@material-ui/core/Tooltip';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
@@ -30,70 +30,34 @@ class Teams extends Component {
     }
   }
 
-  componentDidMount() {
+  componentDidMount = async () => {
     this.setState({loading: true});
-    let champions = require("../../data/champions.json");
-    let items = require("../../data/items.json");
-    let traits = require("../../data/traits.json");
 
-    let champions_arr = {};
-    for (let champion in champions) {
-      if (champions[champion].championId.startsWith("TFT5_")) {
-        champions_arr[champions[champion].championId] = champions[champion]; 
-      }
-    }
+    let champions_arr = champions();
+    let items_arr = items();
+    let traits_arr = traits();
 
-    let items_arr = {};
-    for (let item in items) {
-      items_arr['i' + items[item].id] = items[item];
-    }
+    try {
+      let patchData = await fetch(patch_data_url()).then(res => res.json());
+      let thisSet = patchData.setData[SET_NUMBER];
 
-    let traits_arr = {};
-    for (let trait in traits) {
-      traits_arr[traits[trait].key] = traits[trait];
-    }
+      champions_arr = champion_patch_combine(champions_arr, thisSet.champions);
+      items_arr = item_patch_combine(items_arr, patchData.items);
+      traits_arr = trait_patch_combine(traits_arr, thisSet.traits);
 
-    fetch(patch_data_url()).then(res => res.json()).then(res => {
-      console.log(res);
-      for (let champion in res.setData[5].champions) {
-        if (champions_arr[res.setData[5].champions[champion].apiName] !== undefined) {
-          champions_arr[res.setData[5].champions[champion].apiName].patch_data = res.setData[5].champions[champion];
-          champions_arr[res.setData[5].champions[champion].apiName].patch_data.icon = champion_icon_parse(champions_arr[res.setData[5].champions[champion].apiName].patch_data.icon);
-        }
-      }
-
-      for (let item in res.items) {
-        if (items_arr['i' + res.items[item].id] !== undefined) {
-          if (items_arr['i' + res.items[item].id].name.replaceAll(' ', '').toLowerCase() === res.items[item].name.replaceAll(' ', '').toLowerCase()) {
-            items_arr['i' + res.items[item].id].patch_data = res.items[item];
-          }
-          else {
-            if (items_arr['i' + res.items[item].id].patch_data === undefined) {
-              items_arr['i' + res.items[item].id].patch_data = res.items[item];
-            }
-          }
-        }
-      }
-
-      for (let trait in res.setData[5].traits) {
-        if (traits_arr[res.setData[5].traits[trait].apiName] !== undefined) {
-          traits_arr[res.setData[5].traits[trait].apiName].patch_data = res.setData[5].traits[trait];
-          traits_arr[res.setData[5].traits[trait].apiName].count = 0;
-          traits_arr[res.setData[5].traits[trait].apiName].champions = [];
-        }
-
-      }
       getSetData("teams", 5).then(data => {
         this.setState({teams: data.map(team => team), champions: champions_arr, items: items_arr, traits: traits_arr, loading: false});
+      }).catch((err) => {
+        this.setState({
+          loading: false,
+          error: true,
+          errorSeverity: "error",
+          errorMessage: `Error retrieving patch data: ${err}. Try refreshing the page.`
+        })
       });
-    }).catch((err) => {
-      this.setState({
-        loading: false,
-        error: true,
-        errorSeverity: "error",
-        errorMessage: `Error retrieving patch data: ${err}. Try refreshing the page.`
-      })
-    });
+    } catch (err) {
+      console.error('Error retrieving patch data: ' + err);
+    }
   }
 
   viewInBuilder = (e, teamID) => {
@@ -128,9 +92,9 @@ class Teams extends Component {
       for (let j = 0; j < this.state.teams[i].team.length; j++) {
         let items = [];
         for (let item in this.state.teams[i].team[j].items) {
-          let image = this.state.items['i' + this.state.teams[i].team[j].items[item].id].patch_data.icon.substring(0, this.state.items['i' + this.state.teams[i].team[j].items[item].id].patch_data.icon.indexOf('dds')).toLowerCase();
+          let image = this.state.items[this.state.teams[i].team[j].items[item].id].patch_data.icon.substring(0, this.state.items[this.state.teams[i].team[j].items[item].id].patch_data.icon.indexOf('dds')).toLowerCase();
           items.push(
-            <Tooltip placement='top' title={<ItemTooltip item={this.state.items['i' + this.state.teams[i].team[j].items[item].id]}/>} key={item+image} arrow>
+            <Tooltip placement='top' title={<ItemTooltip item={this.state.items[this.state.teams[i].team[j].items[item].id]}/>} key={item+image} arrow>
               <div style={{position: 'relative', display: 'inline-block', minWidth: '15px'}}>
                 <img src={`https://raw.communitydragon.org/latest/game/${image}png`} alt={image} width={15} height={15}/>
               </div>

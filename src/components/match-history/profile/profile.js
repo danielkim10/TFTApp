@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { errorHandler, checkRateLimit } from '../../../helper/api';
 import { sortGametimeDescending } from '../../../helper/sorting';
-import { companion_parse, champion_icon_parse } from '../../../helper/string-parsing';
+import { companion_parse } from '../../../helper/string-parsing';
 import { patch_data_url, match_url, summoner_by_puuid_url, host_url, companion_bin_url, companion_icon_url, profile_icon_url, rank_face_url, rank_crown_url } from '../../../helper/urls';
 import MatchBasic from '../match-basic/match-basic.component.js';
 import Alert from '@material-ui/lab/Alert';
+import { SET_NUMBER, champions, items, traits, champion_patch_combine, item_patch_combine, trait_patch_combine } from '../../../helper/variables';
 
 import './profile.css';
 
@@ -22,175 +23,122 @@ class Profile extends Component {
         }
     }
 
-    componentDidMount = () => {
+    componentDidMount = async () => {
         this.setState({loading: true});
-        let champions = require("../../../data/champions.json");
-        let items = require("../../../data/items.json");
-        let traits = require("../../../data/traits.json");
 
-        let champions_arr = {};
-        for (let champion in champions) {
-            if (champions[champion].championId.startsWith("TFT5_")) {
-            champions_arr[champions[champion].championId] = champions[champion]; 
-            }
-        }
+        let champions_arr = champions();
+        let items_arr = items();
+        let traits_arr = traits();
 
-        let items_arr = {};
-        for (let item in items) {
-            items_arr['i' + items[item].id] = items[item];
-        }
+        try {
+            let patchData = await fetch(patch_data_url()).then(res => res.json());
+            let thisSet = patchData.setData[SET_NUMBER];
 
-        let traits_arr = {};
-        for (let trait in traits) {
-            traits_arr[traits[trait].key] = traits[trait];
-        }
+            champions_arr = champion_patch_combine(champions_arr, thisSet.champions);
+            items_arr = item_patch_combine(items_arr, patchData.items);
+            traits_arr = trait_patch_combine(traits_arr, thisSet.traits);
+            this.setState({champions: champions_arr, items: items_arr, traits: traits_arr, loading: false});
 
-        fetch(patch_data_url()).then(res => {
-            if (!res.ok) {
-                let errorStr = errorHandler(res.status);
-                this.setState({error: true, loading: false, errorMessage: errorStr});
-                throw Error(errorStr);
-            }
-            return res.json();
-        }).then(res => {
-            for (let champion in res.setData[5].champions) {
-                if (champions_arr[res.setData[5].champions[champion].apiName] !== undefined) {
-                    champions_arr[res.setData[5].champions[champion].apiName].patch_data = res.setData[5].champions[champion];
-                    champions_arr[res.setData[5].champions[champion].apiName].patch_data.icon = champion_icon_parse(champions_arr[res.setData[5].champions[champion].apiName].patch_data.icon);
-                }
-            }
-
-            for (let item in res.items) {
-                if (items_arr['i' + res.items[item].id] !== undefined) {
-                    if (items_arr['i' + res.items[item].id].name.replaceAll(' ', '').toLowerCase() === res.items[item].name.replaceAll(' ', '').toLowerCase()) {
-                        items_arr['i' + res.items[item].id].patch_data = res.items[item];
-                    }
-                    else {
-                        if (items_arr['i' + res.items[item].id].patch_data === undefined) {
-                            items_arr['i' + res.items[item].id].patch_data = res.items[item];
-                        }
-                    }
-                }
-            }
-
-            for (let trait in res.setData[5].traits) {
-                if (traits_arr[res.setData[5].traits[trait].apiName] !== undefined) {
-                    traits_arr[res.setData[5].traits[trait].apiName].patch_data = res.setData[5].traits[trait];
-                    traits_arr[res.setData[5].traits[trait].apiName].count = 0;
-                }
-            }
-            
             if (this.props.location.search) {
                 if (this.props.location.state) {
                     const matchCount = 1;
                     let matchList = this.props.location.state.matchListData.slice(0, matchCount);
-                    
-                    Promise.resolve(checkRateLimit(this.props.location.state.region, 1)).then(rlc1 => {
-                        if (rlc1 < 0) {
-                            this.setState({error: true, loading: false, errorMessage: 'You are being rate limited'});
-                            throw Error('Rate limiting in effect');
-                        }
-                        else {
-                            let matchListUrls = matchList.map((m) => {
-                                let request = new Request(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.props.location.state.region)}${match_url(m)}`, {
-                                    method: 'GET',
-                                    headers: {
-                                        'Accept-Charset': 'application/json;charset=utf-8',
-                                        'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
+
+                    let rateLimitCheck_1 = await Promise.resolve(checkRateLimit(this.props.location.state.region, 1));
+                    if (rateLimitCheck_1 < 0) {
+                        this.setState({error: true, loading: false, errorMessage: 'You are being rate limited'});
+                        throw Error('Rate limiting in effect');
+                    }
+                    else {
+                        let matchListUrls = matchList.map((m) => {
+                            let request = new Request(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.props.location.state.region)}${match_url(m)}`, {
+                                method: 'GET',
+                                headers: {
+                                    'Accept-Charset': 'application/json;charset=utf-8',
+                                    'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
+                                }
+                            });
+                            return fetch(request).then(res => {
+                                    if (!res.ok) {
+                                        let errorStr = errorHandler(res.status);
+                                        this.setState({error: true, loading: false, errorMessage: errorStr});
+                                        throw Error(errorStr);
                                     }
-                                });
-                                return fetch(request).then(res => {
+                                    return res.json();
+                                }).catch(matchErr => console.error("Error retrieving match:" + matchErr));
+                            });
+
+                        let ms = await Promise.all(matchListUrls);
+                        for (let i = 0; i < ms.length; i++) {
+                            let playersUrls = [];
+
+                            let rateLimitCheck_2 = await Promise.resolve(checkRateLimit(this.props.location.state.platform, 8*ms.length));
+                            if (rateLimitCheck_2 < 0) {
+                                this.setState({error: true, loading: false, errorMessage: 'You are being rate limited'});
+                                throw Error('Rate limiting in effect');
+                            }
+                            else {
+                                for (let j = 0; j < ms[i].info.participants.length; j++) {
+                                    let request = new Request(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.props.location.state.platform)}${summoner_by_puuid_url(ms[i].info.participants[j].puuid)}`, {
+                                        method: 'GET',
+                                        headers: {
+                                            'Accept-Charset': 'application/json;charset=utf-8',
+                                            'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
+                                        }
+                                    });
+                                    let promise = new Promise(resolve => setTimeout(resolve, 125*((i+1)*j+1))).then(() => 
+                                        fetch(request).then(res => {
+                                            if (!res.ok) {
+                                                let errorStr = errorHandler(res.status);
+                                                this.setState({error: true, loading: false, errorMessage: errorStr});
+                                                throw Error(errorStr);
+                                            }
+                                            return res.json();
+                                        }).catch(playerErr => console.error("Error retrieving player: " + playerErr)));
+                                    playersUrls.push(promise);
+                                }
+
+                                let companionsUrls = [];
+                                let companionSpecies = [];
+                                let companionSkinIDs = [];
+                                companionsUrls = ms[i].info.participants.map((participant) => {
+                                    let request = new Request(companion_bin_url(participant.companion.species.toLowerCase(), participant.companion.skin_ID));
+                                    companionSpecies.push(participant.companion.species);
+                                    companionSkinIDs.push(participant.companion.skin_ID);
+                                    return fetch(request).then(res => {
                                         if (!res.ok) {
                                             let errorStr = errorHandler(res.status);
                                             this.setState({error: true, loading: false, errorMessage: errorStr});
                                             throw Error(errorStr);
                                         }
                                         return res.json();
-                                    }).catch(matchErr => console.error("Error retrieving match:" + matchErr));
+                                    }).catch(companionErr => console.error("Error retrieving companion: " + companionErr));
                                 });
-                            
 
-                            Promise.all(matchListUrls).then(ms => {
-                                console.log(ms);
-                                for (let i = 0; i < ms.length; i++) {
-                                    let playersUrls = [];
-                                    
-                                    Promise.resolve(checkRateLimit(this.props.location.state.platform, 8*ms.length)).then(rlc2 => {
-                                        if (rlc2 < 0) {
-                                            this.setState({error: true, loading: false, errorMessage: 'You are being rate limited'});
-                                            throw Error('Rate limiting in effect');
-                                        }
-                                        else {
-                                            for (let j = 0; j < ms[i].info.participants.length; j++) {
-                                                let request = new Request(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.props.location.state.platform)}${summoner_by_puuid_url(ms[i].info.participants[j].puuid)}`, {
-                                                    method: 'GET',
-                                                    headers: {
-                                                        'Accept-Charset': 'application/json;charset=utf-8',
-                                                        'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
-                                                    }
-                                                });
-                                                let promise = new Promise(resolve => setTimeout(resolve, 125*((i+1)*j+1))).then(() => 
-                                                    fetch(request).then(res => {
-                                                        if (!res.ok) {
-                                                            let errorStr = errorHandler(res.status);
-                                                            this.setState({error: true, loading: false, errorMessage: errorStr});
-                                                            throw Error(errorStr);
-                                                        }
-                                                        return res.json();
-                                                    }).catch(playerErr => console.error("Error retrieving player: " + playerErr)));
-                                                playersUrls.push(promise);
-                                            }
-    
-                                            let companionsUrls = [];
-                                            let companionSpecies = [];
-                                            let companionSkinIDs = [];
-                                            companionsUrls = ms[i].info.participants.map((participant) => {
-                                                let request = new Request(companion_bin_url(participant.companion.species.toLowerCase(), participant.companion.skin_ID));
-                                                companionSpecies.push(participant.companion.species);
-                                                companionSkinIDs.push(participant.companion.skin_ID);
-                                                return fetch(request).then(res => {
-                                                    if (!res.ok) {
-                                                        let errorStr = errorHandler(res.status);
-                                                        this.setState({error: true, loading: false, errorMessage: errorStr});
-                                                        throw Error(errorStr);
-                                                    }
-                                                    return res.json();
-                                                }).catch(companionErr => console.error("Error retrieving companion: " + companionErr));
-                                            });
-    
-                                            Promise.all(playersUrls).then(players => {
-                                                Promise.all(companionsUrls).then(companions => {
-                                                    for (let j = 0; j < players.length; j++) {
-                                                        ms[i].info.participants[j].name = players[j].name;
-                                                    
-                                                        let companionData = companions[j][`Characters/${companionSpecies[j]}/Skins/Skin${companionSkinIDs[j]}`];
-                                                        if (companionData === undefined) {
-                                                            companionData = companions[j][companion_parse(`Characters/${companionSpecies[j]}/Skins/Skin${companionSkinIDs[j]}`.toLowerCase())];
-                                                        }
-                                                        let iconCircle = companionData.iconCircle.substring(0, companionData.iconCircle.indexOf('dds')).toLowerCase();
-                                                        ms[i].info.participants[j].companion.image_source = companion_icon_url(iconCircle);
-                                                    }
-                                                    let matches = this.state.matches;
-                                                    matches.push(ms[i]);
-                                                    matches.sort(sortGametimeDescending);
-                                                    this.setState({matches: matches});
-                                                });
-                                            });
-                                        }
-                                    });
+                                let players = await Promise.all(playersUrls);
+                                let companions = await Promise.all(companionsUrls);
+                                for (let j = 0; j < players.length; j++) {
+                                    ms[i].info.participants[j].name = players[j].name;
+                                
+                                    let companionData = companions[j][`Characters/${companionSpecies[j]}/Skins/Skin${companionSkinIDs[j]}`];
+                                    if (companionData === undefined) {
+                                        companionData = companions[j][companion_parse(`Characters/${companionSpecies[j]}/Skins/Skin${companionSkinIDs[j]}`.toLowerCase())];
+                                    }
+                                    let iconCircle = companionData.iconCircle.substring(0, companionData.iconCircle.indexOf('dds')).toLowerCase();
+                                    ms[i].info.participants[j].companion.image_source = companion_icon_url(iconCircle);
                                 }
-                            });
+                                let matches = this.state.matches;
+                                matches.push(ms[i]);
+                                matches.sort(sortGametimeDescending);
+                                this.setState({matches: matches});
+                            }
                         }
-                    });
-                }
-                else {
-
+                    }
                 }
             }
-            this.setState({champions: champions_arr, items: items_arr, traits: traits_arr, loading: false});
-        }).catch((patchDataErr) => {
-            console.error("Error retrieving patch data: " + patchDataErr);
-        });
+        } catch (err) {
+            console.error('Error retrieving patch data: ' + err);
+        }
     }
 
     createRank = () => {
@@ -325,6 +273,7 @@ class Profile extends Component {
 
     createMatches = () => {
         let matches = [];
+        console.log(this.state.matches);
         for (let match in this.state.matches) {
             matches.push(
                 <tr key={match}>

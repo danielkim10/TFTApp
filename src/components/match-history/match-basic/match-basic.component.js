@@ -24,16 +24,11 @@ class MatchBasic extends Component {
       traits: this.props.traits,
       items: this.props.items,
     }
-
-    this.championIdParse = this.championIdParse.bind(this);
   }
 
   componentDidMount = () => {
   }
 
-  championIdParse = (id) => {
-    return id.replace(/'/, "").substring(id.indexOf('_') + 1).toLowerCase();
-  }
 
   createTeam = (units) => {
     // let teamMembers = [];
@@ -175,9 +170,9 @@ class MatchBasic extends Component {
       for (let item in championsSorted[champion].items) {
         //let item_i = championsSorted[champion].items[item];
         if (championsSorted[champion].items[item] !== 10006) {
-          let image = this.props.items['i' + championsSorted[champion].items[item]].patch_data.icon.substring(0, this.props.items['i' + championsSorted[champion].items[item]].patch_data.icon.indexOf('dds')).toLowerCase();
+          let image = this.props.items[championsSorted[champion].items[item]].patch_data.icon.substring(0, this.props.items[championsSorted[champion].items[item]].patch_data.icon.indexOf('dds')).toLowerCase();
           items.push(
-            <Tooltip placement='top' title={<ItemTooltip item={this.props.items['i' + championsSorted[champion].items[item]]}/>} key={item+image} arrow>
+            <Tooltip placement='top' title={<ItemTooltip item={this.props.items[championsSorted[champion].items[item]]}/>} key={item+image} arrow>
               <div style={{position: 'relative', display: 'inline-block', minWidth: '15px'}} key={item+image}>
               <img src={`https://raw.communitydragon.org/latest/game/${image}png`} alt={image} width={15} height={15}/>
               </div>

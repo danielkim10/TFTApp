@@ -12,8 +12,8 @@ import TextField from '@material-ui/core/TextField';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import CopyDialog from '../../../sub-components/copy-dialog/copy-dialog';
 import HexagonGrid from '../../../sub-components/hexagon-grid/hexagon-grid';
-import { champion_icon_parse } from '../../../helper/string-parsing';
 import { patch_data_url } from '../../../helper/urls';
+import { SET_NUMBER, champions, items, traits, champion_patch_combine, item_patch_combine, trait_patch_combine } from '../../../helper/variables';
 
 import './main.css';
 
@@ -56,66 +56,20 @@ export default class Main extends Component {
     this.drop = this.drop.bind(this);
   }
 
-  componentDidMount = () => {
+  componentDidMount = async () => {
     this.setState({loading: true});
-    let champions = require("../../../data/champions.json");
-    let items = require("../../../data/items.json");
-    let traits = require("../../../data/traits.json");
 
-    let champions_arr = {};
-    for (let champion in champions) {
-      if (champions[champion].championId.startsWith("TFT5_")) {
-        champions_arr[champions[champion].championId] = champions[champion]; 
-      }
-    }
+    let champions_arr = champions();
+    let items_arr = items();
+    let traits_arr = traits();
 
-    let items_arr = {};
-    for (let item in items) {
-      items_arr['i' + items[item].id] = items[item];
-    }
+    try {
+      let patchData = await fetch(patch_data_url()).then(res => res.json());
+      let thisSet = patchData.setData[SET_NUMBER];
 
-    let traits_arr = {};
-    for (let trait in traits) {
-      traits_arr[traits[trait].key] = traits[trait];
-    }
-
-    fetch(patch_data_url()).then(res => {
-      if (!res.ok) {
-        let errorStr = errorHandler(res.status);
-        this.setState({error: true, loading: false, errorSeverity: "error", errorMessage: errorStr});
-        throw Error(errorStr);
-      }
-      return res.json();
-    }).then(res => {
-      console.log(res);
-      for (let champion in res.setData[5].champions) {
-        if (champions_arr[res.setData[5].champions[champion].apiName] !== undefined) {
-          champions_arr[res.setData[5].champions[champion].apiName].patch_data = res.setData[5].champions[champion];
-          champions_arr[res.setData[5].champions[champion].apiName].patch_data.icon = champion_icon_parse(champions_arr[res.setData[5].champions[champion].apiName].patch_data.icon);
-        }
-      }
-
-      for (let item in res.items) {
-        if (items_arr['i' + res.items[item].id] !== undefined) {
-          if (items_arr['i' + res.items[item].id].name.replaceAll(' ', '').toLowerCase() === res.items[item].name.replaceAll(' ', '').toLowerCase()) {
-            items_arr['i' + res.items[item].id].patch_data = res.items[item];
-          }
-          else {
-            if (items_arr['i' + res.items[item].id].patch_data === undefined) {
-              items_arr['i' + res.items[item].id].patch_data = res.items[item];
-            }
-          }
-        }
-      }
-
-      for (let trait in res.setData[5].traits) {
-        if (traits_arr[res.setData[5].traits[trait].apiName] !== undefined) {
-          traits_arr[res.setData[5].traits[trait].apiName].patch_data = res.setData[5].traits[trait];
-          traits_arr[res.setData[5].traits[trait].apiName].count = 0;
-          traits_arr[res.setData[5].traits[trait].apiName].champions = [];
-        }
-
-      }
+      champions_arr = champion_patch_combine(champions_arr, thisSet.champions);
+      items_arr = item_patch_combine(items_arr, patchData.items);
+      traits_arr = trait_patch_combine(traits_arr, thisSet.traits);
 
       if (this.props.location.search) {
         if (this.props.location.state) {
@@ -130,14 +84,9 @@ export default class Main extends Component {
       else {
         this.setState({champions: champions_arr, items: items_arr, traits: traits_arr, loading: false});
       }
-    }).catch((err) => {
+    } catch (err) {
       console.error('Error retrieving patch data: ' + err);
-    });
-    console.log(champions_arr);
-    console.log(items_arr);
-    console.log(traits_arr)
-
-    
+    }
   }
 
   addToTeam = (e, data) => {
@@ -171,12 +120,12 @@ export default class Main extends Component {
 
   findTraitsInitial = (team) => {
     let traits = JSON.parse(JSON.stringify(this.state.traits));
-    for (let i in team) {
-      for (let j in team[i].champion.traits) {
-        if (!traits[team[i].champion.traits[j]].champions.includes(team[i].champion.championId)) {
-          traits[team[i].champion.traits[j]].count++;
+    for (let i of team) {
+      for (let j of i.champion.traits) {
+        if (!traits[j].champions.includes(i.champion.championId)) {
+          traits[j].count++;
         }
-        traits[team[i].champion.traits[j]].champions.push(team[i].champion.championId);
+        traits[j].champions.push(i.champion.championId);
       }
     }
     this.setState({traits: traits});
@@ -188,16 +137,17 @@ export default class Main extends Component {
       return;
     }
     let isDupe = false;
-    for (let i in team) {
-      if (team[i].champion.name === champion.name) {
+    for (let i of team) {
+      console.log(i);
+      if (i.champion.name === champion.name) {
         isDupe = true;
       }
     }
-    for (let j = 0; j < champion.traits.length; j++) {
+    for (let j of champion.traits) {
       if (!isDupe) {
-        traits[champion.traits[j]].count++;
+        traits[j].count++;
       }
-      traits[champion.traits[j]].champions.push(champion.championId);
+      traits[j].champions.push(champion.championId);
     }
     this.setState({traits: traits});
   }
@@ -208,10 +158,10 @@ export default class Main extends Component {
       return;
     }
 
-    for (let i = 0; i < champion.traits.length; i++) {
-      traits[champion.traits[i]].champions.splice(traits[champion.traits[i]].champions.findIndex(c => c === champion.championId), 1);
-      if (traits[champion.traits[i]].champions.findIndex(c => c === champion.championId) < 0) {
-        traits[champion.traits[i]].count -= 1;
+    for (let i of champion.traits) {
+      traits[i].champions.splice(traits[i].champions.findIndex(c => c === champion.championId), 1);
+      if (traits[i].champions.findIndex(c => c === champion.championId) < 0) {
+        traits[i].count -= 1;
       }
     }
     this.setState({traits: traits});
@@ -291,24 +241,24 @@ export default class Main extends Component {
     }
 
     if (this.state.draggedItem.name !== undefined) {
-      for (let teamMember in this.state.team) {
-        if (this.state.team[teamMember].hexSlot === id) {
+      for (let teamMember of Object.values(this.state.team)) {
+        if (teamMember.hexSlot === id) {
 
-          if (this.state.team[teamMember].items.includes(this.state.draggedItem) && this.state.draggedItem.isUnique) {
+          if (teamMember.items.includes(this.state.draggedItem) && this.state.draggedItem.isUnique) {
             this.setState({error: true, errorSeverity: "warning", errorMessage: "Error: Unique item, only one per champion."});
             setTimeout(() => {
               this.setState({error: false});
             }, 3000);
           }
 
-          else if (this.state.team[teamMember].items.includes(this.state.items['i99']) || this.state.team[teamMember].items.includes(this.state.items['i2099'])) {
+          else if (teamMember.items.includes(this.state.items['99']) || teamMember.items.includes(this.state.items['2099'])) {
             this.setState({error: true, errorSeverity: "warning", errorMessage: "Error: No item slots remaining."});
             setTimeout(() => {
               this.setState({error: false});
             }, 3000);
           }
 
-          else if (this.state.team[teamMember].items.length > 0 && (this.state.draggedItem.id === 99 || this.state.draggedItem.id === 2099)) {
+          else if (teamMember.items.length > 0 && (this.state.draggedItem.id === 99 || this.state.draggedItem.id === 2099)) {
             this.setState({error: true, errorSeverity: "warning", errorMessage: "Error: Item consumes three item slots."});
             setTimeout(() => {
               this.setState({error: false});
@@ -319,23 +269,23 @@ export default class Main extends Component {
             (this.state.draggedItem.isUnique && this.state.draggedItem.id).toString().includes('8')) {
               let traitFromItem = this.state.draggedItem.name.substring(0, this.state.draggedItem.name.indexOf('Emblem')-1);
               let trait = 'Set5_' + traitFromItem.replace(' ', '');
-              if (this.state.team[teamMember].items.includes(this.state.draggedItem)) {
+              if (teamMember.items.includes(this.state.draggedItem)) {
                 this.setState({error: true, errorSeverity: "warning", errorMessage: "Error: Unique item, only one per champion."});
                 setTimeout(() => {
                   this.setState({error: false});
                 }, 3000);
               }
-              else if (this.state.team[teamMember].champion.traits.includes(trait)) {
+              else if (teamMember.champion.traits.includes(trait)) {
                 this.setState({error: true, errorSeverity: "warning", errorMessage: "Error: Champion is already a " + trait});
                 setTimeout(() => {
                   this.setState({error: false});
                 }, 3000);
               }
               else {
-                if (this.state.team[teamMember].items.length < 3) {
-                  team[teamMember].champion.traits.push(trait);
-                  team[teamMember].items.push(this.state.draggedItem);
-                  this.findTraitsFromEmblem(team[teamMember], trait);
+                if (teamMember.items.length < 3) {
+                  team[team.findIndex(t => t === teamMember)].champion.traits.push(trait);
+                  team[team.findIndex(t => t === teamMember)].items.push(this.state.draggedItem);
+                  this.findTraitsFromEmblem(team[team.findIndex(t => t === teamMember)], trait);
                 }
                 else {
                   this.setState({error: true, errorSeverity: "warning", errorMessage: "Error: No item slots remaining."});
@@ -347,8 +297,8 @@ export default class Main extends Component {
             
           }
 
-          else if (this.state.team[teamMember].items.length < 3) {
-            team[teamMember].items.push(this.state.draggedItem);
+          else if (teamMember.items.length < 3) {
+            team[team.findIndex(t => t === teamMember)].items.push(this.state.draggedItem);
           }
           else {
             this.setState({error: true, errorSeverity: "warning", errorMessage: "Error: No item slots remaining."});
