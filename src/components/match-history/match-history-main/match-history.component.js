@@ -10,8 +10,6 @@ import TextField from '@material-ui/core/TextField';
 import { host_url, summoner_by_name_url, ranked_league_url, match_list_url } from '../../../helper/urls';
 import { errorHandler, checkRateLimit } from '../../../helper/api';
 
-import './match-history.component.css';
-
 class MatchHistory extends Component {
 
   constructor(props) {
@@ -138,7 +136,13 @@ class MatchHistory extends Component {
     this.setState({platform: e.target.value, region: regionApi});
   }
 
+  loadSampleData = (e) => {
+
+  }
+
   render = () => {
+    require('./match-history.component.css');
+    require('../../base.css');
 
     let rank = {
         "leagueId": "83b9dd01-6753-4081-aa66-b4e503ae0e8b",
@@ -158,96 +162,39 @@ class MatchHistory extends Component {
 
 
     return (
-        <table style={{width: '100%'}}>
-            <tbody>
-                <tr style={{height: '33%'}}><td></td></tr>
-                <tr style={{height: '66%'}}>
-                    <td className='side-margins'></td>
-                    <td className='main-content'>
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <table>
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <table>
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td>
-                                                                        <h1 className='title'>Summoner Search</h1>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td>
-                                                                        {this.state.error && <Alert severity="error">{this.state.errorMessage}</Alert>}
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                        
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <table>
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td>
-                                                                        <FormControl variant="filled" disabled={this.state.loading} className='region-select'>
-                                                                            <InputLabel id="platform-select-label">Platform</InputLabel>
-                                                                            <Select 
-                                                                                labelId="platform-select-label" 
-                                                                                id="platform-select"
-                                                                                value={this.state.platform}
-                                                                                onChange={this.handleRegionSelect}
-                                                                            >
-                                                                                <MenuItem value="na1">NA</MenuItem>
-                                                                                <MenuItem value="euw1">EUW</MenuItem>
-                                                                            </Select>
-                                                                        </FormControl>
-                                                                    </td>
-                                                                    <td className='summoner-search'>
-                                                                        <TextField id="nameSearch" placeholder="Summoner Name" variant="outlined" onChange={this.handleName} disabled={this.state.loading}/>
-                                                                    </td>
-                                                                    <td>
-                                                                        <Button type="button" className='buttons' onClick={this.search} disabled={this.state.loading}>
-                                                                            <span className='button-text'>Search</span>
-                                                                        </Button>
-                                                                    </td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td></td>
-                                                                    <td>
-                                                                        <Button type="button" className='buttons' onClick={this.loadSample} disabled={this.state.loading}>
-                                                                            <span className='button-text'>Load Sample Data</span>
-                                                                        </Button>
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        {this.state.loading && <CircularProgress className='circular-progress'/>}
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                                
-                            </tbody>
-                        </table>
-                    </td>
-                    <td className='side-margins'></td>
-                </tr>
-                <tr style={{height: '16%'}}><td></td></tr>
-            </tbody>
-        </table>
-    )
+        <div className="page-grid">
+            <div></div>
+            <div>
+                <h1 className='title'>Summoner Search</h1>
+                {this.state.error && <Alert severity="error">{this.state.errorMessage}</Alert>}
+                <div className='content-grid'>
+                <FormControl variant="filled" disabled={this.state.loading} className='region-select'>
+                    <InputLabel id="platform-select-label">Platform</InputLabel>
+                    <Select 
+                        labelId="platform-select-label" 
+                        id="platform-select"
+                        value={this.state.platform}
+                        onChange={this.handleRegionSelect}
+                    >
+                    <MenuItem value="na1">NA</MenuItem>
+                    <MenuItem value="euw1">EUW</MenuItem>
+                    </Select>
+                </FormControl>
+                <TextField id="nameSearch" className="summoner-search" placeholder="Summoner Name" variant="outlined" onChange={this.handleName} disabled={this.state.loading}/>
+                <Button type="button" className='buttons' onClick={this.search} disabled={this.state.loading}>
+                    <span className='button-text'>Search</span>
+                </Button>
+                </div>
+                
+                {this.state.loading && <CircularProgress className='circular-progress'/>}
+            </div>
+            <div></div>
+            <Button type="button" className='sample-button' onClick={this.loadSampleData} disabled={this.state.loading}>
+            <span className='button-text'>Load Sample Data</span>
+            </Button>
+        </div>
+        
+    );
   }
 }
 

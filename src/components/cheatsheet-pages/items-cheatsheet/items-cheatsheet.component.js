@@ -6,7 +6,7 @@ import { items, item_patch_combine } from '../../../helper/variables';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Alert from '@material-ui/lab/Alert';
 
-import './items-cheatsheet.component.css'
+
 
 class ItemsCheatSheet extends Component {
   constructor(props) {
@@ -64,6 +64,8 @@ class ItemsCheatSheet extends Component {
       '{c4b5579c}': '% Dodge Chance'
     };
 
+    
+
     if (item.isRadiant) {
       let itemStats = [];
       let image = item.patch_data.icon.substring(0, item.patch_data.icon.indexOf('dds')).toLowerCase();
@@ -75,14 +77,24 @@ class ItemsCheatSheet extends Component {
       }
 
       itemStats.push(<p className='item-desc-text' key='Radiant'>Radiant - Cannot be crafted</p>);
-      
+
       return (
         <div className='item-category-margins'>
-          <img src={assets_url(image)} alt={item.name} className='item-dimensions'/>
-          <span className='item-desc-text'>{item.name}</span>
-          <Button onClick={this.clear} className='button'><span className='button-text'>Clear</span></Button>
-          <p className='item-desc-text'>{item_desc_parse(item)}</p>
-          {itemStats}
+          <div className='grid-desc'>
+            <div className='portrait'>
+              <img src={assets_url(image)} alt={item.name} className='portrait-border item'/>
+            </div>
+            <div className='item-title'>
+              {item.name}
+            </div>
+            <div className='button'>
+              <Button onClick={this.clear}><span className='button-text'>Clear</span></Button>
+            </div>
+          </div>
+          <div className='item-category-content'>
+            <p className='item-desc-text'>{item_desc_parse(item)}</p>
+            {itemStats}
+          </div>
         </div>
       );
     }
@@ -100,18 +112,26 @@ class ItemsCheatSheet extends Component {
 
       return (
         <div className='item-category-margins'>
-          <img src={assets_url(image)} alt={item.name} className='item-dimensions'/>
-          <span className='item-desc-text'>{item.name}</span>
-          <Button onClick={this.clear} className='button'><span className='button-text'>Clear</span></Button>
-          <p className='item-desc-text'>{item_desc_parse(item)}</p>
-          {itemStats}
-          
+          <div className='grid-desc'>
+            <div className='portrait'>
+              <img src={assets_url(image)} alt={item.name} className='portrait-border item'/>
+            </div>
+            <div className='item-title'>
+              {item.name}
+            </div>
+            <div className='button'>
+              <Button onClick={this.clear}><span className='button-text'>Clear</span></Button>
+            </div>
+          </div>
+          <div className='item-category-content'>
+            <p className='item-desc-text'>{item_desc_parse(item)}</p>
+            {itemStats}
+          </div>
         </div>
       );
     }
 
     else if (item.id < 10) {
-      let itemRecipesRow = [];
       let itemRecipes = [];
       let image = item.patch_data.icon.substring(0, item.patch_data.icon.indexOf('dds')).toLowerCase();
       
@@ -121,38 +141,35 @@ class ItemsCheatSheet extends Component {
         let advancedItem = this.state.items[Math.min(item.id*10 + i, i*10 + item.id)];
         let advancedItemImage = advancedItem.patch_data.icon.substring(0, advancedItem.patch_data.icon.indexOf('dds')).toLowerCase();
         itemRecipes.push(
-          <td key={i}>
-            <table>
-              <tbody>
-                <tr>
-                  <td><img src={assets_url(image)} alt={item.name} className='item-dimensions-small'/></td>
-                  <td><p className='recipe-operator-text'>+</p></td>
-                  <td><img src={assets_url(secondItemImage)} alt={item.name} className='item-dimensions-small'/></td>
-                  <td><p className='recipe-operator-text'>=</p></td>
-                  <td><img src={assets_url(advancedItemImage)} alt={item.name} className='item-dimensions-small-right'/></td>
-                </tr>
-              </tbody>
-            </table>
-          </td>
+          <div key={i} className='grid-recipe'>
+            <img src={assets_url(image)} alt={item.name} className='item-dimensions-small'/>
+            <p className='recipe-operator-text'>+</p>
+            <img src={assets_url(secondItemImage)} alt={item.name} className='item-dimensions-small'/>
+            <p className='recipe-operator-text'>=</p>
+            <img src={assets_url(advancedItemImage)} alt={item.name} className='item-dimensions-small'/>
+          </div>
         );
-        if (i % 3 === 0) {
-          itemRecipesRow.push(<tr key={i}>{itemRecipes}</tr>);
-          itemRecipes = [];
-        }
       }
 
       return (
         <div className='item-category-margins'>
-          <img src={assets_url(image)} alt={item.name} className='item-dimensions'/>
-          <p className='item-desc-text'>{item.name}</p>
-          <Button onClick={this.clear} className='button'><span className='button-text'>Clear</span></Button>
-          <span className='item-desc-text'>{item_desc_parse(item)}</span>
-          <table>
-            <tbody>
-              <tr className='item-desc-text'><td>Recipes</td></tr>
-              {itemRecipesRow}
-            </tbody>
-          </table>
+          <div className='grid-desc'>
+            <div className='portrait'>
+              <img src={assets_url(image)} alt={item.name} className='portrait-border item'/>
+            </div>
+            <div className='item-title'>
+              {item.name}
+            </div>
+            <div className='button'>
+              <Button onClick={this.clear}><span className='button-text'>Clear</span></Button>
+            </div>
+          </div>
+          <div className='item-category-content'>
+            <p className='item-desc-text'>{item_desc_parse(item)}</p>
+            <div className="grid-basic">
+              {itemRecipes}
+            </div>
+          </div>
         </div>
       );
     }
@@ -170,25 +187,31 @@ class ItemsCheatSheet extends Component {
       for (let id in item.patch_data.from) {
         let image = this.state.items[item.patch_data.from[id]].patch_data.icon.substring(0, this.state.items[item.patch_data.from[id]].patch_data.icon.indexOf('dds')).toLowerCase();
         buildsFrom.push(
-          <td key={id}><img src={assets_url(image)} key={id} alt={this.state.items[item.patch_data.from[id]].name} className='item-dimensions-small'/></td>
+          <img src={assets_url(image)} key={id} alt={this.state.items[item.patch_data.from[id]].name} className='item-dimensions-small'/>
         )
       }
 
       return (
         <div className='item-category-margins'>
-          <img src={assets_url(image)} alt={item.name} className='item-dimensions'/>
-          <span className='item-desc-text'>{item.name}</span>
-          <Button onClick={this.clear} className='button'><span className='button-text'>Clear</span></Button>
-          <p className='item-desc-text'>{item_desc_parse(item)}</p>
-          {itemStats}
-          <p className='item-desc-text'>Builds from</p>
-          <table>
-            <tbody>
-              <tr>
-                {buildsFrom}
-              </tr>
-            </tbody>
-          </table>
+          <div className='grid-desc'>
+            <div className='portrait'>
+              <img src={assets_url(image)} alt={item.name} className='portrait-border item'/>
+            </div>
+            <div className='item-title'>
+              {item.name}
+            </div>
+            <div className='button'>
+              <Button onClick={this.clear}><span className='button-text'>Clear</span></Button>
+            </div>
+          </div>
+          <div className='item-category-content'>
+            <p className='item-desc-text'>{item_desc_parse(item)}</p>
+            {itemStats}
+            <p className='item-desc-text'>Builds from</p>
+            <div className='builds-from-items'>
+              {buildsFrom}
+            </div>
+          </div>
         </div>
       );
     }
@@ -200,7 +223,17 @@ class ItemsCheatSheet extends Component {
     this.setState({ selectedItem: {} });
   }
 
+  imageError = () => {
+    this.setState({
+      error: true, 
+      errorSeverity: "warning", 
+      errorMessage: "Warning: Some images failed to load. Refreshing the page may solve the problem."
+    });
+  }
+
   render = () => {
+    require('./items-cheatsheet.component.css');
+    require('../../base.css');
     const basicItems = [];
     const advancedItems = [];
     const radiantItems = [];
@@ -210,8 +243,8 @@ class ItemsCheatSheet extends Component {
 
       if (item.isRadiant) {
         radiantItems.push(
-          <div className='item-spacing' key={item.id.toString()} onClick={(e) => this.selectItem(e, item)}>
-            <img src={assets_url(image)} alt={item.name} className='item-dimensions' />
+          <div className='portrait-spacing item' key={item.id.toString()} onClick={(e) => this.selectItem(e, item)}>
+            <img src={assets_url(image)} alt={item.name} className={`portrait-border item`}/>
             <p className='item-name'>{item.name}</p>
           </div>
         );
@@ -219,8 +252,8 @@ class ItemsCheatSheet extends Component {
 
       else if (item.isElusive) {
         otherItems.push(
-          <div className='item-spacing' key={item.id.toString()} onClick={(e) => this.selectItem(e, item)}>
-            <img src={assets_url(image)} alt={item.name} className='item-dimensions' />
+          <div className='portrait-spacing item' key={item.id.toString()} onClick={(e) => this.selectItem(e, item)}>
+            <img src={assets_url(image)} alt={item.name} className={`portrait-border item`}/>
             <p className='item-name'>{item.name}</p>
           </div>
         );
@@ -228,16 +261,16 @@ class ItemsCheatSheet extends Component {
 
       else if (item.id < 10) {
         basicItems.push(
-          <div className='item-spacing' key={item.id.toString()} onClick={(e) => this.selectItem(e, item)}>
-            <img src={assets_url(image)} alt={item.name} className='item-dimensions' />
+          <div className='portrait-spacing item' key={item.id.toString()} onClick={(e) => this.selectItem(e, item)}>
+            <img src={assets_url(image)} alt={item.name} className={`portrait-border item`}/>
             <p className='item-name'>{item.name}</p>
           </div>
         );
       }
       else if (item.id >= 10) {
         advancedItems.push(
-          <div className='item-spacing' key={item.id.toString()} onClick={(e) => this.selectItem(e, item)}>
-            <img src={assets_url(image)} alt={item.name} className='item-dimensions' />
+          <div className='portrait-spacing item' key={item.id.toString()} onClick={(e) => this.selectItem(e, item)}>
+            <img src={assets_url(image)} alt={item.name} className={`portrait-border item`} />
             <p className='item-name'>{item.name}</p>
           </div>
         );
@@ -245,48 +278,45 @@ class ItemsCheatSheet extends Component {
     }
 
     return (
-      <table className='backgrounds'>
-        <tbody>
-          <tr>
-            <td className='side-margins'></td>
-            <td className='main-content'>
-              <h1 className='title'>Items Cheatsheet</h1>
-              {this.state.loading && <CircularProgress className='circular-progress'/>}
-              {this.state.error && <Alert severity={this.state.errorSeverity}>{this.state.errorMessage}</Alert>}
-              { !this.state.loading && <div>
-                {
-                  this.state.selectedItem !== undefined ? this.showItemDetail(this.state.selectedItem) : <div/> 
-                }
-                <div className='item-category-margins'>
-                  <div className='item-category-title'>Basic</div>
-                  <div>
-                    {basicItems}
-                  </div>
+      <div className='grid'>
+        <div></div>
+        <div>
+          <h1 className='title'>Items Cheatsheet</h1>
+            {this.state.loading && <CircularProgress className='circular-progress'/>}
+            {this.state.error && <Alert severity={this.state.errorSeverity}>{this.state.errorMessage}</Alert>}
+            { !this.state.loading && <div>
+              {
+                this.state.selectedItem !== undefined ? this.showItemDetail(this.state.selectedItem) : <div/> 
+              }
+              <div className='item-category-margins'>
+                <div className='item-category-title'>Basic</div>
+                <div className='item-category-content'>
+                  {basicItems}
                 </div>
-                <div className='item-category-margins'>
-                  <div className='item-category-title'>Advanced</div>
-                  <div>
-                    {advancedItems}
-                  </div>
+              </div>
+              <div className='item-category-margins'>
+                <div className='item-category-title'>Advanced</div>
+                <div className='item-category-content'>
+                  {advancedItems}
                 </div>
-                <div className='item-category-margins'>
-                  <div className='item-category-title'>Radiant</div>
-                  <div>
-                    {radiantItems}
-                  </div>
+              </div>
+              <div className='item-category-margins'>
+                <div className='item-category-title'>Radiant</div>
+                <div className='item-category-content'>
+                  {radiantItems}
                 </div>
-                <div className='item-category-margins'>
-                  <div className='item-category-title'>Elusive</div>
-                  <div>
-                    {otherItems}
-                  </div>
+              </div>
+              <div className='item-category-margins'>
+                <div className='item-category-title'>Elusive</div>
+                <div className='item-category-content'>
+                  {otherItems}
                 </div>
-              </div>}
-            </td>
-            <td className='side-margins'></td>
-          </tr>
-        </tbody>
-      </table>
+              </div>
+            </div>
+            }
+          </div>
+          <div></div>
+      </div>
     );
   }
 }

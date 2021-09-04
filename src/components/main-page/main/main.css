@@ -6,60 +6,6 @@
   color: gray;
 }
 
-.icon40{
-  width: 40px;
-  height: 40px;
-}
-.icon50{
-  width: 50px;
-  height: 50px;
-}
-.cost1champion{
-  width: 50px;
-  height: 50px;
-  box-shadow: -2px -2px gray, -2px 2px gray, 2px -2px gray, 2px 2px gray;
-}
-.cost2champion{
-  width: 50px;
-  height: 50px;
-  box-shadow: -2px -2px green, -2px 2px green, 2px -2px green, 2px 2px green;
-}
-.cost3champion{
-  width: 50px;
-  height: 50px;
-  box-shadow: -2px -2px blue, -2px 2px blue, 2px -2px blue, 2px 2px blue;
-}
-.cost4champion{
-  width: 50px;
-  height: 50px;
-  box-shadow: -2px -2px purple, -2px 2px purple, 2px -2px purple, 2px 2px purple;
-}
-.cost5champion{
-  width: 50px;
-  height: 50px;
-  box-shadow: -2px -2px orange, -2px 2px orange, 2px -2px orange, 2px 2px orange;
-}
-
-.icon60{
-  width: 60px;
-  height: 60px;
-}
-.itemMargins{
-  margin-left: 10px;
-  margin-top: 10px;
-  width: 40px;
-  height: 40px;
-}
-
-p{
-  margin: 0;
-  padding: 0;
-}
-
-.test-whitespace {
-  white-space: pre-wrap;
-}
-
 .side-margins {
   width: 16%;
 }

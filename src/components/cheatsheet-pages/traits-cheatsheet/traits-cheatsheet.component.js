@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import TraitCard from '../../../sub-components/trait-card/trait-card';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Alert from '@material-ui/lab/Alert';
 import { patch_data_url } from '../../../helper/urls';
 import { SET_NUMBER, champions, traits, champion_patch_combine, trait_patch_combine } from '../../../helper/variables';
-import './traits-cheatsheet.component.css';
 
 class TraitsCheatSheet extends Component {
   constructor(props) {
@@ -12,6 +12,9 @@ class TraitsCheatSheet extends Component {
       traits: {},
       champions: {},
       loading: false,
+      error: false,
+      errorSeverity: "",
+      errorMessage: "",
     };
     this.championRedirect = this.championRedirect.bind(this);
   }
@@ -37,7 +40,7 @@ class TraitsCheatSheet extends Component {
   }
 
   createTrait = (data) => {
-    return <TraitCard champions={this.state.champions} trait={data}/>
+    return <TraitCard champions={this.state.champions} trait={data} imageError={this.imageError}/>
   }
 
   championRedirect = (key) => {
@@ -45,49 +48,49 @@ class TraitsCheatSheet extends Component {
     this.props.history.push({pathname: path, data: key});
   }
 
+  imageError = () => {
+    this.setState({
+      error: true, 
+      errorSeverity: "warning", 
+      errorMessage: "Warning: Some images failed to load. Refreshing the page may solve the problem."
+    });
+  }
+
   render = () => {
+    require('./traits-cheatsheet.component.css');
+    require('../../base.css');
+
     let originCards = [];
     let classCards = [];
 
     for (let trait of Object.values(this.state.traits)) {
       if (trait.type === 'origin') {
-        originCards.push(<tr key={trait.apiName}><td style={{verticalAlign: 'top'}}>{this.createTrait(trait)}</td></tr>);
+        originCards.push(<div key={trait.key}>{this.createTrait(trait)}</div>);
       }
       else {
-        classCards.push(<tr key={trait.apiName}><td style={{verticalAlign: 'top'}}>{this.createTrait(trait)}</td></tr>);
+        classCards.push(<div key={trait.key}>{this.createTrait(trait)}</div>);
       }
     }
 
     return (
-      <table>
-        <tbody>
-          <tr>
-            <td className='side-margins'></td>
-            <td className='main-content float-top'>
-              <h1 className='title'>Traits Cheatsheet</h1>
+      <div className='page-grid'>
+        <div></div>
+        <div>
+            <h1 className='title'>Traits Cheatsheet</h1>
+            {this.state.error && <Alert severity={this.state.errorSeverity}>{this.state.errorMessage}</Alert>}
+            <div className='content-grid'>
               {this.state.loading && <CircularProgress className='circular-progress'/>}
               { !this.state.loading && 
-              <table className="float-top">
-                <tbody>
-                  {originCards}
-                </tbody>
-              </table>
+                  <div>{originCards}</div>
               }
-            </td>
-            <td className='main-content'>
-            {this.state.loading && <CircularProgress className='circular-progress'/>}
-            { !this.state.loading && 
-              <table className="float-top">
-                <tbody>
-                  {classCards}
-                </tbody>
-              </table>
-            }
-            </td>
-            <td className='side-margins'></td>
-          </tr>
-        </tbody>
-      </table>
+              <div></div>
+              { !this.state.loading && 
+                <div>{classCards}</div>
+              }
+          </div>
+        </div>
+        <div></div>
+      </div>
     );
   }
 }

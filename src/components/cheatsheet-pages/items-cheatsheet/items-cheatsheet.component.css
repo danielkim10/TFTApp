@@ -1,101 +1,85 @@
-.itemMargins {
-  margin-left: 10px;
-  margin-top: 10px;
-  width: 60px;
-  height: 60px;
-}
-
-.side-margins {
-  width: 16%;
-}
-
-.main-content {
-  width: 66%;
-}
-
-.div-border {
-  border-radius: 12px;
-}
-
-.item-spacing {
-  position: relative;
-  display: inline-block;
-  margin: 6px;
-  cursor: pointer;
-}
-
-.item-name {
-    position: absolute;
-    color: white;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-    font-size: 11px;
-    text-align: center;
-}
-
-.item-dimensions {
-  width: 50px;
-  height: 50px;
-}
-
 .item-dimensions-small {
   width: 35px;
   height: 35px;
 }
 
-.item-dimensions-small-right {
-  width: 35px;
-  height: 35px;
-  margin-right: 70px;
-}
-
 .item-desc-text {
-  color: white;
   white-space: pre-line;
 }
 
-
-.backgrounds {
-  background-color: #404040;
-}
-
 .item-category-title {
-  color: white;
   font-size: 24px;
+  font-weight: 500;
+  padding: 15px;
+  background-color: royalblue;
 }
 
 .recipe-operator-text {
-  color: white;
   font-size: 40px;
 }
 
 .item-category-margins {
   margin-top: 30px;
   margin-bottom: 30px;
-  border: white;
-  border-style: solid;
-  border-radius: 12px;
 }
 
-.title {
-  color: white;
-  font-size: 24;
-  font-weight: 400;
-}
-
-.button {
-  background-color: royalblue !important;
+.item-category-content {
+  padding: 15px;
+  background-color: #18399a;
 }
 
 .button-text {
   font-size: 16px !important;
   font-weight: 400 !important;
-  color: white;
+  color: var(--main-color);
 }
 
-.circular-progress {
-  size: 24px;
-  color: white;
+.portrait {
+  grid-area: portrait;
+}
+
+.button {
+  background-color: #0d2059 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  grid-area: button;
+}
+
+.item-title {
+  font-size: 24px;
+  padding: 15px;
+  grid-area: item-title;
+  font-weight: 500;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 4fr 1fr;
+  place-items: center;
+}
+
+.grid-desc {
+  display: grid;
+  grid-template-columns: 64px 1fr 80px;
+  grid-template-areas:
+    "portrait item-title button";
+  padding: 15px;
+  background-color: royalblue;
+}
+
+.grid-basic {
+  display: grid;
+  width: 60%;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.grid-recipe {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  place-items: center;
+}
+
+.builds-from-items {
+  display: inline-block;
 }

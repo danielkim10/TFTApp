@@ -4,6 +4,7 @@ import ChampionTooltip from '../../../sub-components/champion-tooltips/champion-
 import Tooltip from '@material-ui/core/Tooltip';
 
 import './champions-panel.css';
+import '../../base.css';
 
 class ChampionsPanel extends Component {
   constructor(props) {
@@ -30,8 +31,8 @@ class ChampionsPanel extends Component {
           }
           champions.push(
             <Tooltip placement='top' title={<ChampionTooltip champion={champion} traits={trait_data}/>} key={champion.championId} arrow>
-              <div className='champion-spacing' onClick={(e) => this.props.addToTeam(e, champion)} draggable="true" onDragStart={(e) => this.props.drag(e, champion)}  id={champion.championId} key={champion.championId}>
-                <img src={champion.patch_data.icon} id={champion.championId} alt={champion.name} className={`cost${champion.cost}champion`} onError={this.props.imageError}/>
+              <div className='portrait-spacing' onClick={(e) => this.props.addToTeam(e, champion)} draggable="true" onDragStart={(e) => this.props.drag(e, champion)}  id={champion.championId} key={champion.championId}>
+                <img src={champion.patch_data.icon} id={champion.championId} alt={champion.name} className={`portrait-border cost${champion.cost}`} onError={this.props.imageError}/>
                 <p className="cost">${champion.cost}</p>
                 <p className="champion-name">{champion.name}</p>
               </div>

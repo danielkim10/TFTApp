@@ -5,6 +5,7 @@ import ItemTooltip from '../../../sub-components/item-tooltips/item-tooltips';
 import Tooltip from '@material-ui/core/Tooltip';
 
 import './items-panel.css';
+import '../../base.css';
 
 class ItemsPanel extends Component {
   constructor(props) {
@@ -25,8 +26,8 @@ class ItemsPanel extends Component {
             
             items.push(
               <Tooltip placement='top' title={<ItemTooltip item={item}/>} key={item.id.toString()} arrow>
-                <div className='item-spacing' id={item.id} key={item.id.toString()} draggable="true" onDragStart={(e) => this.props.drag(e, item)}>
-                  <img src={assets_url(image)} alt={item.name} className='itemborder' onError={this.props.imageError}/>
+                <div className='portrait-spacing' id={item.id} key={item.id.toString()} draggable="true" onDragStart={(e) => this.props.drag(e, item)}>
+                  <img src={assets_url(image)} alt={item.name} className='portrait-border item' onError={this.props.imageError}/>
                   <p className='item-name'>{item.name}</p>
                 </div>
               </Tooltip>

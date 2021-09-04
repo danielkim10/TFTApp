@@ -1,39 +1,22 @@
-.title {
-    color: white;
-    font-size: 24;
-    font-weight: 400;
+.content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    place-items: center;
 }
 
 .region-select {
-    background-color: white;
-    min-width: 50px;
+    background-color: var(--main-color);
 }
 
 .summoner-search {
-    min-width: 250px;
-    background-color: white;
+    background-color: var(--main-color);
     border-radius: 10px;
-}
-
-.circular-progress {
-    size: 24px;
-    color: white;
-}
-
-.side-margins {
-    width: 33%;
-}
-
-.main-content {
-    width: 33%;
 }
 
 .buttons {
     background-color: royalblue !important;
 }
 
-.button-text {
-    color: white;
-    font-size: 20px;
-    font-weight: 500;
+.sample-button {
+    background-color: royalblue !important;
 }

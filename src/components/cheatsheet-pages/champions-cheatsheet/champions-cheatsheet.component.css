@@ -1,109 +1,134 @@
-.champion{
-  width: 60px;
-  height: 60px;
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
 }
 
-.champion-name{
-    position: absolute;
-    color: white;
-    top: 75%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-    font-size: 12px;
-    text-align: center;
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  margin: 15px;
 }
 
-.cost{
-  position: absolute;
-  color: white;
-  top: 0px;
-  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
-  font-size: 12px;
+.champion-header-1 {
+  background-color: var(--cost1-color);
 }
 
-.champion-spacing{
-  position: relative;
+.champion-body-1 {
+  background-color: #999999;
+}
+
+.champion-header-2 {
+  background-color: var(--cost2-color);
+}
+
+.champion-body-2{
+  background-color: #00b300;
+}
+
+.champion-header-3 {
+  background-color: var(--cost3-color);
+}
+
+.champion-body-3 {
+  background-color: #3333ff;
+}
+
+.champion-header-4 {
+  background-color: var(--cost4-color);
+}
+
+.champion-body-4 {
+  background-color: #cc00cc;
+}
+
+.champion-header-5 {
+  background-color: var(--cost5-color);
+  color: black;
+}
+
+.champion-header-5 .champion-traits .trait-icon-small {
+  filter: invert(100%);
+}
+
+.champion-body-5{
+  background-color: #ffb833;
+  color: black;
+}
+
+.traits-align {
   display: inline-block;
-  margin: 6px;
+  margin: 15px;
 }
 
-.image-cropper {
-  width: 60px;
-  height: 60px;
-  position: relative;
-  overflow: hidden;
-  border-radius: 50%;
+.trait-icon-small {
+  margin: 5px;
+  width: 20px;
+  height: 20px;
 }
 
-.image-cropper-2 {
-  position: relative;
-    height: 50px;
-    width: 50px;
-    overflow: hidden;
-    border-radius: 50%;
-    /*margin: 20px;*/
-    display: flex;
-    justify-content: center;
+.row1 {
+  grid-area: row1;
+  margin-top: 15px;
+  margin-left: 15px;
+  font-weight: 500;
 }
 
-.center-image{
-  display: block;
-    margin: 0 auto;
-    height: 100%;
-    width: auto;
+.row2 {
+  grid-area: row2;
+  margin-left: 15px;
 }
 
-.cost1champion{
-  width: 60px;
-  height: 60px;
-  box-shadow: -2px -2px gray, -2px 2px gray, 2px -2px gray, 2px 2px gray;
-}
-.cost2champion{
-  width: 60px;
-  height: 60px;
-  box-shadow: -2px -2px green, -2px 2px green, 2px -2px green, 2px 2px green;
-}
-.cost3champion{
-  width: 60px;
-  height: 60px;
-  box-shadow: -2px -2px blue, -2px 2px blue, 2px -2px blue, 2px 2px blue;
-}
-.cost4champion{
-  width: 60px;
-  height: 60px;
-  box-shadow: -2px -2px purple, -2px 2px purple, 2px -2px purple, 2px 2px purple;
-}
-.cost5champion{
-  width: 60px;
-  height: 60px;
-  box-shadow: -2px -2px orange, -2px 2px orange, 2px -2px orange, 2px 2px orange;
+.portrait {
+  grid-area: portrait;
+  margin-top: 15px;
+  margin-bottom: 15px;
 }
 
-.stat-column {
-  width: 33%;
-  min-width: 200px;
+.champion-traits {
+  grid-area: champion-traits;
 }
 
-.side-margin {
-  width: 16% !important;
-}
-
-.main-content {
-  width: 66% !important;
-}
-
-.test-whitespace {
+.ability-desc {
+  margin: 15px;
   white-space: pre-wrap;
-  color: white;
 }
 
-.white {
-  color: white;
+.ability-variables {
+  padding-bottom: 15px;
+  margin: 15px;
 }
 
-.title {
-  color: white;
-  font-size: 24;
-  font-weight: 400;
+.wrapper {
+  display: grid;
+  grid-template-columns: 60px 1.5fr 8.5fr;
+  grid-template-areas:
+    "portrait row1 champion-traits"
+    "portrait row2 champion-traits";
+  margin-left: 15px;
+  margin-right: 15px;
+  margin-bottom: 15px;
+}
+
+.wrapper-ability {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  grid-template-areas:
+    "portrait row1"
+    "portrait row2";
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+.search-field {
+  width: 95%;
+  background-color: white;
+}
+
+.content-margins {
+  margin: 30px;
+}
+
+.champion-traits-cards {
+  margin-top: 15px;
+  margin-bottom: 15px;
 }

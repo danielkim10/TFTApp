@@ -2,8 +2,6 @@ var fnv = require('fnv-plus');
 
 export const item_desc_parse = (item) => {
   let description = item.patch_data.desc;
-  let desc_hashed = '';
-  let previous_index = 0;
   let counter = 0;
   let counter2 = 0;
 
@@ -14,25 +12,36 @@ export const item_desc_parse = (item) => {
   description = description.replaceAll('<br>', '\r\n');
 
   while (description.indexOf('@') !== -1) {
-    previous_index = 0;
     counter = description.indexOf('@');
     counter2 = description.indexOf('@', description.indexOf('@') + 1);
     let substring = description.substring(counter+1, counter2);
     let fnvsubstring = '{' + fnv.fast1a32hex(substring.toLowerCase()) + '}';
     if (substring === 'Lifesteal') {
-      desc_hashed += description.substring(previous_index, counter) + item.patch_data.effects['LifeSteal'];
+      description = description.replace(`@${substring}@`, item.patch_data.effects['LifeSteal']);
     }
     else if (item.patch_data.effects[substring] !== undefined) {
-      desc_hashed += description.substring(previous_index, counter) + item.patch_data.effects[substring];
+      description = description.replace(`@${substring}@`, item.patch_data.effects[substring]);
     }
     else if (item.patch_data.effects[fnvsubstring] !== undefined) {
-      desc_hashed += description.substring(previous_index, counter) + item.patch_data.effects[fnvsubstring];
+      description = description.replace(`@${substring}@`, item.patch_data.effects[fnvsubstring]);
     }
-    previous_index = counter2+1;
-    description = description.substring(counter2+1, description.length);
   }
-  desc_hashed += description;
-  return desc_hashed;
+
+  while (description.indexOf('<') !== -1) {
+    counter = description.indexOf('<');
+    counter2 = description.indexOf('>');
+    let substring = description.substring(counter, counter2+1);
+    description = description.replace(substring, '');
+  }
+
+  while (description.indexOf('%i') !== -1) {
+    counter = description.indexOf('%i');
+    counter2 = description.indexOf('%', description.indexOf('%i') + 2);
+    let substring = description.substring(counter, counter2+1);
+    description = description.replace(substring, '');
+  }
+  
+  return description;
 }
 
 export const champion_icon_parse = (icon) => {

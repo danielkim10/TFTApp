@@ -1,3 +1,13 @@
+.self-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+}
+
+.player-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr
+}
+
 .trait-layering-mb {
     position: relative;
     display: inline-block;
@@ -22,26 +32,6 @@
     filter: invert(100%);
     top: 15%;
     left: 15%;
-}
-
-.first {
-    background-color: #ffcc33;
-}
-
-.second {
-    background-color: #a6a6a6
-}
-
-.third {
-    background-color: #cd7f32
-}
-
-.fourth {
-    background-color: #4d4d4d
-}
-
-.defeat {
-    background-color: #ff6666;
 }
 
 .t1-star {
@@ -78,8 +68,20 @@
     font-size: 24px;
 }
 
-.backgrounds {
-    background-color: #343a40;
+.background-header-red {
+    background-color: #cc0000 !important;
+}
+
+.background-body-red {
+    background-color: #ff3333 !important;
+}
+
+.background-header-blue {
+    background-color: #18399a !important;
+}
+
+.background-body-blue {
+    background-color: #4f74e3 !important;
 }
 
 .text {

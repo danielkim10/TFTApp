@@ -22,8 +22,8 @@ class ChampionTooltip extends Component {
         );
       }
     }
-
-    for (let trait of Object.values(this.props.traits)) {
+    console.log(this.props.traits);
+    for (let trait of this.props.traits) {
       
       let image = trait.patch_data.icon.substring(0, trait.patch_data.icon.indexOf('dds')).toLowerCase();
       championTraitsSmall.push(<tr key={trait.name}>

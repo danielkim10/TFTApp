@@ -7,8 +7,6 @@ import MatchBasic from '../match-basic/match-basic.component.js';
 import Alert from '@material-ui/lab/Alert';
 import { SET_NUMBER, champions, items, traits, champion_patch_combine, item_patch_combine, trait_patch_combine } from '../../../helper/variables';
 
-import './profile.css';
-
 class Profile extends Component {
     constructor(props) {
         super(props);
@@ -172,102 +170,50 @@ class Profile extends Component {
 
 
             rankedCards.push(
-                <td key='0'>
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>Ranked</td>
-                            </tr>
-                            <tr>
-                                <td>{rankedData[rankedIndex].tier} {rankedData[rankedIndex].rank}</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <img src={rank_face_url(tier, ranks[tier])} alt={tier} className='ranked-face'/>
-                                    <img src={rank_crown_url(tier, ranks[tier], rank)} alt={rank} className='ranked-crown'/>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>{rankedData[rankedIndex].leaguePoints} LP</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    {rankedData[rankedIndex].wins} Wins / {rankedData[rankedIndex].losses} Losses
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </td>
+                <div className='ranked-card'>
+                    <div>Ranked</div>
+                    <div>{rankedData[rankedIndex].tier} {rankedData[rankedIndex].rank} / {rankedData[rankedIndex].leaguePoints} LP</div>
+                    <div>
+                        <img src={rank_face_url(tier, ranks[tier])} alt={tier} className='ranked-face'/>
+                        <img src={rank_crown_url(tier, ranks[tier], rank)} alt={rank} className='ranked-crown'/>
+                    </div>
+                    <div>{rankedData[rankedIndex].wins} Wins / {rankedData[rankedIndex].losses} Losses</div>
+                </div>
             );
         }
 
         else {
             rankedCards.push(
-                <td key='1'>
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>Ranked</td>
-                            </tr>
-                            <tr>
-                                <td>Unranked</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </td>
+                <div className='ranked-card'>
+                    <div>Ranked</div>
+                    <div>Unranked</div>
+                </div>
             );
         }
         rankedIndex = rankedData.findIndex(r => r.queueType === 'RANKED_TFT_TURBO');
         if (rankedIndex > -1) {
             rankedCards.push(
-                <td key='2'>
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>Hyper Roll</td>
-                            </tr>
-                            <tr>
-                                <td>{rankedData[rankedIndex].ratedTier}</td>
-                            </tr>
-                            <tr>
-                                <td>{rankedData[rankedIndex].ratedRating} Rating</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    {rankedData[rankedIndex].wins} Wins / {rankedData[rankedIndex].losses} Losses
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </td>
+                <div className='ranked-card'>
+                    <div>Hyper Roll</div>
+                    <div>{rankedData[rankedIndex].ratedTier} / {rankedData[rankedIndex].ratedRating} Rating</div>
+                    <div>{rankedData[rankedIndex].wins} Wins / {rankedData[rankedIndex].losses} Losses</div>
+                </div>
             );
         }
         else {
             rankedCards.push(
-                <td key='3'>
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>Hyper Roll</td>
-                            </tr>
-                            <tr>
-                                <td>Unrated</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </td>
+                <div className='ranked-card'>
+                    <div>Hyper Roll</div>
+                    <div>Unranked</div>
+                </div>
             );
         }
 
 
         return (
-            <table>
-                <tbody>
-                    <tr>
-                        {rankedCards}
-                    </tr>
-                </tbody>
-            </table>
+            <div className='ranked-card-grid'>
+                {rankedCards}
+            </div>        
         );
     }
 
@@ -276,72 +222,45 @@ class Profile extends Component {
         console.log(this.state.matches);
         for (let match in this.state.matches) {
             matches.push(
-                <tr key={match}>
-                    <td><MatchBasic puuid={this.props.location.state.summonerData.puuid} gamedata={this.state.matches[match]} champions={this.state.champions} items={this.state.items} traits={this.state.traits}/></td>
-                </tr>
+                <div key={match}>
+                    <MatchBasic puuid={this.props.location.state.summonerData.puuid} gamedata={this.state.matches[match]} champions={this.state.champions} items={this.state.items} traits={this.state.traits}/>
+                </div>
             );
         }
         return matches;
     }
 
     render = () => {
+        require('./profile.css');
+        require('../../base.css');
+
         return (
-            <table className='text'>
-                <tbody>
-                    <tr>
-                        <td className='side-margins'></td>
-                        <td className='main-content'>
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <table>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>
-                                                            <img src={profile_icon_url(this.props.location.state.summonerData.profileIconId)} alt={this.props.location.state.summonerData.profileIconId} className='profile-icon'/>
-                                                        </td>
-                                                        <td className='summoner-name'>{this.props.location.state.summonerData.name}</td>
-                                                        <td className='level'>{this.props.location.state.summonerData.summonerLevel}</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                            
-                                        </td>
-                                        
-                                    </tr>
-                                    <tr>
-                                        {this.state.error && <Alert severity="error">{this.state.errorMessage}</Alert>}
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <table>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>
-                                                            {this.createRank()}
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <table>
-                                                <tbody>
-                                                    {this.createMatches()}
-                                                </tbody>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                        <td className='side-margins'></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div>
+                <div className='page-grid'>
+                    <div></div>
+                        <div className='summoner-grid'>
+                            <img src={profile_icon_url(this.props.location.state.summonerData.profileIconId)} alt={this.props.location.state.summonerData.profileIconId} className='profile-icon'/>
+                            <div className='summoner-name'>{this.props.location.state.summonerData.name}</div>
+                            <div className='level'>{this.props.location.state.summonerData.summonerLevel}</div>
+                        </div>
+                    <div></div>
+                </div>
+                <div className='page-grid'>
+                    <div></div>
+                    <div className='section'>
+                        {this.state.error && <Alert severity="error">{this.state.errorMessage}</Alert>}
+                        {this.createRank()}
+                    </div>
+                    <div></div>
+                </div>
+                <div className='page-grid-wide'>
+                    <div></div>
+                    <div>
+                        {this.createMatches()}
+                    </div>
+                    <div></div>
+                </div>
+            </div>
         );
     }
 }

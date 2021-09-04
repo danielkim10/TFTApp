@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { sortCostAscending } from '../../helper/sorting';
 import { withRouter } from 'react-router';
 import { trait_desc_parse, trait_effect_parse } from '../../helper/string-parsing';
-import './trait-card.css';
 import { assets_url } from '../../helper/urls';
 
 class TraitCard extends Component {
@@ -13,12 +12,15 @@ class TraitCard extends Component {
         }
     }
 
-    championRedirect(championId) {
+    championRedirect = (championId) => {
         let path = '/cheatsheet/champions';
         this.props.history.push({pathname: path, search: `?champion=${championId}`, state: {data: championId}});
     }
 
-    render() {
+    render = () => {
+        require('./trait-card.css');
+        require('../../components/base.css');
+
         let championDesc = [];
         let champions = [];
         for (let champion of Object.values(this.props.champions)) {
@@ -30,8 +32,8 @@ class TraitCard extends Component {
         champions.sort(sortCostAscending);
         for (let champion of Object.values(champions)) {
             championDesc.push(
-                <div className='champion-spacing' onClick={() => this.championRedirect(champion.championId)} key={champion.championId}>
-                    <img src={champion.patch_data.icon} alt={champion.name} className={`cost${champion.cost}champion`}/>
+                <div className='portrait-spacing' onClick={() => this.championRedirect(champion.championId)} key={champion.championId}>
+                    <img src={champion.patch_data.icon} alt={champion.name} className={`portrait-border cost${champion.cost}`} onError={this.props.imageError}/>
                     <p className='champion-name'>{champion.name}</p>
                     <p className='cost'>${champion.cost}</p>
                 </div>);
@@ -45,38 +47,34 @@ class TraitCard extends Component {
             stat_string = this.props.trait.patch_data.desc.substring(this.props.trait.patch_data.desc.indexOf('<expandRow>') + 11, this.props.trait.patch_data.desc.length - 12);
             let effects = trait_effect_parse(stat_string, this.props.trait.patch_data);
             for (let effect in effects) {
-                bonuses_hashed.push(<tr key={effect}><td key={effect} className='white-text'>{effects[effect]}</td></tr>)
+                bonuses_hashed.push(<div key={effect}>{effects[effect]}</div>);
             }
         }
 
         let image = this.props.trait.patch_data.icon.substring(0, this.props.trait.patch_data.icon.indexOf('dds')).toLowerCase();
 
         return(
-            <div className='div-margins'>
-                <table>
-                    <tbody>
-                        <tr>
-                            <td style={{width: '70px'}}>
-                            <img src={assets_url(image)} alt={this.props.trait.name} className='white-icon'/>
-                            </td>
-                            <td className='white-text'>{this.props.trait.patch_data.name}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <table>
-                    <tbody>
-                        <tr>
-                            <td className='white-text'>{this.props.trait.innate}</td>
-                        </tr>
-                        <tr>
-                            <td className='white-text'>{desc_hashed}</td>
-                        </tr>
-                        <tr>
-                            <td>{championDesc}</td>
-                        </tr>
-                        {bonuses_hashed}
-                    </tbody>
-                </table>
+            <div className='trait-style'>
+                <div className='trait-header'>
+                    <div className='trait-card-icon'>
+                        <img src={assets_url(image)} alt={this.props.trait.name} />
+                    </div>
+                    <div className='trait-title'>
+                        {this.props.trait.patch_data.name}
+                    </div>
+                </div>
+                <div className='card-row'>
+                    {this.props.trait.innate}
+                </div>
+                <div className='card-row'>
+                    {desc_hashed}
+                </div>
+                <div className='card-row'>
+                    {championDesc}
+                </div>
+                <div className='card-row list'>
+                    {bonuses_hashed}
+                </div>   
             </div>
         );
     }

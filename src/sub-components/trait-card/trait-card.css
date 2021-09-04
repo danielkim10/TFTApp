@@ -1,17 +1,31 @@
-.white-text {
-    color: white;
+.trait-style {
+    background-color: #18399a;
 }
 
-.div-margins {
+.trait-card-icon {
+    width: 32px;
+    height: 32px;
     margin: 15px;
-    border-radius: 12px;
-    border-style: solid;
-    border-color: white;
 }
 
-.champion-spacing{
-    position: relative;
+.trait-header {
+    display: grid;
+    grid-template-columns: 47px 1fr;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    background-color: royalblue;
+}
+
+.trait-title {
+    font-size: 24px;
+    font-weight: 400;
+    margin: 15px;
+}
+
+.card-row {
+    margin: 15px;
+}
+
+.list {
     display: inline-block;
-    margin: 6px;
-    cursor: pointer;
-  }
+}
