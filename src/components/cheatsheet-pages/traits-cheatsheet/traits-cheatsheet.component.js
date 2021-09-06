@@ -31,7 +31,6 @@ class TraitsCheatSheet extends Component {
 
       champions_arr = champion_patch_combine(champions_arr, thisSet.champions);
       traits_arr = trait_patch_combine(traits_arr, thisSet.traits);
-      
       this.setState({champions: champions_arr, traits: traits_arr, loading: false});
 
     } catch (err) {

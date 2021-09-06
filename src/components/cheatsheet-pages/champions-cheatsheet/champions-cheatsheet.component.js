@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Input } from 'reactstrap';
 import { ability_desc_parse, ability_icon_parse } from '../../../helper/string-parsing';
 import { patch_data_url, assets_url } from '../../../helper/urls';
 import { SET_NUMBER, champions, traits, champion_patch_combine, trait_patch_combine } from '../../../helper/variables';
@@ -65,6 +64,9 @@ class ChampionsCheatSheet extends Component {
     let abilityVariables = [];
     let championTraitsSmall = [];
     let championTraits = [];
+
+    let parsedAbilityDesc = ability_desc_parse(this.state.champion.patch_data.ability);
+
     for (let variable of Object.values(champion.patch_data.ability.variables)) {
       if (!(variable.value[1] === variable.value[2] && variable.value[1] === variable.value[2])) {
         abilityVariables.push(
@@ -125,7 +127,7 @@ class ChampionsCheatSheet extends Component {
             </div>
           </div>
           <div className="ability-desc">
-              {ability_desc_parse(this.state.champion.patch_data.ability)}
+              {parsedAbilityDesc}
           </div>
           <div className="ability-variables">
             {abilityVariables}

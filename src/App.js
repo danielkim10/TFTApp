@@ -9,6 +9,7 @@ import TraitsCheatSheet from "./components/cheatsheet-pages/traits-cheatsheet/tr
 import ItemsCheatSheet from "./components/cheatsheet-pages/items-cheatsheet/items-cheatsheet.component";
 import MatchHistory from "./components/match-history/match-history-main/match-history.component";
 import Profile from "./components/match-history/profile/profile";
+import SampleData from "./components/match-history/sample-data/sample-data";
 import Teams from "./components/teams/teams.component";
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
         <Route path="/cheatsheet/items" component={ItemsCheatSheet} />
         <Route path="/matchhistory" component={MatchHistory} />
         <Route path="/profile" component={Profile} />
+        <Route path="/sampledata" component={SampleData} />
         <Route path="/teams" component={Teams} />
       </div>
     </Router>

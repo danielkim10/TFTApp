@@ -64,6 +64,8 @@ export const trait_patch_combine = (traits, patchData) => {
             traits[trait.apiName].patch_data = trait;
             traits[trait.apiName].count = 0;
             traits[trait.apiName].champions = [];
+            traits[trait.apiName].tier = -1;
+            traits[trait.apiName].color = "";
         }
     }
     return traits;

@@ -24,10 +24,9 @@ router.route('/update/:id').post((req, res) => {
     .then(team => {
       team.name = req.body.name;
       team.team = req.body.team;
-      team.synergies = req.body.synergies;
-      team.teamString = req.body.teamString;
+      team.traits = req.body.traits;
+      team.date = req.body.date;
       team.set = req.body.set;
-      team.patch = req.body.patch;
 
       team.save()
         .then(() => res.json('Team saved'))
@@ -39,14 +38,19 @@ router.route('/update/:id').post((req, res) => {
 router.route('/add').post((req, res) => {
   const name = req.body.name;
   const team = req.body.team;
-  const synergies = req.body.synergies;
-  const teamString = req.body.teamString;
+  const traits = req.body.traits;
+  const date = req.body.date;
   const set = req.body.set;
-  const patch = req.body.patch;
-  const newTeam = new Team({name, team, synergies, teamString, set, patch});
+  const newTeam = new Team({name, team, traits, date, set});
 
   newTeam.save()
     .then(() => res.json('Team added'))
+    .catch(err => res.status(400).json('Error: ' + err));
+});
+
+router.route('/delete').post((req, res) => {
+  Team.deleteMany({'_id': {$in: req.body}})
+    .then()
     .catch(err => res.status(400).json('Error: ' + err));
 });
 

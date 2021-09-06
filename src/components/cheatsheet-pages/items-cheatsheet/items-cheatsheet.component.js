@@ -82,7 +82,7 @@ class ItemsCheatSheet extends Component {
         <div className='item-category-margins'>
           <div className='grid-desc'>
             <div className='portrait'>
-              <img src={assets_url(image)} alt={item.name} className='portrait-border item'/>
+              <img src={assets_url(image)} alt={item.name} className='portrait-border item' onError={this.imageError}/>
             </div>
             <div className='item-title'>
               {item.name}
@@ -114,7 +114,7 @@ class ItemsCheatSheet extends Component {
         <div className='item-category-margins'>
           <div className='grid-desc'>
             <div className='portrait'>
-              <img src={assets_url(image)} alt={item.name} className='portrait-border item'/>
+              <img src={assets_url(image)} alt={item.name} className='portrait-border item' onError={this.imageError}/>
             </div>
             <div className='item-title'>
               {item.name}
@@ -142,11 +142,11 @@ class ItemsCheatSheet extends Component {
         let advancedItemImage = advancedItem.patch_data.icon.substring(0, advancedItem.patch_data.icon.indexOf('dds')).toLowerCase();
         itemRecipes.push(
           <div key={i} className='grid-recipe'>
-            <img src={assets_url(image)} alt={item.name} className='item-dimensions-small'/>
+            <img src={assets_url(image)} alt={item.name} className='item-dimensions-small' onError={this.imageError}/>
             <p className='recipe-operator-text'>+</p>
-            <img src={assets_url(secondItemImage)} alt={item.name} className='item-dimensions-small'/>
+            <img src={assets_url(secondItemImage)} alt={item.name} className='item-dimensions-small' onError={this.imageError}/>
             <p className='recipe-operator-text'>=</p>
-            <img src={assets_url(advancedItemImage)} alt={item.name} className='item-dimensions-small'/>
+            <img src={assets_url(advancedItemImage)} alt={item.name} className='item-dimensions-small' onError={this.imageError}/>
           </div>
         );
       }
@@ -155,7 +155,7 @@ class ItemsCheatSheet extends Component {
         <div className='item-category-margins'>
           <div className='grid-desc'>
             <div className='portrait'>
-              <img src={assets_url(image)} alt={item.name} className='portrait-border item'/>
+              <img src={assets_url(image)} alt={item.name} className='portrait-border item' onError={this.imageError}/>
             </div>
             <div className='item-title'>
               {item.name}
@@ -187,7 +187,7 @@ class ItemsCheatSheet extends Component {
       for (let id in item.patch_data.from) {
         let image = this.state.items[item.patch_data.from[id]].patch_data.icon.substring(0, this.state.items[item.patch_data.from[id]].patch_data.icon.indexOf('dds')).toLowerCase();
         buildsFrom.push(
-          <img src={assets_url(image)} key={id} alt={this.state.items[item.patch_data.from[id]].name} className='item-dimensions-small'/>
+          <img src={assets_url(image)} key={id} alt={this.state.items[item.patch_data.from[id]].name} className='item-dimensions-small' onError={this.imageError}/>
         )
       }
 
@@ -195,7 +195,7 @@ class ItemsCheatSheet extends Component {
         <div className='item-category-margins'>
           <div className='grid-desc'>
             <div className='portrait'>
-              <img src={assets_url(image)} alt={item.name} className='portrait-border item'/>
+              <img src={assets_url(image)} alt={item.name} className='portrait-border item' onError={this.imageError}/>
             </div>
             <div className='item-title'>
               {item.name}
@@ -244,7 +244,7 @@ class ItemsCheatSheet extends Component {
       if (item.isRadiant) {
         radiantItems.push(
           <div className='portrait-spacing item' key={item.id.toString()} onClick={(e) => this.selectItem(e, item)}>
-            <img src={assets_url(image)} alt={item.name} className={`portrait-border item`}/>
+            <img src={assets_url(image)} alt={item.name} className={`portrait-border item`} onError={this.imageError}/>
             <p className='item-name'>{item.name}</p>
           </div>
         );
@@ -253,7 +253,7 @@ class ItemsCheatSheet extends Component {
       else if (item.isElusive) {
         otherItems.push(
           <div className='portrait-spacing item' key={item.id.toString()} onClick={(e) => this.selectItem(e, item)}>
-            <img src={assets_url(image)} alt={item.name} className={`portrait-border item`}/>
+            <img src={assets_url(image)} alt={item.name} className={`portrait-border item`} onError={this.imageError}/>
             <p className='item-name'>{item.name}</p>
           </div>
         );
@@ -262,7 +262,7 @@ class ItemsCheatSheet extends Component {
       else if (item.id < 10) {
         basicItems.push(
           <div className='portrait-spacing item' key={item.id.toString()} onClick={(e) => this.selectItem(e, item)}>
-            <img src={assets_url(image)} alt={item.name} className={`portrait-border item`}/>
+            <img src={assets_url(image)} alt={item.name} className={`portrait-border item`} onError={this.imageError}/>
             <p className='item-name'>{item.name}</p>
           </div>
         );
@@ -270,7 +270,7 @@ class ItemsCheatSheet extends Component {
       else if (item.id >= 10) {
         advancedItems.push(
           <div className='portrait-spacing item' key={item.id.toString()} onClick={(e) => this.selectItem(e, item)}>
-            <img src={assets_url(image)} alt={item.name} className={`portrait-border item`} />
+            <img src={assets_url(image)} alt={item.name} className={`portrait-border item`} onError={this.imageError}/>
             <p className='item-name'>{item.name}</p>
           </div>
         );

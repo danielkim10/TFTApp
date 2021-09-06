@@ -6,11 +6,13 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Star from '@material-ui/icons/Star';
 import Tooltip from '@material-ui/core/Tooltip';
-import { assets_url, trait_bg_url } from '../../../helper/urls';
+import { assets_url } from '../../../helper/urls';
+import SaveIcon from '@material-ui/icons/Save';
 
 import ChampionTooltip from '../../../sub-components/champion-tooltips/champion-tooltips';
 import TraitTooltip from '../../../sub-components/trait-tooltips/trait-tooltips';
 import ItemTooltip from '../../../sub-components/item-tooltips/item-tooltips';
+import TraitEmblem from '../../../sub-components/trait-emblem/trait-emblem';
 
 class MatchBasic extends Component {
   constructor(props) {
@@ -27,28 +29,6 @@ class MatchBasic extends Component {
   componentDidMount = () => {
   }
 
-
-  createTeam = (units) => {
-    // let teamMembers = [];
-    // for (let i in units) {
-    //   let itemDiv = [];
-    //    if (units[i].items.length === 3) {
-    //      itemDiv.push(<img src={this.state.items[units[i].items[0]].image[3]} className='item-image-3items-left'/>)
-    //      itemDiv.push(<img src={this.state.items[units[i].items[1]].image[3]} className='item-image'/>)
-    //      itemDiv.push(<img src={this.state.items[units[i].items[2]].image[3]} className='item-image-3items-right'/>)
-    //     }
-    //    else if (units[i].items.length === 2) {
-    //      itemDiv.push(<img src={this.state.items[units[i].items[0]].image[3]} className='item-image-2items-left'/>)
-    //      itemDiv.push(<img src={this.state.items[units[i].items[1]].image[3]} className='item-image-2items-right'/>)
-    //    }
-    //    else if (units[i].items.length === 1) {
-    //      itemDiv.push(<img src={this.state.items[units[i].items[0]].image[3]} className='item-image-1item'/>)
-    //    }
-    //    teamMembers.push(<div className='champion-row'><div><img src={this.state.champions[this.championIdParse(units[i].character_id)].icon} className='champion-image'/></div>{itemDiv}</div>);
-    // }
-    // return teamMembers;
-  }
-
   gameDataParse = () => {
     let players = this.props.gamedata.info.participants;
     let playersSorted =  [];
@@ -62,7 +42,6 @@ class MatchBasic extends Component {
     for (let player in playersSorted) {
       let data = this.playerDataParse(playersSorted[player], player)
       if (playersSorted[player].puuid === this.props.puuid) {
-        console.log(playersSorted[player]);
         if (playersSorted[player].placement > 4) {
           color = 'red;'
         }
@@ -72,25 +51,10 @@ class MatchBasic extends Component {
       playerData.push(data);
     }
     
-    //https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-tft/global/default/
-
     return (
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon/>} className={`background-header-${color}`}>
-          <table className={`background-header-${color}`}>
-            <thead>
-              <tr>
-                <td style={{minWidth: '150px'}}></td>
-                <td style={{minWidth: '75px'}}></td>
-                <td style={{minWidth: '400px'}}></td>
-                <td style={{minWidth: '550px'}}></td>
-                <td style={{minWidth: '275px'}}></td>
-              </tr>
-            </thead>
-            <tbody>
-              {myPlayer}
-            </tbody>
-          </table>
+          {myPlayer}
         </AccordionSummary>
         <AccordionDetails className={`background-body-${color}`}>
         <table className={`background-body-${color}`}>
@@ -103,6 +67,7 @@ class MatchBasic extends Component {
               <td style={{minWidth: '400px'}}>Traits</td>
               <td style={{minWidth: '600px'}}>Champions</td>
               <td style={{minWidth: '50px'}}>Gold</td>
+              <td style={{minWidth: '40px'}}></td>
             </tr>
           </thead>
           <tbody>
@@ -124,14 +89,12 @@ class MatchBasic extends Component {
           let traitStyle = this.props.traits[trait.name].sets[trait.tier_current-1].style;
 
           traitsRow.push(
-            <td key={this.props.traits[trait.name].name}>
-              <Tooltip placement='top' title={<TraitTooltip trait={this.props.traits[trait.name]} count={trait.num_units} smallTooltip={true}/>} arrow>
-              <div className='trait-layering-mb'>
-                <img src={trait_bg_url(traitStyle)} alt={traitStyle} className='background-mb'/>
-                <img src={assets_url(image)} alt={this.props.traits[trait.name].name} className='trait'/>
-              </div>
-              </Tooltip>
-            </td>
+            <Tooltip placement='top' title={<TraitTooltip trait={this.props.traits[trait.name]} count={trait.num_units} smallTooltip={true}/>} key={this.props.traits[trait.name].name} arrow>
+            <div className='trait-layering-mb'>
+
+              <TraitEmblem traitStyle={traitStyle} image={image} name={this.props.traits[trait.name].name} iconClassName='trait' background='background' onError={this.props.imageError}/>
+            </div>
+            </Tooltip>
           );
 
         }
@@ -142,47 +105,48 @@ class MatchBasic extends Component {
 
   championsItemsSort = (championsSorted) => {
     let championsItemsRowSorted = [];
-    for (let champion of championsSorted) {
+    for (let [i1, champion] of championsSorted.entries()) {
       let stars = [];
       let items = [];
       for (let i = 0; i < champion.tier; i++) {
         let starColor = '';
         switch(champion.rarity) {
           case 0:
-            starColor = 't1-star';
+            starColor = 't1';
             break;
           case 1:
-            starColor = 't2-star';
+            starColor = 't2';
             break;
           case 2:
-            starColor='t3-star';
+            starColor='t3';
             break;
           case 3:
-            starColor='t4-star';
+            starColor='t4';
             break;
           case 4:
-            starColor='t5-star';
+            starColor='t5';
             break;
           default:
-            starColor='t5-star';
+            starColor='t5';
             break;
         }
 
-        stars.push(<Star className={starColor} key={i}/>);
+        stars.push(<Star className={`star ${starColor}`} key={i}/>);
       }
-
-      for (let item of champion.items) {
-        //let item_i = championsSorted[champion].items[item];
+      for (let [i2, item] of champion.items.entries()) {
         if (item !== 10006) {
           let image = this.props.items[item].patch_data.icon.substring(0, this.props.items[item].patch_data.icon.indexOf('dds')).toLowerCase();
           items.push(
-            <Tooltip placement='top' title={<ItemTooltip item={this.props.items[item]}/>} key={item.id+image} arrow>
-              <div style={{position: 'relative', display: 'inline-block', minWidth: '15px'}} key={item.id+image}>
+            <Tooltip placement='top' title={<ItemTooltip item={this.props.items[item]}/>} key={i2} arrow>
+              <div className='item-row' key={i2}>
               <img src={assets_url(image)} alt={image} width={15} height={15}/>
               </div>
             </Tooltip>
           );
         }
+      }
+      if (!items.length) {
+        items.push(<div key={i1} className='item-row'></div>);
       }
 
       let trait_data = [];
@@ -192,32 +156,25 @@ class MatchBasic extends Component {
       }
 
       championsItemsRowSorted.push(
-        <td key={champion.character_id}>
-          <table>
-            <tbody>
-              <tr>
-                <td style={{marginLeft: '10px'}}>{stars}</td>
-              </tr>
-              <tr>
-                <td>
-                  <Tooltip placement='top' title={<ChampionTooltip champion={this.props.champions[champion.character_id]} traits={trait_data}/>} arrow>
-                    <img src={this.props.champions[champion.character_id].patch_data.icon} alt={champion.name} width={45} height={45}/>
-                  </Tooltip>
-                </td>
-              </tr>
-              <tr style={{minHeight: '15px'}}>
-                <td style={{height: '15px'}}>{items}</td>
-              </tr>
-            </tbody>
-          </table>
-        </td>
+        <div key={i1} className='champion-row'>
+          <div>
+            {stars}
+          </div>
+          <div>
+            <Tooltip placement='top' title={<ChampionTooltip champion={this.props.champions[champion.character_id]} traits={trait_data}/>} arrow>
+              <img src={this.props.champions[champion.character_id].patch_data.icon} alt={champion.name} className={`cost${this.props.champions[champion.character_id].cost}`} width={45} height={45}/>
+            </Tooltip>
+          </div>
+          <div>
+            {items}
+          </div>
+        </div>
       );
     }
     return championsItemsRowSorted;
   }
 
   playerPlacement = (rank) => {
-    let rowBackground = '';
     let placement = '';
     switch (rank) {
       case 1:
@@ -238,9 +195,9 @@ class MatchBasic extends Component {
     }
 
     return (
-      <td>
+      <div>
           {placement}
-      </td>
+      </div>
     );
   }
 
@@ -262,10 +219,10 @@ class MatchBasic extends Component {
     let playerStuff = [];
     for (let i = 0; i < this.props.gamedata.info.participants.length; i++) {
       playerStuff.push(
-        <tr key={i}>
-          <td><img src={this.props.gamedata.info.participants[i].companion.image_source} alt={this.props.gamedata.info.participants[i].companion.species} width={25} height={25}/></td><td>{this.props.gamedata.info.participants[i].name}</td>
-          <td><img src={this.props.gamedata.info.participants[i+1].companion.image_source} alt={this.props.gamedata.info.participants[i+1].companion.species} width={25} height={25}/></td><td>{this.props.gamedata.info.participants[i+1].name}</td>
-        </tr>
+        <div key={i} className='player-row'>
+          <div><img src={this.props.gamedata.info.participants[i].companion.image_source} alt={this.props.gamedata.info.participants[i].companion.species} width={25} height={25}/><span className='small-font'>{this.props.gamedata.info.participants[i].name}</span></div>
+          <div><img src={this.props.gamedata.info.participants[i+1].companion.image_source} alt={this.props.gamedata.info.participants[i+1].companion.species} width={25} height={25}/><span className='small-font'>{this.props.gamedata.info.participants[i+1].name}</span></div>
+        </div>
       )
       i++
     }
@@ -287,104 +244,49 @@ class MatchBasic extends Component {
     let time = this.timeConvert(this.props.gamedata.info.game_datetime);
     let timeString = '';
 
-    let months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec'
-    ];
+    let months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-    if ((Date.now()/1000 - time/1000) / 86400 > 1) {
-      timeString = `${months[(new Date(time)).getUTCMonth()]} ${(new Date(time)).getUTCDate()} ${(new Date(time)).getUTCFullYear()}`
-    }
-    else if ((Date.now()/1000 - time/1000) / 3600 > 1) {
-      timeString = `${Math.floor((Date.now()/1000 - time/1000) / 3600)} hours ago`;
-    }
-    else if ((Date.now()/1000 - time/1000) / 60 > 1) {
-      timeString = `${Math.floor((Date.now()/1000 - time/1000) / 60)} minutes ago`;
-    }
-    else {
-      timeString = `${Math.floor(Date.now()/1000 - time/1000)} seconds ago`;
-    }
+    timeString = `${months[(new Date(time)).getUTCMonth()]} ${(new Date(time)).getUTCDate()} ${(new Date(time)).getUTCFullYear()}`
 
-    let queue = '';
+    let queue = 'Normal';
     if (this.props.gamedata.info.queue_id === 1100) {
       queue = 'Ranked';
     }
     else if (this.props.gamedata.info.queue_id === 1130) {
       queue = 'Turbo';
     }
-    else {
-      queue = 'Normal';
-    }
     
     return (
-      <tr className='text'>
-        <td>
-          <table>
-            <tbody>
-              <tr>
-                {this.playerPlacement(player.placement)}
-              </tr>
-              <tr>
-                <td>{queue}</td>
-              </tr>
-              <tr>
-                <td>{selflength} / {gamelength}</td>
-              </tr>
-              <tr>
-                <td>{timeString}</td>
-              </tr>
-            </tbody>
-          </table>
-        </td>
-        <td>
-          <table>
-            <tbody>
-              <tr>
-                <td>
-                  <img src={player.companion.image_source} alt={player.companion.species} width={50} height={50}/>
-                  <div className='black-circle'></div>
-                  <div className='level-align'>{player.level}</div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </td>
-        <td>
-          <table>
-            <tbody>
-              <tr key={'t'+index}>
-                {this.traitsSort(traitsSorted)}
-              </tr>
-            </tbody>
-          </table>
-        </td>
-        <td>
-          <table>
-            <tbody>
-              <tr key={'c'+index}>
-                {this.championsItemsSort(championsSorted)}
-              </tr>
-            </tbody>
-          </table>
-        </td>
-        <td>
-          <table>
-            <tbody>
-              {playerStuff}
-            </tbody>
-          </table>
-        </td>
-      </tr>
+      <div className='self-grid text'>
+        <div>
+          <div>
+            {this.playerPlacement(player.placement)}
+          </div>
+          <div>
+            {queue}
+          </div>
+          <div>
+            {selflength} / {gamelength}
+          </div>
+          <div>
+            {timeString}
+          </div>
+        </div>
+        <div className='align'>
+          <img src={player.companion.image_source} alt={player.companion.species} width={50} height={50}/>
+          <div className='black-circle'></div>
+          <div className='level-align'>{player.level}</div>
+        </div>
+        <div className='align'>
+          {this.traitsSort(traitsSorted)}
+        </div>
+        <div>
+          {this.championsItemsSort(championsSorted)}
+        </div>
+        <div className='players-grid'>
+          {playerStuff}
+        </div>
+      </div>
     );
   }
 
@@ -397,19 +299,13 @@ class MatchBasic extends Component {
     let championsSorted = [];
     championsSorted = champions.sort(sortTierDescending);
 
-    //let companion = companion_parse(player.companion);
-    //console.log(companion);
-
-    //console.log(player.name);
-    //console.log(player.last_round);
-
     let last_round = player.last_round - 3;
     let main_round = Math.floor(last_round/6) + 1;
     let sub_round = (last_round % 6) + 1;
 
     return (
       <tr key={index}>
-        {this.playerPlacement(player.placement)}
+        <td>{this.playerPlacement(player.placement)}</td>
         <td>
           <img src={player.companion.image_source} alt={player.companion.species} width={50} height={50}/>
           <div className='black-circle'></div>
@@ -423,25 +319,18 @@ class MatchBasic extends Component {
           {Math.floor(player.time_eliminated/60)}:{Math.floor(player.time_eliminated%60)}
         </td>
         <td>
-          <table>
-            <tbody>
-              <tr key={'a'+index}>
-                {this.traitsSort(traitsSorted)}
-              </tr>
-            </tbody>
-          </table>
+          {this.traitsSort(traitsSorted)}
         </td>
         <td>
-          <table>
-            <tbody>
-              <tr key={'b'+index}>
-                {this.championsItemsSort(championsSorted)}
-              </tr>
-            </tbody>
-          </table>
+          {this.championsItemsSort(championsSorted)}
         </td>
         <td>
           {player.gold_left}
+        </td>
+        <td>
+          <div title="Save" className='save-mb'>
+            <SaveIcon onClick={(e) => this.props.save(e, player, traitsSorted, championsSorted)}/>
+          </div>
         </td>
       </tr>
     );

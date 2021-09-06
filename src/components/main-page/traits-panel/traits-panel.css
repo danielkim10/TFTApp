@@ -11,36 +11,16 @@
     align-items: center;
     margin-left: 2px;
     margin-right: 2px;
-    /* border-color: white; */
-    border-style: dashed;
     width: 100%;
     min-height: 45px;
     margin: 2px;
-}
-
-.trait-icon {
-    position: absolute;
-    margin-top: 13px;
-    margin-left: 5px;
-    width: 20px;
-    height: 20px;
-    /* color: black; */
-    filter: invert(100%);
-    /* top: 15%; */
-    /* left: 15%; */
-}
-
-.trait-icon-white {
-    position: absolute;
-    margin-top: 13px;
-    margin-left: 5px;
-    width: 20px;
-    height: 20px;
+    padding: 5px;
+    background-color: #18399a;
 }
 
 .trait-text {
     display: inline-block;
     margin-left: 35px;
-    margin-top: 7px;
-    color: white;
+    margin-top: 9px;
+    color: var(--main-color);
 }

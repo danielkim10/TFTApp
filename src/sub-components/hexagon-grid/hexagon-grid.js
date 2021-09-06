@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { assets_url } from '../../helper/urls';
-import './hexagon-grid.css';
 
 class HexagonGrid extends Component {
     constructor(props) {
@@ -19,27 +18,25 @@ class HexagonGrid extends Component {
 
 
     render = () => {
+        require('./hexagon-grid.css');
+        require('../../components/base.css');
         let itemsEquipped = [];
-        //if (this.props.team.length === 0) {
-            for (let i = 0; i < 28; i++) {
-                let styleElem = document.head.appendChild(document.createElement("style"));
-                let styleElem2 = document.head.appendChild(document.createElement("style"));
-            
-                styleElem2.innerHTML = `#h${i} {background: black}`;
-                styleElem.innerHTML = `#h${i}:before {
-                    background: white; 
-                }`;
-            }
-        //}
+        for (let i = 0; i < 28; i++) {
+            let styleElem = document.head.appendChild(document.createElement("style"));
+            let styleElem2 = document.head.appendChild(document.createElement("style"));
+        
+            styleElem2.innerHTML = `#h${i} {background: black}`;
+            styleElem.innerHTML = `#h${i}:before {
+                background: white; 
+            }`;
+        }
 
-        //console.log(this.props.team);
-
-        for (let champion in this.props.team) {
+        for (let t of this.props.team) {
             let styleElem = document.head.appendChild(document.createElement("style"));
             let styleElem2 = document.head.appendChild(document.createElement("style"));
 
             let color = 'gray';
-            switch(this.props.team[champion].champion.cost) {
+            switch(this.props.champions[t.champion.championId].cost) {
                 case 1:
                     color = 'gray';
                     break;
@@ -60,51 +57,51 @@ class HexagonGrid extends Component {
                     break;
             }
 
-            styleElem2.innerHTML = `#h${this.props.team[champion].hexSlot} {background: ${color}}`;
-            styleElem.innerHTML = `#h${this.props.team[champion].hexSlot}:before {
-                background: url(${this.props.team[champion].champion.patch_data.icon}); 
+            styleElem2.innerHTML = `#h${t.hexSlot} {background: ${color}}`;
+            styleElem.innerHTML = `#h${t.hexSlot}:before {
+                background: url(${this.props.champions[t.champion.championId].patch_data.icon}); 
                 background-position: center; 
                 background-repeat: no-repeat; 
                 background-size: 85px 85px;
             }`;
 
-            for (let i = 0; i < this.props.team[champion].items.length; i++) {
-                let image = this.props.team[champion].items[i].patch_data.icon.substring(0, this.props.team[champion].items[i].patch_data.icon.indexOf('dds')).toLowerCase();
+            for (let i = 0; i < t.items.length; i++) {
+                let image = this.props.items[t.items[i]].patch_data.icon.substring(0, this.props.items[t.items[i]].patch_data.icon.indexOf('dds')).toLowerCase();
                 itemsEquipped.push(
-                    <div id={`h${this.props.team[champion].hexSlot}-${i}`} key={this.props.team[champion].hexSlot + 'i' + i} className='items-equipped'>
-                        <img src={assets_url(image)} id={`i${this.props.team[champion].hexSlot}-${i}`} className='item-size' alt={this.props.team[champion].items[i].name}/>
+                    <div id={`h${t.hexSlot}-${i}`} key={t.hexSlot + 'i' + i} className='items-equipped'>
+                        <img src={assets_url(image)} id={`i${t.hexSlot}-${i}`} className='item-size' alt={this.props.items[t.items[i]].name}/>
                     </div>
                 );
 
                 let leftMargin = -231;
                 let topMargin = 168;
 
-                if (this.props.team[champion].hexSlot > 20) {
-                    leftMargin = -72 - 91*(27 - this.props.team[champion].hexSlot);
+                if (t.hexSlot > 20) {
+                    leftMargin = -132 - 91*(27 - t.hexSlot);
                     topMargin = 168;
                 }
-                else if (this.props.team[champion].hexSlot > 13) {
-                    leftMargin = -118 - 91*(20 - this.props.team[champion].hexSlot);
+                else if (t.hexSlot > 13) {
+                    leftMargin = -178 - 91*(20 - t.hexSlot);
                     topMargin = 99;
                 }
-                else if (this.props.team[champion].hexSlot > 6) {
-                    leftMargin = -72 - 91*(13 - this.props.team[champion].hexSlot);
+                else if (t.hexSlot > 6) {
+                    leftMargin = -132 - 91*(13 - t.hexSlot);
                     topMargin = 30;
                 }
                 else {
-                    leftMargin = -118 - 91*(6 - this.props.team[champion].hexSlot);
+                    leftMargin = -178 - 91*(6 - t.hexSlot);
                     topMargin = -39;
                 }
 
-                if (this.props.team[champion].items.length === 3) {
+                if (t.items.length === 3) {
                     leftMargin -= 20;   
                 }
-                else if (this.props.team[champion].items.length === 2) {
+                else if (t.items.length === 2) {
                     leftMargin -= 10;
                 }
 
                 let styleElem3 = document.head.appendChild(document.createElement("style"));
-                styleElem3.innerHTML = `#h${this.props.team[champion].hexSlot}-${i} {
+                styleElem3.innerHTML = `#h${t.hexSlot}-${i} {
                     position: absolute; 
                     display: inline-block; 
                     margin-left: ${leftMargin}px; 
@@ -113,7 +110,7 @@ class HexagonGrid extends Component {
 
                 let styleElem4 = document.head.appendChild(document.createElement("style"));
                 let margin = 20*i;
-                styleElem4.innerHTML = `#i${this.props.team[champion].hexSlot}-${i} {
+                styleElem4.innerHTML = `#i${t.hexSlot}-${i} {
                     width: 20px;
                     height: 20px;
                     margin-left: ${margin}px;
@@ -148,13 +145,13 @@ class HexagonGrid extends Component {
         }
 
         return (
-            <div style={{minHeight: '400px', minWidth: '700px'}}>
+            <div className='grid-dimensions'>
                 
-                <div style={{display: 'inline-block', width: '100%'}}>
+                <div className='hexagon-row'>
                     {hexagonRow1}
                     
                 </div>
-                <div style={{display: 'inline-block', width: '100%'}}>
+                <div className='hexagon-row'>
                     {hexagonRow2}
                 </div>
                 {itemsEquipped}

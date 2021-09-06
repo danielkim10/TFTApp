@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import { trait_desc_parse, trait_effect_parse } from '../../helper/string-parsing';
 import { sortCostAscending } from '../../helper/sorting';
 
-import './trait-tooltips.css';
-
 class TraitTooltip extends Component {
   constructor(props) {
     super(props);
@@ -15,13 +13,7 @@ class TraitTooltip extends Component {
 
   createSmallTooltip = () => {
     return (
-      <table>
-        <tbody>
-          <tr>
-            <td><p className='tooltipTitle'>{this.props.count} {this.props.trait.name}</p></td>
-          </tr>
-        </tbody>
-      </table>
+      <div className='tooltipTitle small'>{this.props.count} {this.props.trait.name}</div>
     );
   }
 
@@ -37,9 +29,14 @@ class TraitTooltip extends Component {
 
     champions.sort(sortCostAscending);
     for (let champion of Object.values(champions)) {
+      let championLocked = '';
+      if (this.props.team.findIndex(t => t.champion.championId === champion.championId) === -1) {
+        championLocked = 'champion-locked';
+      }
+
       championDesc.push(
-        <div className='champion-spacing' onClick={() => this.championRedirect(champion.championId)} key={champion.championId}>
-            <img src={champion.patch_data.icon} alt={champion.name} className={`cost${champion.cost}champion-tooltip`}/>
+        <div className='portrait-spacing' onClick={() => this.championRedirect(champion.championId)} key={champion.championId}>
+            <img src={champion.patch_data.icon} alt={champion.name} className={`portrait-border-small cost${champion.cost} ${championLocked}`}/>
         </div>);
     }
 
@@ -50,34 +47,32 @@ class TraitTooltip extends Component {
         desc_hashed = trait_desc_parse(this.props.trait.patch_data);
         stat_string = this.props.trait.patch_data.desc.substring(this.props.trait.patch_data.desc.indexOf('<expandRow>') + 11, this.props.trait.patch_data.desc.length - 12);
         let effects = trait_effect_parse(stat_string, this.props.trait.patch_data);
+        
         for (let effect in effects) {
-            bonuses_hashed.push(<tr key={effect}><td key={effect} className='white-text'>{effects[effect]}</td></tr>)
+          let bonusLocked = '';
+
+          if (this.props.trait.sets[effect].min > this.props.trait.count) {
+            bonusLocked = 'bonus-locked';
+          }
+
+          bonuses_hashed.push(<div key={effect} className={bonusLocked}>{effects[effect]}</div>);
         }
     }
 
     return (
-      <table>
-        <tbody>
-          <tr>
-            <td><p className='tooltipTitle'>{this.props.trait.name}</p></td>
-          </tr>
-          <tr>
-            <td><p>{this.props.trait.innate}</p></td>
-          </tr>
-          <tr>
-            <td>{desc_hashed}</td>
-          </tr>
-          {bonuses_hashed}
-          <tr>
-            <td>{championDesc}</td>
-          </tr>
-          
-        </tbody>
-      </table>
+      <div className='trait-wrapper font'>
+        <div className='tooltipTitle'>{this.props.trait.name}</div>
+        <div className='trait-tooltip-row'>{this.props.trait.innate}</div>
+        <div className='trait-tooltip-row'>{desc_hashed}</div>
+        <div className='trait-tooltip-row'>{bonuses_hashed}</div>
+        <div>{championDesc}</div>
+      </div>
     )
   }
 
   render = () => {
+    require('./trait-tooltips.css');
+    require('../../components/base.css');
     return (
       <div>
       { this.props.smallTooltip && this.createSmallTooltip() }

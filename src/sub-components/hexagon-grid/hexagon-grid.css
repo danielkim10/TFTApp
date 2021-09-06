@@ -133,3 +133,13 @@
     margin-top: -39px;
     margin-left: -184px;
 }
+
+.grid-dimensions {
+  min-height: 300px;
+  min-width: 700px;
+}
+
+.hexagon-row {
+  display: inline-block;
+  width: 100%;
+}

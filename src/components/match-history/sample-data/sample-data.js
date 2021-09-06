@@ -1,14 +1,12 @@
 import React, { Component } from 'react';
-import { errorHandler, checkRateLimit, postData } from '../../../helper/api';
-import { sortGametimeDescending } from '../../../helper/sorting';
-import { companion_parse } from '../../../helper/string-parsing';
-import { patch_data_url, match_url, summoner_by_puuid_url, host_url, companion_bin_url, companion_icon_url, profile_icon_url, rank_face_url, rank_crown_url } from '../../../helper/urls';
+import { postData } from '../../../helper/api';
+import { patch_data_url, profile_icon_url, rank_face_url, rank_crown_url } from '../../../helper/urls';
 import MatchBasic from '../match-basic/match-basic.component.js';
 import Alert from '@material-ui/lab/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { SET_NUMBER, champions, items, traits, champion_patch_combine, item_patch_combine, trait_patch_combine } from '../../../helper/variables';
 
-class Profile extends Component {
+class SampleData extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -20,7 +18,7 @@ class Profile extends Component {
             summonerLevel: 0,
             puuid: "",
             leagueData: [],
-            loading: false,
+            loading: true,
             loadingProgress: 1,
             error: false,
             errorSeverity: "",
@@ -35,152 +33,33 @@ class Profile extends Component {
         let champions_arr = champions();
         let items_arr = items();
         let traits_arr = traits();
-        
 
         try {
             let error = false;
             let patchData = await fetch(patch_data_url()).then(res => res.json());
+
+            if (error) { return; }
 
             let thisSet = patchData.setData[SET_NUMBER];
 
             champions_arr = champion_patch_combine(champions_arr, thisSet.champions);
             items_arr = item_patch_combine(items_arr, patchData.items);
             traits_arr = trait_patch_combine(traits_arr, thisSet.traits);
-            this.setState({champions: champions_arr, items: items_arr, traits: traits_arr});
-
-            if (this.props.location.search) {
-                if (this.props.location.state) {
-                    const matchCount = 5;
-                    let matchList = this.props.location.state.matchListData.slice(0, Math.min(this.props.location.state.matchListData.length, matchCount));
-
-                    let callsObj = { 'platform': this.props.location.state.platform, platformCount: 8*matchList.length, 'region': this.props.location.state.region, regionCount: matchList.length }
-
-                    let rateLimitCheck_1 = await Promise.resolve(checkRateLimit(callsObj));
-                    if (rateLimitCheck_1 < 0) {
-                        this.setState({error: true, errorSeverity: "error", loading: false, errorMessage: 'You are being rate limited'});
-                    }
-                    else {
-                        let matchListUrls = matchList.map((m) => {
-                            let request = new Request(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.props.location.state.region)}${match_url(m)}`, {
-                                method: 'GET',
-                                headers: {
-                                    'Accept-Charset': 'application/json;charset=utf-8',
-                                    'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
-                                }
-                            });
-                            return fetch(request).then(res => {
-                                    if (!res.ok) {
-                                        let errorStr = errorHandler(res.status);
-                                        this.setState({error: true, errorSeverity: "error", loading: false, errorMessage: errorStr});
-                                        error = true;
-                                    }
-                                    return res.json();
-                                }).catch(matchErr => console.error("Error retrieving match:" + matchErr));
-                            });
-
-                        if (error) { return; }
-
-                        let ms = await Promise.all(matchListUrls);
-
-                        if (!matchCount || !ms.length) {
-                            this.setState({
-                                summonerLevel: this.props.location.state.summonerData.summonerLevel, 
-                                summonerName: this.props.location.state.summonerData.name, 
-                                profileIconId: this.props.location.state.summonerData.profileIconId,
-                                puuid: this.props.location.state.summonerData.puuid,
-                                leagueData: this.props.location.state.leagueData,
-                                loading: false
-                            });
-                            return;
-                        }
-
-                        for (let i = 0; i < ms.length; i++) {
-                            let playersUrls = [];
-
-                            // let rateLimitCheck_2 = await Promise.resolve(checkRateLimit(this.props.location.state.platform, 8*ms.length));
-                            // if (rateLimitCheck_2 < 0) {
-                            //     this.setState({error: true, errorSeverity: "error", loading: false, errorMessage: 'You are being rate limited'});
-                            // }
-                            // else {
-                                for (let j = 0; j < ms[i].info.participants.length; j++) {
-                                    
-                                    let request = new Request(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.props.location.state.platform)}${summoner_by_puuid_url(ms[i].info.participants[j].puuid)}`, {
-                                        method: 'GET',
-                                        headers: {
-                                            'Accept-Charset': 'application/json;charset=utf-8',
-                                            'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
-                                        }
-                                    });
-                                    let promise = new Promise(resolve => setTimeout(resolve, 125*((i+1)*j+1))).then(() => 
-                                        fetch(request).then(res => {
-                                            if (!res.ok) {
-                                                let errorStr = errorHandler(res.status);
-                                                this.setState({error: true, errorSeverity: "error", loading: false, errorMessage: errorStr});
-                                                if (res.status === 429) {
-                                                    return;
-                                                }
-                                            }
-                                            return res.json();
-                                        }).catch(playerErr => console.error("Error retrieving player: " + playerErr)));
-                                    playersUrls.push(promise);
-                                }
-
-                                if (this.state.error) { return; }
-
-                                let companionsUrls = [];
-                                let companionSpecies = [];
-                                let companionSkinIDs = [];
-                                companionsUrls = ms[i].info.participants.map((participant) => {
-                                    let request = new Request(companion_bin_url(participant.companion.species.toLowerCase(), participant.companion.skin_ID));
-                                    companionSpecies.push(participant.companion.species);
-                                    companionSkinIDs.push(participant.companion.skin_ID);
-                                    return fetch(request).then(res => {
-                                        if (!res.ok) {
-                                            let errorStr = errorHandler(res.status);
-                                            this.setState({error: true, errorSeverity: "error", loading: false, errorMessage: errorStr});
-                                        }
-                                        return res.json();
-                                    }).catch(companionErr => console.error("Error retrieving companion: " + companionErr));
-                                });
-
-                                if (this.state.error) { return; }
-
-                                let players = await Promise.all(playersUrls);
-                                let companions = await Promise.all(companionsUrls);
-                                for (let j = 0; j < players.length; j++) {
-                                    ms[i].info.participants[j].name = players[j].name;
-                                
-                                    let companionData = companions[j][`Characters/${companionSpecies[j]}/Skins/Skin${companionSkinIDs[j]}`];
-                                    if (companionData === undefined) {
-                                        companionData = companions[j][companion_parse(`Characters/${companionSpecies[j]}/Skins/Skin${companionSkinIDs[j]}`.toLowerCase())];
-                                    }
-                                    let iconCircle = companionData.iconCircle.substring(0, companionData.iconCircle.indexOf('dds')).toLowerCase();
-                                    ms[i].info.participants[j].companion.image_source = companion_icon_url(iconCircle);
-                                }
-                                let matches = this.state.matches;
-                                matches.push(ms[i]);
-                                matches.sort(sortGametimeDescending);
-                                this.setState({
-                                    matches: matches, 
-                                    summonerLevel: this.props.location.state.summonerData.summonerLevel, 
-                                    summonerName: this.props.location.state.summonerData.name, 
-                                    profileIconId: this.props.location.state.summonerData.profileIconId,
-                                    puuid: this.props.location.state.summonerData.puuid,
-                                    leagueData: this.props.location.state.leagueData,
-                                    loading: !(i === ms.length - 1),
-                                    loadingProgress: i+1
-                                });
-                            // }
-                        }
-                    }
-                }
-                else {
-                    window.location.href = `${process.env.REACT_APP_SITE}matchhistory`;
-                }
-            }
-            else {
-                window.location.href = `${process.env.REACT_APP_SITE}matchhistory`;
-            }
+            let summoner = require('../../../data/sample-data/sample-summoner.json');
+            let sample_matches = require('../../../data/sample-data/sample-matches.json');
+            let rank = require('../../../data/sample-data/sample-rank.json');
+            this.setState({
+                champions: champions_arr, 
+                items: items_arr, 
+                traits: traits_arr,
+                matches: sample_matches,
+                leagueData: rank, 
+                loading: false, 
+                summonerName: summoner.name,
+                summonerLevel: summoner.summonerLevel,
+                puuid: summoner.puuid,
+                profileIconId: summoner.profileIconId,
+            });
         } catch (err) {
             console.error('Error retrieving patch data: ' + err);
         }
@@ -364,8 +243,14 @@ class Profile extends Component {
         }, 3000);
     }
 
+    copy = (e, player, traits, champions) => {
+        console.log(player);
+        console.log(traits);
+        console.log(champions);
+    }
+
     render = () => {
-        require('./profile.css');
+        require('../profile/profile.css');
         require('../../base.css');
 
         return (
@@ -379,6 +264,7 @@ class Profile extends Component {
                                 <img src={profile_icon_url(this.state.profileIconId)} alt={this.state.profileIconId} className='profile-icon'/>
                                 <div className='summoner-name'>{this.state.summonerName}</div>
                                 <div className='level'>{this.state.summonerLevel}</div>
+                                <div>This page is for users that want to see the end product without using the API. Summoner names and IDs are changed and/or hidden</div>
                             </>
                             }
                         </div>
@@ -415,4 +301,4 @@ class Profile extends Component {
     }
 }
 
-export default Profile;
+export default SampleData;

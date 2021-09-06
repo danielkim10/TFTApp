@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { postData, errorHandler, getDataFromId } from '../../../helper/api';
+import { postData, getDataFromId } from '../../../helper/api';
 import ChampionsPanel from '../champions-panel/champions-panel';
 import ItemsPanel from '../items-panel/items-panel';
 import TraitsPanel from '../traits-panel/traits-panel';
@@ -13,9 +13,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import CopyDialog from '../../../sub-components/copy-dialog/copy-dialog';
 import HexagonGrid from '../../../sub-components/hexagon-grid/hexagon-grid';
 import { patch_data_url } from '../../../helper/urls';
+import { sortTrait } from '../../../helper/sorting';
 import { SET_NUMBER, champions, items, traits, champion_patch_combine, item_patch_combine, trait_patch_combine } from '../../../helper/variables';
-
-import './main.css';
 
 export default class Main extends Component {
   constructor(props) {
@@ -28,7 +27,6 @@ export default class Main extends Component {
         patch_data: {},
       },
       traits: {},
-      selectedTraits: [],
       items: {
         name: "",
         patch_data: {},
@@ -39,13 +37,10 @@ export default class Main extends Component {
       error: false,
       errorSeverity: "error",
       errorMessage: "",
-      text: {
-        teamName: "",
-        searchNameChamps: "",
-        searchNameItems: "",
-      },
+      teamName: "",
       openDialog: false,
     }
+
     this.findTraits = this.findTraits.bind(this);
     this.clearTeam = this.clearTeam.bind(this);
     this.handleChanges = this.handleChanges.bind(this);
@@ -74,8 +69,7 @@ export default class Main extends Component {
       if (this.props.location.search) {
         if (this.props.location.state) {
           getDataFromId("teams", this.props.location.state.teamID).then(data => {
-            console.log(data);
-            this.setState({champions: champions_arr, items: items_arr, traits: traits_arr, team: data.team, loading: false}, () => {
+            this.setState({champions: champions_arr, items: items_arr, traits: traits_arr, team: data.team, teamName: data.name, loading: false}, () => {
               this.findTraitsInitial(data.team);
             });
           });
@@ -91,11 +85,11 @@ export default class Main extends Component {
 
   addToTeam = (e, data) => {
     let team = this.state.team;
-
+    let champion = JSON.parse(JSON.stringify(data));
     for (let i = 0; i < 28; i++) {
       if (team.findIndex(c => c.hexSlot === i) === -1) {
-        this.findTraits(team, data);
-        team.push({champion: data, tier: 1, items: [], remainingSlots: 3, hexSlot: i });
+        this.findTraits(team, this.state.traits, data);
+        team.push({champion: champion, tier: 1, items: [], hexSlot: i });
         this.setState({team: team});
         return;
       }
@@ -114,8 +108,10 @@ export default class Main extends Component {
     Object.keys(traits).forEach((key, index) => {
       traits[key].count = 0;
       traits[key].champions = [];
+      traits[key].tier = -1;
+      traits[key].color = "";
     });
-    this.setState({team: [], traits: traits, draggedChampion: {}, draggedItem: {}, text: {teamName: "", searchNameChamps: "", searchNameItems: ""}});
+    this.setState({team: [], traits: traits, draggedChampion: {}, draggedItem: {}, teamName: ""});
   }
 
   findTraitsInitial = (team) => {
@@ -131,14 +127,13 @@ export default class Main extends Component {
     this.setState({traits: traits});
   }
 
-  findTraits = (team, champion) => {
-    let traits = JSON.parse(JSON.stringify(this.state.traits));
+  findTraits = (team, traits_t, champion) => {
+    let traits = JSON.parse(JSON.stringify(traits_t));
     if (champion.name === undefined) {
       return;
     }
     let isDupe = false;
     for (let i of team) {
-      console.log(i);
       if (i.champion.name === champion.name) {
         isDupe = true;
       }
@@ -164,28 +159,25 @@ export default class Main extends Component {
         traits[i].count -= 1;
       }
     }
-    this.setState({traits: traits});
+    return traits;
   }
 
   findTraitsFromEmblem = (champion, trait) => {
-    let traits = Object.assign({}, this.state.traits);
+    let traits = JSON.parse(JSON.stringify(this.state.traits));
     
-    if (!traits[trait].champions.includes(champion.championId)) {
+    if (!traits[trait].champions.includes(champion.champion.championId)) {
       traits[trait].count++;
     }
-    traits[trait].champions.push(champion.championId);
+    traits[trait].champions.push(champion.champion.championId);
 
     this.setState({traits: traits});
   }
 
   handleChanges = (e) => {
-    let text = Object.assign({}, this.state.text);
-    text[e.target.name] = e.target.value;
-    this.setState({text: text});
+    this.setState({ teamName: e.target.value });
   }
 
   copy = (event) => {
-    console.log(this.state.team);
     this.setState({openDialog: true});
   }
 
@@ -194,9 +186,33 @@ export default class Main extends Component {
   }
 
   handleSave = (event) => {
-    let teamObj = {name: this.state.text.teamName, team: this.state.team, date: new Date(), set: 5};
+    let traits = [];
+    for (let i of Object.values(this.state.traits)) {
+      if (i.count > 0) {
+        traits.push({key: i.key, champions: i.champions, count: i.count, color: i.color, tier: i.tier});
+      }
+    }
+
+    traits = traits.sort(sortTrait);
+
+    let team = [];
+    for (let i of this.state.team) {
+      let items = [];
+      for (let item of i.items) {
+        items.push(item.id);
+      }
+
+      team.push({ champion: { championId: i.champion.championId, traits: i.champion.traits }, tier: i.tier, items: items, hexSlot: i.hexSlot });
+    }
+
+    let teamName = this.state.teamName;
+    if (teamName.trim() === "") {
+      teamName = `${traits[0].count} ${this.state.traits[traits[0].key].name}, ${traits[1].count} ${this.state.traits[traits[1].key].name}`;
+    }
+
+    let teamObj = {name: teamName, team: team, traits: traits, date: new Date(), set: 5};
     postData('teams', teamObj, "");
-    this.setState({error: true, errorSeverity: 'success', errorMessage: `Successfully saved team ${this.state.text.teamName}`});
+    this.setState({error: true, errorSeverity: 'success', errorMessage: `Successfully saved team ${teamName}`});
     setTimeout(() => {
       this.setState({error: false});
     }, 3000);
@@ -223,20 +239,28 @@ export default class Main extends Component {
     e.preventDefault();
 
     let team = this.state.team;
+    if (this.state.draggedChampion.championId !== undefined) {
 
-    if (this.state.draggedChampion.name !== undefined) {
-      this.findTraits(team, this.state.draggedChampion);
-      team.push({champion: this.state.draggedChampion, tier: 1, items: [], remainingSlots: 3, hexSlot: id });
-      
-    }
-
-    else if (this.state.draggedChampion.champion !== undefined) {
-      if (team.findIndex(tm => tm.hexSlot === id) > -1) {
-        team[team.findIndex(tm => tm.hexSlot === id)].hexSlot = this.state.draggedChampion.hexSlot;
-        team[team.findIndex(tm => tm.champion.name === this.state.draggedChampion.champion.name)].hexSlot = id;
+      let index = team.findIndex(tm => tm.hexSlot === id);
+      if (index > -1) {
+        let traits = this.removeTraits(team, team[index].champion);
+        team.splice(index, 1);
+        this.findTraits(team, traits, this.state.draggedChampion);
       }
       else {
-        team[team.findIndex(tm => tm.champion.name === this.state.draggedChampion.champion.name)].hexSlot = id;
+        this.findTraits(team, this.state.traits, this.state.draggedChampion);
+      }
+      team.push({champion: this.state.draggedChampion, tier: 1, items: [], hexSlot: id });
+    }
+    
+    else if (this.state.draggedChampion.champion !== undefined) {
+      let originalHexSlot = team.findIndex(tm => tm.hexSlot === this.state.draggedChampion.hexSlot);
+      if (team.findIndex(tm => tm.hexSlot === id) > -1) {
+        team[team.findIndex(tm => tm.hexSlot === id)].hexSlot = this.state.draggedChampion.hexSlot;
+        team[originalHexSlot].hexSlot = id;
+      }
+      else {
+        team[originalHexSlot].hexSlot = id;
       }
     }
 
@@ -266,7 +290,7 @@ export default class Main extends Component {
           }
 
           else if (this.state.draggedItem.isElusive || 
-            (this.state.draggedItem.isUnique && this.state.draggedItem.id).toString().includes('8')) {
+            (this.state.draggedItem.isUnique && (this.state.draggedItem.id.toString().includes('8')))) {
               let traitFromItem = this.state.draggedItem.name.substring(0, this.state.draggedItem.name.indexOf('Emblem')-1);
               let trait = 'Set5_' + traitFromItem.replace(' ', '');
               if (teamMember.items.includes(this.state.draggedItem)) {
@@ -320,80 +344,51 @@ export default class Main extends Component {
     });
   }
 
-  saveTraits = (traits) => {
-    this.setState({selectedTraits: traits});
+  dragEnd = () => {
+    this.setState({draggedChampion: {}, draggedItem: {}});
   }
 
   render = () => {
+    require('./main.css');
+    require('../../base.css');
     return (
-      <div>
-        <table>
-          <tbody>
-            <tr>
-              <td className='side-margins'></td>
-              <td className='main-content'>
-              {this.state.loading && <CircularProgress size={24}/>}
-                {this.state.openDialog && <CopyDialog team={this.state.team} traits={this.state.selectedTraits} name={this.state.text.teamName} open={this.state.openDialog} onClose={this.closeDialog}/>}
-                { !this.state.loading &&
-                  <div className='button-row'>
-                    <Button type="button" className="button-width" onClick={this.clearTeam}>
-                      <ClearIcon className='icon-color'/><span className='icon-color'>Clear</span>
-                    </Button>
-                    <Button type="button" className="button-width" onClick={this.copy}>
-                      <FileCopyIcon className='icon-color'/><span className='icon-color'>Copy</span>
-                    </Button>
-                    <Button type="button" className="button-width" onClick={this.handleSave}>
-                      <SaveIcon className='icon-color'/><span className='icon-color'>Save</span>
-                    </Button>
-                    <div>
-                      {this.state.error && <Alert severity={this.state.errorSeverity}>{this.state.errorMessage}</Alert>}
-                    </div>
-                    <TextField id="search" type="search" placeholder="Team name" variant="outlined" onChange={this.handleChanges} className="team-name"/>
-                    <table>
-                      <tbody>
-                        <tr>
-                          <td style={{width: '20%', verticalAlign: 'top'}}>
-                            <TraitsPanel traits={this.state.traits} champions={this.state.champions} imageError={this.imageError} saveTraits={this.saveTraits}/>
-                          </td>
-                          <td style={{width: '80%'}}>
-                            <table>
-                              <tbody>
-                                <tr>
-                                  <td style={{width: '75%'}}>
-                                    <HexagonGrid team={this.state.team} drop={this.drop} drag={this.dragFromGrid}/>
-                                  </td> 
-                                  <td style={{width: '25%'}}></td>
-                                </tr>
-                                <tr>
-                                  <td style={{width: '25%'}}>
-                                    <table>
-                                      <tbody>
-                                        <tr>
-                                          <td style={{width: '50%', verticalAlign: 'top'}}>
-                                            <ChampionsPanel champions={this.state.champions} traits={this.state.traits} addToTeam={this.addToTeam} drag={this.dragChampion} drop={this.removeFromTeam} imageError={this.imageError}/>
-                                          </td>
-                                          <td style={{width: '50%', verticalAlign: 'top'}}>
-                                            <ItemsPanel items={this.state.items} itemsBasic={this.state.itemsBasic} drag={this.drag} imageError={this.imageError}/>
-                                          </td>
-                                        </tr>
-                                      </tbody>
-                                    </table>
-                                  </td>
-                                  <td style={{width: '25%'}}></td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                }
-              </td>
-              <td className='side-margins'></td>
-            </tr>
-          </tbody>
-        </table>
+      <div className='page-grid'>
+        <div></div>
+        <div>
+          <h1 className='title'>Builder</h1>
+          {this.state.loading && <CircularProgress size={24}/>}
+          {this.state.error && <Alert severity={this.state.errorSeverity}>{this.state.errorMessage}</Alert>}
+          {this.state.openDialog && <CopyDialog team={this.state.team} traits={this.state.traits} name={this.state.teamName} open={this.state.openDialog} onClose={this.closeDialog}/>}
+          { !this.state.loading &&
+            <div>
+              
+              <TextField id="search" type="search" placeholder="Team name" variant="outlined" onChange={this.handleChanges} value={this.state.teamName} className="team-name"/>
+              <div className='team-grid'>
+                <div className='traits-container'>
+                  <TraitsPanel traits={this.state.traits} champions={this.state.champions} team={this.state.team} imageError={this.imageError}/>
+                </div>
+                <HexagonGrid team={this.state.team} champions={this.state.champions} items={this.state.items} drop={this.drop} drag={this.dragFromGrid} dragEnd={this.dragEnd}/>
+                <div>
+                  <Button type="button" className="button-width" onClick={this.clearTeam}>
+                    <ClearIcon className='icon-color'/><span className='icon-color'>Clear</span>
+                  </Button>
+                  <Button type="button" className="button-width" onClick={this.copy}>
+                    <FileCopyIcon className='icon-color'/><span className='icon-color'>Copy</span>
+                  </Button>
+                  <Button type="button" className="button-width" onClick={this.handleSave} disabled={this.state.team.length === 0}>
+                    <SaveIcon className='icon-color'/><span className='icon-color'>Save</span>
+                  </Button>
+                </div>
+              </div>
+              <div className='panels-grid'>
+                <ChampionsPanel champions={this.state.champions} traits={this.state.traits} addToTeam={this.addToTeam} drag={this.dragChampion} dragEnd={this.dragEnd} drop={this.removeFromTeam} imageError={this.imageError}/>
+                <ItemsPanel items={this.state.items} itemsBasic={this.state.itemsBasic} drag={this.drag} dragEnd={this.dragEnd} imageError={this.imageError}/>
+
+              </div>
+            </div>
+          }
+        </div>
+        <div></div>
       </div>
     );
   }

@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { item_desc_parse } from '../../helper/string-parsing';
 
-import './item-tooltips.css';
-
 class ItemTooltip extends Component {
   constructor(props) {
     super(props);
@@ -30,16 +28,16 @@ class ItemTooltip extends Component {
     if (this.props.item.isRadiant) {
       for (let effect of Object.values(this.props.item.patch_data.effects)) {
         if (basicStats[effect] !== undefined) {
-          itemStats.push(<p className='item-desc-text' key={effect+this.props.item.id}>+{this.props.item.patch_data.effects[effect]} {basicStats[effect]}</p>);
+          itemStats.push(<div className='tooltip-row' key={effect+this.props.item.id}>+{this.props.item.patch_data.effects[effect]} {basicStats[effect]}</div>);
         }
       }
 
-      itemStats.push(<p className='item-desc-text' key='Radiant'>Radiant - Cannot be crafted</p>);
+      itemStats.push(<div key='Radiant'>Radiant - Cannot be crafted</div>);
 
       return (
-        <div className='item-category-margins'>
-          <span className='item-desc-text'>{this.props.item.name}</span>
-          <p className='item-desc-text'>{item_desc_parse(this.props.item)}</p>
+        <div className='tooltip-wrapper-item font'>
+          <div className='tooltip-title tooltip-row'>{this.props.item.name}</div>
+          <div className='tooltip-row'>{item_desc_parse(this.props.item)}</div>
           {itemStats}
         </div>
       );
@@ -48,16 +46,16 @@ class ItemTooltip extends Component {
     else if (this.props.item.isElusive) {
       for (let effect of Object.values(this.props.item.patch_data.effects)) {
         if (basicStats[effect] !== undefined) {
-          itemStats.push(<p className='item-desc-text' key={effect+this.props.item.id}>+{this.props.item.patch_data.effects[effect]} {basicStats[effect]}</p>)
+          itemStats.push(<div className='tooltip-row' key={effect+this.props.item.id}>+{this.props.item.patch_data.effects[effect]} {basicStats[effect]}</div>)
         }
       }
 
-      itemStats.push(<p className='item-desc-text' key='Elusive'>Elusive - Cannot be crafted</p>);
+      itemStats.push(<div key='Elusive'>Elusive - Cannot be crafted</div>);
     
       return (
-        <div className='item-category-margins'>
-          <span className='item-desc-text'>{this.props.item.name}</span>
-          <p className='item-desc-text'>{item_desc_parse(this.props.item)}</p>
+        <div className='tooltip-wrapper-item font'>
+          <div className='tooltip-title tooltip-row'>{this.props.item.name}</div>
+          <div className='tooltip-row'>{item_desc_parse(this.props.item)}</div>
           {itemStats}
         </div>
       );
@@ -65,9 +63,9 @@ class ItemTooltip extends Component {
 
     else if (this.props.item.id < 10) {
       return (
-        <div className='item-category-margins'>
-          <p className='item-desc-text'>{this.props.item.name}</p>
-          <span className='item-desc-text'>{item_desc_parse(this.props.item)}</span>
+        <div className='tooltip-wrapper-item font'>
+          <div className='tooltip-title tooltip-row'>{this.props.item.name}</div>
+          <div className='tooltip-row'>{item_desc_parse(this.props.item)}</div>
         </div>
       );
     }
@@ -75,37 +73,24 @@ class ItemTooltip extends Component {
     else if (this.props.item.id >= 10) {
       for (let effect of Object.values(this.props.item.patch_data.effects)) {
         if (basicStats[effect] !== undefined) {
-          itemStats.push(<p className='item-desc-text' key={effect+this.props.item.id}>+{this.props.item.patch_data.effects[effect]} {basicStats[effect]}</p>);
+          itemStats.push(<div className='tootip-row' key={effect+this.props.item.id}>+{this.props.item.patch_data.effects[effect]} {basicStats[effect]}</div>);
         }
       }
 
-      // let buildsFrom = [];
-      // for (let id in this.props.item.patch_data.from) {
-      //   let image = this.props.items['i'+this.props.item.patch_data.from[id]].patch_data.icon.substring(0, this.state.items['i'+item.patch_data.from[id]].patch_data.icon.indexOf('dds'));
-      //   buildsFrom.push(
-      //     <td><img src={"https://raw.communitydragon.org/latest/game/"+image.toLowerCase()+'png'} key={id} alt={this.state.items['i'+item.patch_data.from[id]].name} className='item-dimensions-small'/></td>
-      //   )
-      // }
-
       return (
-        <div className='item-category-margins'>
-          <span className='item-desc-text'>{this.props.item.name}</span>
-          <p className='item-desc-text'>{item_desc_parse(this.props.item)}</p>
+        <div className='tooltip-wrapper-item font'>
+          <div className='tooltip-title tooltip-row'>{this.props.item.name}</div>
+          <div className='tooltip-row'>{item_desc_parse(this.props.item)}</div>
           {itemStats}
-          <p className='item-desc-text'>Builds from</p>
-          <table>
-            <tbody>
-              <tr>
-                {/* {buildsFrom} */}
-              </tr>
-            </tbody>
-          </table>
+          <div></div>
         </div>
       );
     }
   }
 
   render = () => {
+    require('./item-tooltips.css');
+    require('../../components/base.css');
     return (
       this.renderTooltipContent()
     );

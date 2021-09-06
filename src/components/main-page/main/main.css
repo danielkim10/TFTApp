@@ -19,20 +19,40 @@
   justify-items: center;
 }
 
+.button-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
 .button-width {
-  width: 30%;
+  width: 80%;
   margin: 5px !important;
   background-color: royalblue !important;
 }
 
+.traits-container {
+  height: 300px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr;
+}
+
+.panels-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
 .icon-color {
-  color: white;
+  color: var(--main-color);
   margin: 2px;
 }
 
 .team-name {
-  background-color: white !important;
-  border-radius: 5px;
-  color: 'primary';
+  background-color: var(--main-color) !important;
+  border-radius: 12px;
   width: 100%;
 }

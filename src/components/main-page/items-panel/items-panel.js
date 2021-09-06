@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { Card, CardHeader, CardBody, Input } from 'reactstrap';
+import TextField from '@material-ui/core/TextField';
 import { assets_url } from '../../../helper/urls';
 import ItemTooltip from '../../../sub-components/item-tooltips/item-tooltips';
 import Tooltip from '@material-ui/core/Tooltip';
 
-import './items-panel.css';
-import '../../base.css';
+
 
 class ItemsPanel extends Component {
   constructor(props) {
@@ -26,7 +25,7 @@ class ItemsPanel extends Component {
             
             items.push(
               <Tooltip placement='top' title={<ItemTooltip item={item}/>} key={item.id.toString()} arrow>
-                <div className='portrait-spacing' id={item.id} key={item.id.toString()} draggable="true" onDragStart={(e) => this.props.drag(e, item)}>
+                <div className='portrait-spacing' id={item.id} key={item.id.toString()} draggable="true" onDragStart={(e) => this.props.drag(e, item)} onDragEnd={(e) => this.props.dragEnd()}>
                   <img src={assets_url(image)} alt={item.name} className='portrait-border item' onError={this.props.imageError}/>
                   <p className='item-name'>{item.name}</p>
                 </div>
@@ -44,16 +43,19 @@ class ItemsPanel extends Component {
   }
 
   render = () => {
+    require('./items-panel.css');
+    require('../../base.css');
+
     return (
-      <Card>
-        <CardHeader className='whitebg'>
-          <strong>Items</strong>
-        </CardHeader>
-        <CardBody style={{height: '350px', overflowY: 'auto'}}>
-        <Input type="text" id="searchNameItems" name="searchNameItems" onChange={this.handleChanges} placeholder="Item Name" />
+      <div className='item-panel'>
+        <div className='item-panel-header'>
+          <p className='header-title'>Items</p>
+        </div>
+        <div className='item-panel-body'>
+          <TextField id="searchNameItems" name="searchNameItems" onChange={this.handleChanges} placeholder="Item Name" variant="outlined" className='item-search' />
           {this.placeItems()}
-        </CardBody>
-      </Card>
+        </div>
+      </div>
     );
   }
 }

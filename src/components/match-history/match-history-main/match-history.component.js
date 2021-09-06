@@ -39,10 +39,13 @@ class MatchHistory extends Component {
     //e.preventDefault()
     this.setState({loading: true});
 
-    let rateLimitCheck_1 = await Promise.resolve(checkRateLimit(this.state.platform, 1));
+    let error = false;
+
+    let callsObj = { 'platform': this.state.platform, platformCount: 2, 'region': this.state.region, regionCount: 1 }
+
+    let rateLimitCheck_1 = await Promise.resolve(checkRateLimit(callsObj));
     if (rateLimitCheck_1 < 0) {
         this.setState({error: true, loading: false, errorMessage: 'You are being rate limited'});
-        throw Error('Rate limiting in effect');
     }
     else {
         let summonerData = await fetch(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.state.platform)}${summoner_by_name_url(this.state.summonerName)}`, {
@@ -56,67 +59,75 @@ class MatchHistory extends Component {
             if (!res.ok) {
                 let errorStr = errorHandler(res.status);
                 this.setState({error: true, loading: false, errorMessage: errorStr});
-                throw Error(errorStr);
+                error = true;
+                setTimeout(() => {
+                    this.setState({error: false});
+                }, 3000);
             }
             return res.json();
         });
 
-        let rateLimitCheck_2 = await Promise.resolve(checkRateLimit(this.state.platform, 1));
-        if (rateLimitCheck_2 < 0) {
-            this.setState({error: true, loading: false, errorMessage: 'You are being rate limited'});
-            throw Error('Rate limiting in effect');
-        }
-        else {
-            let leagueData = await fetch(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.state.platform)}${ranked_league_url(summonerData.id)}`, {
-                method: `GET`,
-                headers: {
-                    'Accept-Charset': 'application/json;charset=utf-8',
-                    'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
-                }
-            }).then(res => {
-                if (!res.ok) {
-                    let errorStr = errorHandler(res.status);
-                    this.setState({error: true, loading: false, errorMessage: errorStr});
-                    throw Error(errorStr);
-                }
-                return res.json();
-            });
-            let rateLimitCheck_3 = await Promise.resolve(checkRateLimit(this.state.region, 1));
-            if (rateLimitCheck_3 < 0) {
-                this.setState({error: true, loading: false, errorMessage: 'You are being rate limited'});
-                throw Error('Rate limiting in effect');
+        if (error) { return; }
+
+        let leagueData = await fetch(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.state.platform)}${ranked_league_url(summonerData.id)}`, {
+            method: `GET`,
+            headers: {
+                'Accept-Charset': 'application/json;charset=utf-8',
+                'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
             }
-            else {
-                let matchListData = await fetch(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.state.region)}${match_list_url(summonerData.puuid)}`, {
-                    method: `GET`,
-                    headers: {
-                        'Accept-Charset': 'application/json;charset=utf-8',
-                        'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
-                    }
-                }).then(res => {
-                    if (!res.ok) {
-                        let errorStr = errorHandler(res.status);
-                        this.setState({error: true, loading: false, errorMessage: errorStr});
-                        throw Error(errorStr);
-                    }
-                    return res.json();
-                });
-                let path = `/profile`;
-                this.props.history.push({
-                    pathname: path, 
-                    search: `?platform=${this.state.platform}&summonerName=${this.state.summonerName.replaceAll(' ', '').toLowerCase()}`, 
-                    state: { 
-                        summonerData: summonerData,
-                        leagueData: leagueData,
-                        matchListData: matchListData,
-                        platform: this.state.platform,
-                        region: this.state.region
-                    }});
+        }).then(res => {
+            if (!res.ok) {
+                let errorStr = errorHandler(res.status);
+                this.setState({error: true, loading: false, errorMessage: errorStr});
+                error = true;
+                setTimeout(() => {
+                    this.setState({error: false});
+                }, 3000);
             }
-        }
+            return res.json();
+        });
+
+        if (error) { return; }
+
+        let matchListData = await fetch(`${process.env.REACT_APP_CORS_PREFIX_URL}${host_url(this.state.region)}${match_list_url(summonerData.puuid)}`, {
+            method: `GET`,
+            headers: {
+                'Accept-Charset': 'application/json;charset=utf-8',
+                'X-Riot-Token': `${process.env.REACT_APP_RIOT_KEY}`
+            }
+        }).then(res => {
+            if (!res.ok) {
+                let errorStr = errorHandler(res.status);
+                this.setState({error: true, loading: false, errorMessage: errorStr});
+                error = true;
+                setTimeout(() => {
+                    this.setState({error: false});
+                }, 3000);
+            }
+            return res.json();
+        });
+
+        if (error) { return; }
+
+        console.log(JSON.stringify(summonerData));
+        console.log(JSON.stringify(leagueData));
+        console.log(JSON.stringify(matchListData));
+        
+
+        let path = `/profile`;
+        this.props.history.push({
+            pathname: path, 
+            search: `?platform=${this.state.platform}&summonerName=${this.state.summonerName.replaceAll(' ', '').toLowerCase()}`, 
+            state: { 
+                summonerData: summonerData,
+                leagueData: leagueData,
+                matchListData: matchListData,
+                platform: this.state.platform,
+                region: this.state.region
+            }});
     }
   }
-
+  
   handleName = (event) => {
     this.setState({summonerName: event.target.value});
   }
@@ -137,29 +148,15 @@ class MatchHistory extends Component {
   }
 
   loadSampleData = (e) => {
-
+    let path = `/sampledata`;
+      this.props.history.push({
+        pathname: path,
+      });
   }
 
   render = () => {
     require('./match-history.component.css');
     require('../../base.css');
-
-    let rank = {
-        "leagueId": "83b9dd01-6753-4081-aa66-b4e503ae0e8b",
-        "queueType": "RANKED_TFT",
-        "tier": "GOLD",
-        "rank": "IV",
-        "summonerId": "EseeFAsed8-yv9dEOjUvpDYSAiZ_RxQ2G-r3_j6il6TtDIo",
-        "summonerName": "Dice Jar",
-        "leaguePoints": 39,
-        "wins": 3,
-        "losses": 23,
-        "veteran": false,
-        "inactive": false,
-        "freshBlood": false,
-        "hotStreak": false
-    }
-
 
     return (
         <div className="page-grid">

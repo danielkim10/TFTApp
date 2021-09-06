@@ -58,3 +58,12 @@
     background-color: black;
     font-weight: 500;
 }
+
+.no-match {
+    background-color: royalblue;
+    padding: 15px;
+}
+
+.match {
+    margin: 15px;
+}

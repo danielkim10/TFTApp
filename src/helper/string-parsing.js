@@ -47,7 +47,6 @@ export const item_desc_parse = (item) => {
 export const champion_icon_parse = (icon) => {
   if (icon.indexOf('TFT_Set5_Stage2') > -1) {
     let championId = icon.substring(icon.indexOf('ChampionSplashes/')+17, icon.indexOf('.')).toLowerCase();
-    //console.log(icon);
     return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/characters/${championId}/hud/${championId}_square.tft_set5_stage2.png`;
   }
   else if (icon.indexOf('TFT_Set5') > -1) {
@@ -81,7 +80,12 @@ export const ability_desc_parse = (ability) => {
     for (let variable in ability.variables) {
       if (ability.variables[variable].name === substring || ability.variables[variable].name === substring.substring(0,substring.length-4)) {
         if (ability.variables[variable].value[1] === ability.variables[variable].value[2] && ability.variables[variable].value[1] === ability.variables[variable].value[3]) {
-          desc_parsed += description.substring(previous_index, counter) + (Math.round(ability.variables[variable].value[1]*100)/100);
+          if (substring.includes('*100')) {
+            desc_parsed += description.substring(previous_index, counter) + (Math.round(ability.variables[variable].value[1]*100)/100)*100;
+          }
+          else {
+            desc_parsed += description.substring(previous_index, counter) + (Math.round(ability.variables[variable].value[1]*100)/100);
+          }
           previous_index = counter2+1;
           description = description.substring(counter2+1, description.length);
           counter = 0;
@@ -101,6 +105,21 @@ export const ability_desc_parse = (ability) => {
     }
     description = description.replace(description.substring(counter, counter2+1), '');
   }
+
+  while (description.indexOf('<') !== -1) {
+    counter = description.indexOf('<');
+    counter2 = description.indexOf('>');
+    let substring = description.substring(counter, counter2+1);
+    description = description.replace(substring, '');
+  }
+
+  while (description.indexOf('%i') !== -1) {
+    counter = description.indexOf('%i');
+    counter2 = description.indexOf('%', description.indexOf('%i') + 2);
+    let substring = description.substring(counter, counter2+1);
+    description = description.replace(substring, '');
+  }
+
   desc_parsed += description;
   
   return desc_parsed;

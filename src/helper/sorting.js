@@ -97,3 +97,13 @@ export const sortTraitMatch = (a, b) => {
     }
     return 0;
 }
+
+export const sortTeamDate = (a, b) => {
+    if (a.date < b.date) {
+        return 1;
+    }
+    else if (a.date > b.date) {
+        return -1;
+    }
+    return 0;
+}

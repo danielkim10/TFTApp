@@ -2,10 +2,17 @@ const router = require('express').Router();
 let RateLimit = require('../models/ratelimit.model');
 
 router.route('/get/:date').get((req, res) => {
-    RateLimit.find({'dateFirst': {$gte: Date.now() - 120*1000, $lt: Date.now()}})
+    // RateLimit.find()
+    RateLimit.find({'dateFirst': {$gte: parseInt(req.params.date) - 120*1000, $lt: parseInt(req.params.date)}})
         .then(ratelimit => res.json(ratelimit))
         .catch(err => res.status(400).json('Error: ' + err));
 });
+
+// router.route('/').get((req, res) => {
+//     RateLimit.find()
+//         .then(ratelimit => res.json(ratelimit))
+//         .catch(err => res.status(400).json('Error: ' + err));
+// })
 
 router.route('/update/:id').post((req, res) => {
     RateLimit.findById(req.params.id)
@@ -37,6 +44,7 @@ router.route('/add').post((req, res) => {
 });
 
 router.route('/delete').post((req, res) => {
+    req.setTimeout(0);
     RateLimit.deleteMany({'dateFirst': {$lt: Date.now() - 120*1000}})
         .then()
         .catch(err => res.status(400).json('Error: ' + err));

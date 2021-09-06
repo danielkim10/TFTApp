@@ -1,0 +1,41 @@
+.background {
+    margin-top: 9px;
+    width: 30px;
+    height: 30px;
+}
+
+.background-tp {
+    position: absolute;
+    margin-top: 7px;
+    width: 30px;
+    height: 30px;
+}
+
+.trait-icon-white {
+    position: absolute;
+    margin-top: 13px;
+    margin-left: 5px;
+    width: 20px;
+    height: 20px;
+}
+
+.trait-icon {
+    position: absolute;
+    margin-top: 13px;
+    margin-left: 5px;
+    width: 20px;
+    height: 20px;
+    filter: invert(100%);
+}
+
+.trait {
+    position: absolute;
+    margin-top: 8px;
+    margin-left: 0px;
+    width: 20px;
+    height: 20px;
+    /* color: black; */
+    filter: invert(100%);
+    top: 15%;
+    left: 15%;
+}

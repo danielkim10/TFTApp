@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import TraitTooltip from '../../../sub-components/trait-tooltips/trait-tooltips';
 import Tooltip from '@material-ui/core/Tooltip';
-import { assets_url, trait_bg_url } from '../../../helper/urls';
+import TraitEmblem from '../../../sub-components/trait-emblem/trait-emblem';
 import { sortTrait } from '../../../helper/sorting';
-
-import './traits-panel.css';
 
 class TraitsPanel extends Component {
   constructor(props) {
@@ -89,10 +87,10 @@ class TraitsPanel extends Component {
       }
 
       traitsSorted.push(
-        <Tooltip placement='top' title={<TraitTooltip trait={traitsUnsorted[i]} champions={this.props.champions} key={traitsUnsorted[i].key} advancedTooltip={true}/>} arrow>
+        <Tooltip placement='top' title={<TraitTooltip trait={traitsUnsorted[i]} team={this.props.team} champions={this.props.champions} key={traitsUnsorted[i].key} advancedTooltip={true}/>} arrow>
           <div key={traitsUnsorted[i].key} id={traitsUnsorted[i].key} className='trait-layering'>
-            { traitBg !== '' && <img src={trait_bg_url(traitBg)} alt={traitBg} className='background' onError={this.props.imageError}/>}
-            <img src={assets_url(image)} alt={traitsUnsorted[i].name} className={iconClassName} onError={this.props.imageError}/><p className='trait-text'>{traitsUnsorted[i].name + ": " + traitsUnsorted[i].count + " / " + max}</p>
+            <TraitEmblem traitStyle={traitBg} image={image} name={traitsUnsorted[i].name} imageError={this.props.imageError} background='background-tp' iconClassName={iconClassName}/>
+            <p className='trait-text'>{traitsUnsorted[i].name + ": " + traitsUnsorted[i].count + " / " + max}</p>
           </div>
         </Tooltip>
       );
@@ -101,6 +99,8 @@ class TraitsPanel extends Component {
   }
 
   render = () => {
+    require('./traits-panel.css');
+    require('../../base.css');
     return(
         this.createTraits()
     );

@@ -23,9 +23,6 @@ class CopyDialog extends Component {
             teamString += this.props.name + ': ';
         }
 
-        let teamTraits = '';
-        let teamChampions = '';
-
         for (let champion in team) {
             teamString += team[champion].champion.name;
             teamString += ' [';
@@ -54,10 +51,12 @@ class CopyDialog extends Component {
             <Dialog onClose={this.handleClose} open={this.state.open}>
                 <div className='dialog-size'>
                     <h3>Copy this string to share with others</h3>
-                    <TextField className='textfield-size' defaultValue={this.state.team} InputProps={{readOnly: true}} variant="outlined"/>
-                    <IconButton color="primary" aria-label="copy to clipboard" component="span" onClick={() => {navigator.clipboard.writeText(this.state.team)}}>
-                        <FileCopy/>
-                    </IconButton>
+                    <div className='dialog-content'>
+                        <TextField className='textfield-size' defaultValue={this.state.team} InputProps={{readOnly: true}} variant="outlined"/>
+                        <IconButton color="primary" className="copy-button" aria-label="copy to clipboard" component="span" onClick={() => {navigator.clipboard.writeText(this.state.team)}}>
+                            <FileCopy/>
+                        </IconButton>
+                    </div>
                 </div>
             </Dialog>
         );

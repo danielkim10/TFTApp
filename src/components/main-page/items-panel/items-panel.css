@@ -1,0 +1,31 @@
+.item-panel {
+    margin: 15px;
+}
+
+.item-panel-header {
+    background-color: royalblue;
+    padding-bottom: 15px;
+}
+
+.item-panel-body {
+    background-color: #18399a;
+    height: 500px;
+    overflow-y: auto;
+    padding: 15px;
+    margin-top: -15px;
+}
+
+.header-title {
+    font-size: 24px;
+    padding-top: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+    font-weight: 500;
+}
+
+.item-search {
+    background-color: var(--main-color);
+    width: 100%;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}

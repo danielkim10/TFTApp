@@ -1,10 +1,19 @@
-.tooltipimage1{
-  width: 40px;
-  height: 40px;
-  margin-left: 25%;
+.tooltip-wrapper-item {
+  margin: 5px;
 }
 
-.tooltipimage2{
-  width: 40px;
-  height: 40px;
+.font {
+  font-size: 11px;
+}
+
+.tooltip-title {
+  color: yellow;
+  width: 100%;
+  font-size: 16px;
+  
+}
+
+.tooltip-row {
+  margin-bottom: 5px;
+  white-space: pre-wrap;
 }
