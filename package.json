@@ -25,7 +25,7 @@
   },
   "scripts": {
     "start": "cd ./backend && node server.js",
-    "heroku-postbuild": "cd .. && npm install && npm run build",
+    "heroku-postbuild": "cd .. && npm run build",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
