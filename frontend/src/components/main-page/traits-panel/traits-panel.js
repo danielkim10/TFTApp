@@ -87,7 +87,7 @@ class TraitsPanel extends Component {
       }
 
       traitsSorted.push(
-        <Tooltip placement='top' title={<TraitTooltip trait={traitsUnsorted[i]} team={this.props.team} champions={this.props.champions} key={traitsUnsorted[i].key} advancedTooltip={true}/>} arrow>
+        <Tooltip placement='top' title={<TraitTooltip trait={traitsUnsorted[i]} team={this.props.team} champions={this.props.champions} key={traitsUnsorted[i].key} advancedTooltip={true} imageError={this.props.imageError}/>} arrow>
           <div key={traitsUnsorted[i].key} id={traitsUnsorted[i].key} className='trait-layering'>
             <TraitEmblem traitStyle={traitBg} image={image} name={traitsUnsorted[i].name} imageError={this.props.imageError} background='background-tp' iconClassName={iconClassName}/>
             <p className='trait-text'>{traitsUnsorted[i].name + ": " + traitsUnsorted[i].count + " / " + max}</p>

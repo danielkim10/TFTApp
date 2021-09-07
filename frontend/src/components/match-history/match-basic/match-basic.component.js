@@ -92,7 +92,7 @@ class MatchBasic extends Component {
             <Tooltip placement='top' title={<TraitTooltip trait={this.props.traits[trait.name]} count={trait.num_units} smallTooltip={true}/>} key={this.props.traits[trait.name].name} arrow>
             <div className='trait-layering-mb'>
 
-              <TraitEmblem traitStyle={traitStyle} image={image} name={this.props.traits[trait.name].name} iconClassName='trait' background='background' onError={this.props.imageError}/>
+              <TraitEmblem traitStyle={traitStyle} image={image} name={this.props.traits[trait.name].name} iconClassName='trait' background='background' imageError={this.props.imageError}/>
             </div>
             </Tooltip>
           );
@@ -139,7 +139,7 @@ class MatchBasic extends Component {
           items.push(
             <Tooltip placement='top' title={<ItemTooltip item={this.props.items[item]}/>} key={i2} arrow>
               <div className='item-row' key={i2}>
-              <img src={assets_url(image)} alt={image} width={15} height={15}/>
+              <img src={assets_url(image)} alt={image} width={15} height={15} onError={this.props.imageError}/>
               </div>
             </Tooltip>
           );
@@ -161,8 +161,8 @@ class MatchBasic extends Component {
             {stars}
           </div>
           <div>
-            <Tooltip placement='top' title={<ChampionTooltip champion={this.props.champions[champion.character_id]} traits={trait_data}/>} arrow>
-              <img src={this.props.champions[champion.character_id].patch_data.icon} alt={champion.name} className={`cost${this.props.champions[champion.character_id].cost}`} width={45} height={45}/>
+            <Tooltip placement='top' title={<ChampionTooltip champion={this.props.champions[champion.character_id]} traits={trait_data} imageError={this.props.imageError}/>} arrow>
+              <img src={this.props.champions[champion.character_id].patch_data.icon} alt={champion.name} className={`cost${this.props.champions[champion.character_id].cost}`} width={45} height={45} onError={this.props.imageError}/>
             </Tooltip>
           </div>
           <div>
@@ -220,8 +220,8 @@ class MatchBasic extends Component {
     for (let i = 0; i < this.props.gamedata.info.participants.length; i++) {
       playerStuff.push(
         <div key={i} className='player-row'>
-          <div><img src={this.props.gamedata.info.participants[i].companion.image_source} alt={this.props.gamedata.info.participants[i].companion.species} width={25} height={25}/><span className='small-font'>{this.props.gamedata.info.participants[i].name}</span></div>
-          <div><img src={this.props.gamedata.info.participants[i+1].companion.image_source} alt={this.props.gamedata.info.participants[i+1].companion.species} width={25} height={25}/><span className='small-font'>{this.props.gamedata.info.participants[i+1].name}</span></div>
+          <div><img src={this.props.gamedata.info.participants[i].companion.image_source} alt={this.props.gamedata.info.participants[i].companion.species} width={25} height={25} onError={this.props.imageError}/><span className='small-font'>{this.props.gamedata.info.participants[i].name}</span></div>
+          <div><img src={this.props.gamedata.info.participants[i+1].companion.image_source} alt={this.props.gamedata.info.participants[i+1].companion.species} width={25} height={25} onError={this.props.imageError}/><span className='small-font'>{this.props.gamedata.info.participants[i+1].name}</span></div>
         </div>
       )
       i++
@@ -273,7 +273,7 @@ class MatchBasic extends Component {
           </div>
         </div>
         <div className='align'>
-          <img src={player.companion.image_source} alt={player.companion.species} width={50} height={50}/>
+          <img src={player.companion.image_source} alt={player.companion.species} width={50} height={50} onError={this.props.imageError}/>
           <div className='black-circle'></div>
           <div className='level-align'>{player.level}</div>
         </div>
@@ -307,7 +307,7 @@ class MatchBasic extends Component {
       <tr key={index}>
         <td>{this.playerPlacement(player.placement)}</td>
         <td>
-          <img src={player.companion.image_source} alt={player.companion.species} width={50} height={50}/>
+          <img src={player.companion.image_source} alt={player.companion.species} width={50} height={50} onError={this.props.imageError}/>
           <div className='black-circle'></div>
           <div className='level-align'>{player.level}</div>
           {player.name}

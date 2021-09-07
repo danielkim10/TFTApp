@@ -29,7 +29,7 @@ class ChampionTooltip extends Component {
       let image = trait.patch_data.icon.substring(0, trait.patch_data.icon.indexOf('dds')).toLowerCase();
       championTraitsSmall.push(
         <div key={trait.name} className='traits-align-tooltip'>
-          <img src={assets_url(image)} alt={trait.name} className='trait-image-size'/>{trait.name}
+          <img src={assets_url(image)} alt={trait.name} className='trait-image-size' onError={this.props.imageError}/>{trait.name} 
         </div>
       );
     }
@@ -51,7 +51,7 @@ class ChampionTooltip extends Component {
         </div>
         <div className='ability-wrapper'>
           <div className='portrait-tooltip'>
-            <img src={ability_icon_parse(this.props.champion.patch_data)} className='ability-image-size' alt={this.props.champion.patch_data.ability.name}/>
+            <img src={ability_icon_parse(this.props.champion.patch_data)} className='ability-image-size' alt={this.props.champion.patch_data.ability.name} onError={this.props.imageError}/>
           </div>
           <div className='ability-tooltip'>
             {this.props.champion.patch_data.ability.name}

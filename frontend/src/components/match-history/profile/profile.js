@@ -376,7 +376,7 @@ class Profile extends Component {
                             {this.state.loading && <CircularProgress size={24}/>}
                             { !this.state.loading && 
                             <>
-                                <img src={profile_icon_url(this.state.profileIconId)} alt={this.state.profileIconId} className='profile-icon'/>
+                                <img src={profile_icon_url(this.state.profileIconId)} alt={this.state.profileIconId} className='profile-icon' onError={this.imageError}/>
                                 <div className='summoner-name'>{this.state.summonerName}</div>
                                 <div className='level'>{this.state.summonerLevel}</div>
                             </>

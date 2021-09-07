@@ -44,8 +44,14 @@ class TraitCard extends Component {
         let desc_hashed = "";
 
         if (this.props.trait.patch_data.desc.indexOf('<expandRow>') !== -1) {
-            desc_hashed = trait_desc_parse(this.props.trait.patch_data);
-            stat_string = this.props.trait.patch_data.desc.substring(this.props.trait.patch_data.desc.indexOf('<expandRow>') + 11, this.props.trait.patch_data.desc.length - 12);
+            if (this.props.trait.name === 'Assassin') {
+                desc_hashed = this.props.trait.patch_data.desc.substring(this.props.trait.patch_data.desc.indexOf('<br><br>')+8, this.props.trait.patch_data.desc.indexOf('<br><br>', this.props.trait.patch_data.desc.indexOf('<br><br>')+9));
+            }
+            else {
+                desc_hashed = trait_desc_parse(this.props.trait.patch_data);
+            }
+
+            stat_string = this.props.trait.patch_data.desc.substring(this.props.trait.patch_data.desc.indexOf('<expandRow>') + 11, this.props.trait.patch_data.desc.indexOf('</expandRow>', this.props.trait.patch_data.desc.indexOf('<expandRow>') + 12));
             let effects = trait_effect_parse(stat_string, this.props.trait.patch_data);
             for (let effect in effects) {
                 bonuses_hashed.push(<div key={effect}>{effects[effect]}</div>);
@@ -83,7 +89,7 @@ class TraitCard extends Component {
             <div className='trait-style'>
                 <div className='trait-header'>
                     <div className='trait-card-icon'>
-                        <img src={assets_url(image)} alt={this.props.trait.name} />
+                        <img src={assets_url(image)} alt={this.props.trait.name} onError={this.props.imageError}/>
                     </div>
                     <div className='trait-title'>
                         {this.props.trait.patch_data.name}

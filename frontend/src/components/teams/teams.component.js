@@ -111,7 +111,7 @@ class Teams extends Component {
           items.push(
             <Tooltip placement='top' title={<ItemTooltip item={this.state.items[item]}/>} key={item+image} arrow>
               <div className='item-row'>
-                <img src={assets_url(image)} alt={image} className='item-small'/>
+                <img src={assets_url(image)} alt={image} className='item-small' onError={this.imageError}/>
               </div>
             </Tooltip>
           );
@@ -131,9 +131,9 @@ class Teams extends Component {
         teamMembers.push(
           <div className='champion-row'>
             <div>
-              <Tooltip placement='top' title={<ChampionTooltip champion={this.state.champions[j.champion.championId]} traits={trait_data}/>} arrow>
+              <Tooltip placement='top' title={<ChampionTooltip champion={this.state.champions[j.champion.championId]} traits={trait_data} imageError={this.imageError}/>} arrow>
                 <div>
-                  <img src={this.state.champions[j.champion.championId].patch_data.icon} alt={j.champion.name} className={`portrait-small cost${this.state.champions[j.champion.championId].cost}`}/>                
+                  <img src={this.state.champions[j.champion.championId].patch_data.icon} alt={j.champion.name} className={`portrait-small cost${this.state.champions[j.champion.championId].cost}`} onError={this.imageError}/>                
                 </div>
               </Tooltip>
             </div>
@@ -153,7 +153,7 @@ class Teams extends Component {
             <div className='trait-row'>
               <Tooltip placement='top' title={<TraitTooltip trait={this.state.traits[j.key]} count={j.count} smallTooltip={true}/>} arrow>
                 <div key={j.key} className='trait-layering'>
-                  <TraitEmblem traitStyle={j.color} image={image} name={this.state.traits[j.key].name} iconClassName='trait' background='background-team' onError={this.imageError}/>
+                  <TraitEmblem traitStyle={j.color} image={image} name={this.state.traits[j.key].name} iconClassName='trait' background='background-team' imageError={this.imageError}/>
                 </div>
               </Tooltip>
             </div>

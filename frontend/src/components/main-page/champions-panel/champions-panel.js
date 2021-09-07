@@ -27,7 +27,7 @@ class ChampionsPanel extends Component {
             trait_data.push(this.props.traits[champion.traits[i]]);
           }
           champions.push(
-            <Tooltip placement='top' title={<ChampionTooltip champion={champion} traits={trait_data}/>} key={champion.championId} arrow>
+            <Tooltip placement='top' title={<ChampionTooltip champion={champion} traits={trait_data} imageError={this.props.imageError}/>} key={champion.championId} arrow>
               <div className='portrait-spacing' onClick={(e) => this.props.addToTeam(e, champion)} draggable="true" onDragStart={(e) => this.props.drag(e, champion)} onDragEnd={(e) => this.props.dragEnd()}  id={champion.championId} key={champion.championId}>
                 <img src={champion.patch_data.icon} id={champion.championId} alt={champion.name} className={`portrait-border cost${champion.cost}`} onError={this.props.imageError}/>
                 <p className="cost">${champion.cost}</p>

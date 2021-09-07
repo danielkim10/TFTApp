@@ -79,12 +79,12 @@ class ChampionsCheatSheet extends Component {
       let image = this.state.traits[trait].patch_data.icon.substring(0, this.state.traits[trait].patch_data.icon.indexOf('dds')).toLowerCase();
       championTraitsSmall.push(
         <div key={trait} className='traits-align'>
-          <img src={assets_url(image)} alt={this.state.traits[trait].name} className='trait-icon-small'/>
+          <img src={assets_url(image)} alt={this.state.traits[trait].name} className='trait-icon-small' onError={this.imageError}/>
           {this.state.traits[trait].name}
         </div>
       );
       championTraits.push(
-        <TraitCard key={trait} champions={this.state.champions} trait={this.state.traits[trait]}/>
+        <TraitCard key={trait} champions={this.state.champions} trait={this.state.traits[trait]} imageError={this.imageError}/>
       );
     }
 
@@ -94,7 +94,7 @@ class ChampionsCheatSheet extends Component {
           <div className={`champion-header-${champion.cost}`}>
             <div className="wrapper">
               <div className="portrait">
-                <img src={champion.patch_data.icon} alt={champion.name} className={`portrait-border cost${champion.cost}`}/>
+                <img src={champion.patch_data.icon} alt={champion.name} className={`portrait-border cost${champion.cost}`} onError={this.imageError}/>
               </div>
               <div className="row1">
                 <p>{this.state.champion.name}</p>
@@ -117,7 +117,7 @@ class ChampionsCheatSheet extends Component {
           </div>
           <div className="wrapper-ability">
             <div className="portrait">
-              <img src={ability_icon_parse(this.state.champion.patch_data)} alt={this.state.champion.patch_data.ability.name} loading="lazy" className="portrait-border ability"/>
+              <img src={ability_icon_parse(this.state.champion.patch_data)} alt={this.state.champion.patch_data.ability.name} loading="lazy" className="portrait-border ability" onError={this.imageError}/>
             </div>
             <div className="row1">
               {this.state.champion.patch_data.ability.name}

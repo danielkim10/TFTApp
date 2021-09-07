@@ -161,6 +161,9 @@ export const ability_variables_convert = (ability) => {
 
 export const trait_desc_parse = (patch_data) => {
     let description = patch_data.desc.substring(0, patch_data.desc.indexOf('<br>'));
+    if (patch_data.desc.includes('When combat starts')) {
+      console.log(patch_data.desc);
+    }
     let desc_hashed = '';
     let previous_index = 0;
     let counter = 0;
@@ -209,7 +212,7 @@ export const trait_effect_parse = (string, patch_data) => {
           effects[effect] += string.substring(previous_index, counter) + patch_data.effects[effect].variables[substring];
         }
         else if (patch_data.effects[effect].variables[substring.substring(0, substring.length - 4)] !== undefined) {
-          effects[effect] += string.substring(previous_index, counter) + patch_data.effects[effect].variables[substring.substring(0, substring.length - 4)]*100;
+          effects[effect] += string.substring(previous_index, counter) + (Math.round(patch_data.effects[effect].variables[substring.substring(0, substring.length - 4)]*100)/100)*100;
         }
         else if (patch_data.effects[effect].variables[fnvsubstring] !== undefined) {
           effects[effect] += string.substring(previous_index, counter) + patch_data.effects[effect].variables[fnvsubstring];

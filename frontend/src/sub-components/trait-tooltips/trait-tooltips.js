@@ -36,7 +36,7 @@ class TraitTooltip extends Component {
 
       championDesc.push(
         <div className='portrait-spacing' onClick={() => this.championRedirect(champion.championId)} key={champion.championId}>
-            <img src={champion.patch_data.icon} alt={champion.name} className={`portrait-border-small cost${champion.cost} ${championLocked}`}/>
+            <img src={champion.patch_data.icon} alt={champion.name} className={`portrait-border-small cost${champion.cost} ${championLocked}`} onError={this.props.imageError}/>
         </div>);
     }
 
@@ -68,11 +68,23 @@ class TraitTooltip extends Component {
           
           stat_string = description.substring(0, description.indexOf('<br>'));
           stat_string = stat_string.replace('@MinUnits@', '3');
-          bonuses_hashed.push(<div key={'0'}>{stat_string}</div>);
+
+          let bonusLocked = '';
+          if (this.props.trait.sets[0].min > this.props.trait.count) {
+            bonusLocked = 'bonus-locked';
+          }
+
+          bonuses_hashed.push(<div key={'0'} className={bonusLocked}>{stat_string}</div>);
           
           let stat_string_2 = description.substring(description.indexOf('<br>') + 4, description.indexOf('<br><br>'));
           stat_string_2 = stat_string_2.replace('@MinUnits@', '5');
-          bonuses_hashed.push(<div key={'1'}>{stat_string_2}</div>);
+
+          bonusLocked = '';
+          if (this.props.trait.sets[1].min > this.props.trait.count) {
+            bonusLocked = 'bonus-locked';
+          }
+
+          bonuses_hashed.push(<div key={'1'} className={bonusLocked}>{stat_string_2}</div>);
           bonuses_hashed.push(<div key={'2'}>{description.substring(description.indexOf('<br><br>')+8)}</div>)
       }
       else {

@@ -374,7 +374,7 @@ export default class Main extends Component {
                 <div className='traits-container'>
                   <TraitsPanel traits={this.state.traits} champions={this.state.champions} team={this.state.team} imageError={this.imageError}/>
                 </div>
-                <HexagonGrid team={this.state.team} champions={this.state.champions} items={this.state.items} drop={this.drop} drag={this.dragFromGrid} dragEnd={this.dragEnd}/>
+                <HexagonGrid team={this.state.team} champions={this.state.champions} items={this.state.items} drop={this.drop} drag={this.dragFromGrid} dragEnd={this.dragEnd} imageError={this.imageError}/>
                 <div>
                   <Button type="button" className="button-width" onClick={this.clearTeam}>
                     <ClearIcon className='icon-color'/><span className='icon-color'>Clear</span>
