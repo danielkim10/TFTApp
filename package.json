@@ -24,8 +24,8 @@
     "reactstrap": "^8.0.1"
   },
   "scripts": {
-    "start": "cd ./backend && node server.js",
-    "heroku-postbuild": "cd .. && npm run build",
+    "start": "cd ./backend && nodemon server",
+    "heroku-postbuild": "cd .. && npm install && npm run build",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
