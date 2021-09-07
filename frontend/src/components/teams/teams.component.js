@@ -153,7 +153,7 @@ class Teams extends Component {
             <div className='trait-row'>
               <Tooltip placement='top' title={<TraitTooltip trait={this.state.traits[j.key]} count={j.count} smallTooltip={true}/>} arrow>
                 <div key={j.key} className='trait-layering'>
-                  <TraitEmblem traitStyle={j.color} image={image} name={this.state.traits[j.key].name} iconClassName='trait' background='background' onError={this.imageError}/>
+                  <TraitEmblem traitStyle={j.color} image={image} name={this.state.traits[j.key].name} iconClassName='trait' background='background-team' onError={this.imageError}/>
                 </div>
               </Tooltip>
             </div>
@@ -164,7 +164,7 @@ class Teams extends Component {
       teams.push(
         <div>
           <div className='team-header'>
-            <div className='team-name'>
+            <div className='team-name-teams'>
               {i.name}
             </div>
             <div className='team-date'>

@@ -69,7 +69,8 @@ class TraitCard extends Component {
                 bonuses_hashed.push(<div key={'2'}>{description.substring(description.indexOf('<br><br>')+8)}</div>)
             }
             else {
-                let effects = trait_effect_parse(this.props.trait.patch_data.desc, this.props.trait.patch_data);
+                let description = this.props.trait.patch_data.desc.replaceAll('<br>', '');
+                let effects = trait_effect_parse(description, this.props.trait.patch_data);
                 for (let effect in effects) {
                     bonuses_hashed.push(<div key={effect}>{effects[effect]}</div>);
                 }
