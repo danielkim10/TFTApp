@@ -11,7 +11,7 @@ class TraitsCheatSheet extends Component {
     this.state = {
       traits: {},
       champions: {},
-      loading: false,
+      loading: true,
       error: false,
       errorSeverity: "",
       errorMessage: "",
