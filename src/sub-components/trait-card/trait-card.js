@@ -53,11 +53,26 @@ class TraitCard extends Component {
         }
 
         else {
-            desc_hashed = trait_desc_parse(this.props.trait.patch_data);
-            stat_string = this.props.trait.patch_data.desc.substring(this.props.trait.patch_data.desc.indexOf('<br>') + 4, this.props.trait.patch_data.desc.length);
-            let effects = trait_effect_parse(stat_string, this.props.trait.patch_data);
-            for (let effect in effects) {
-                bonuses_hashed.push(<div key={effect}>{effects[effect]}</div>);
+            if (this.props.trait.name === 'Draconic') {
+                let description = this.props.trait.patch_data.desc.replaceAll('<row>', '');
+                description = description.replaceAll('</row>', '');
+                description = description.replaceAll('<tftitemrules>', '');
+                description = description.replaceAll('</tftitemrules>', '');
+                
+                stat_string = description.substring(0, description.indexOf('<br>'));
+                stat_string = stat_string.replace('@MinUnits@', '3');
+                bonuses_hashed.push(<div key={'0'}>{stat_string}</div>);
+                
+                let stat_string_2 = description.substring(description.indexOf('<br>') + 4, description.indexOf('<br><br>'));
+                stat_string_2 = stat_string_2.replace('@MinUnits@', '5');
+                bonuses_hashed.push(<div key={'1'}>{stat_string_2}</div>);
+                bonuses_hashed.push(<div key={'2'}>{description.substring(description.indexOf('<br><br>')+8)}</div>)
+            }
+            else {
+                let effects = trait_effect_parse(this.props.trait.patch_data.desc, this.props.trait.patch_data);
+                for (let effect in effects) {
+                    bonuses_hashed.push(<div key={effect}>{effects[effect]}</div>);
+                }
             }
         }
 

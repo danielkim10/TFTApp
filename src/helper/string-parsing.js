@@ -208,6 +208,9 @@ export const trait_effect_parse = (string, patch_data) => {
         if (patch_data.effects[effect].variables[substring] !== undefined) {
           effects[effect] += string.substring(previous_index, counter) + patch_data.effects[effect].variables[substring];
         }
+        else if (patch_data.effects[effect].variables[substring.substring(0, substring.length - 4)] !== undefined) {
+          effects[effect] += string.substring(previous_index, counter) + patch_data.effects[effect].variables[substring.substring(0, substring.length - 4)]*100;
+        }
         else if (patch_data.effects[effect].variables[fnvsubstring] !== undefined) {
           effects[effect] += string.substring(previous_index, counter) + patch_data.effects[effect].variables[fnvsubstring];
         }
