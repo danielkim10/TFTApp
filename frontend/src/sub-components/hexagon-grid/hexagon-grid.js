@@ -66,7 +66,6 @@ class HexagonGrid extends Component {
             }`;
 
             for (let j = 0; j < t.items.length; j++) {
-                console.log(t.items);
                 let image = this.props.items[t.items[j]].patch_data.icon.substring(0, this.props.items[t.items[j]].patch_data.icon.indexOf('dds')).toLowerCase();
                 itemsEquipped.push(
                     <div id={`h${t.hexSlot}-${j}`} key={t.hexSlot + 'i' + j} className='items-equipped'>

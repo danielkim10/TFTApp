@@ -21,7 +21,6 @@ class TraitsCheatSheet extends Component {
 
   componentDidMount = async() => {
     this.setState({loading: true});
-    console.log('asdf');
     let champions_arr = champions();
     let traits_arr = traits();
 
@@ -31,9 +30,7 @@ class TraitsCheatSheet extends Component {
 
       champions_arr = champion_patch_combine(champions_arr, thisSet.champions);
       traits_arr = trait_patch_combine(traits_arr, thisSet.traits);
-      this.setState({champions: champions_arr, traits: traits_arr, loading: false}, () => {
-        console.log('stuff set successfully');
-      });
+      this.setState({champions: champions_arr, traits: traits_arr, loading: false});
     } catch (err) {
       console.error(`Error retrieving patch data: ${err}`);
     }

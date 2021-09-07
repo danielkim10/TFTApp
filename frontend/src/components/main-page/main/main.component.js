@@ -7,10 +7,12 @@ import Button from '@material-ui/core/Button' ;
 import SaveIcon from '@material-ui/icons/Save';
 import ClearIcon from '@material-ui/icons/Clear';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
+import HelpIcon from '@material-ui/icons/Help';
 import Alert from '@material-ui/lab/Alert';
 import TextField from '@material-ui/core/TextField';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import CopyDialog from '../../../sub-components/copy-dialog/copy-dialog';
+import HelpDialog from '../../../sub-components/help-dialog/help-dialog';
 import HexagonGrid from '../../../sub-components/hexagon-grid/hexagon-grid';
 import { patch_data_url } from '../../../helper/urls';
 import { sortTrait } from '../../../helper/sorting';
@@ -38,7 +40,8 @@ export default class Main extends Component {
       errorSeverity: "error",
       errorMessage: "",
       teamName: "",
-      openDialog: false,
+      openCopyDialog: false,
+      openHelpDialog: false,
     }
 
     this.findTraits = this.findTraits.bind(this);
@@ -65,7 +68,6 @@ export default class Main extends Component {
       champions_arr = champion_patch_combine(champions_arr, thisSet.champions);
       items_arr = item_patch_combine(items_arr, patchData.items);
       traits_arr = trait_patch_combine(traits_arr, thisSet.traits);
-      console.log(items_arr);
       if (this.props.location.search) {
         if (this.props.location.state) {
           getDataFromId("teams", this.props.location.state.teamID).then(data => {
@@ -99,8 +101,8 @@ export default class Main extends Component {
   removeFromTeam = (data) => {
     let team = this.state.team;
     team.splice(team.findIndex(c => c.hexSlot === this.state.draggedChampion.hexSlot), 1);
-    this.setState({ team: team });
-    this.removeTraits(team, this.state.draggedChampion.champion);
+    let traits = this.removeTraits(team, this.state.draggedChampion.champion);
+    this.setState({ team: team, traits: traits });
   }
 
   clearTeam = () => {
@@ -178,11 +180,15 @@ export default class Main extends Component {
   }
 
   copy = (event) => {
-    this.setState({openDialog: true});
+    this.setState({openCopyDialog: true});
+  }
+
+  help = (event) => {
+    this.setState({openHelpDialog: true});
   }
 
   closeDialog = () => {
-    this.setState({openDialog: false});
+    this.setState({openCopyDialog: false, openHelpDialog: false});
   }
 
   handleSave = (event) => {
@@ -358,7 +364,8 @@ export default class Main extends Component {
           <h1 className='title'>Builder</h1>
           {this.state.loading && <CircularProgress size={24}/>}
           {this.state.error && <Alert severity={this.state.errorSeverity}>{this.state.errorMessage}</Alert>}
-          {this.state.openDialog && <CopyDialog team={this.state.team} traits={this.state.traits} items={this.state.items} name={this.state.teamName} open={this.state.openDialog} onClose={this.closeDialog}/>}
+          {this.state.openCopyDialog && <CopyDialog team={this.state.team} traits={this.state.traits} items={this.state.items} name={this.state.teamName} open={this.state.openCopyDialog} onClose={this.closeDialog}/>}
+          {this.state.openHelpDialog && <HelpDialog open={this.state.openHelpDialog} onClose={this.closeDialog}/>}
           { !this.state.loading &&
             <div>
               
@@ -377,6 +384,9 @@ export default class Main extends Component {
                   </Button>
                   <Button type="button" className="button-width" onClick={this.handleSave} disabled={this.state.team.length === 0}>
                     <SaveIcon className='icon-color'/><span className='icon-color'>Save</span>
+                  </Button>
+                  <Button type="button" className="button-width" onClick={this.help}>
+                    <HelpIcon className='icon-color'/><span className='icon-color'>Help</span>
                   </Button>
                 </div>
               </div>

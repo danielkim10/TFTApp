@@ -45,12 +45,16 @@ class ChampionsPanel extends Component {
     this.setState({ searchNameChamps: e.target.value });
   }
 
+  allowDrop = (e) => {
+    e.preventDefault();
+  }
+
   render = () => {
     require('./champions-panel.css');
     require('../../base.css') ;
 
     return(
-      <div className="champion-panel">
+      <div className="champion-panel" onDragOver={this.allowDrop} onDrop={(e) => this.props.drop(e)}>
         <div className="champion-panel-header">
           <p className="header-title">Champions</p>
         </div>

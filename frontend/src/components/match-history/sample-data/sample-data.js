@@ -243,12 +243,6 @@ class SampleData extends Component {
         }, 3000);
     }
 
-    copy = (e, player, traits, champions) => {
-        console.log(player);
-        console.log(traits);
-        console.log(champions);
-    }
-
     render = () => {
         require('../profile/profile.css');
         require('../../base.css');

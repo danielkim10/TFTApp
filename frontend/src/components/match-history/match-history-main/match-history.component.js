@@ -108,10 +108,6 @@ class MatchHistory extends Component {
         });
 
         if (error) { return; }
-
-        console.log(JSON.stringify(summonerData));
-        console.log(JSON.stringify(leagueData));
-        console.log(JSON.stringify(matchListData));
         
 
         let path = `/profile`;

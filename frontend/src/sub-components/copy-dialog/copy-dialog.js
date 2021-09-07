@@ -42,10 +42,6 @@ class CopyDialog extends Component {
         this.props.onClose();
     }
 
-    copyToClipboard = () => {
-
-    }
-
     render = () => {
         return (
             <Dialog onClose={this.handleClose} open={this.state.open}>
