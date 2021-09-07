@@ -27,7 +27,7 @@ class CopyDialog extends Component {
             teamString += team[champion].champion.name;
             teamString += ' [';
             for (let item in team[champion].items) {
-                teamString += team[champion].items[item].name
+                teamString += this.props.items[team[champion].items[item]].name
                 if (item !== team[champion].items.length - 1) {
                     teamString += ', ';
                 }

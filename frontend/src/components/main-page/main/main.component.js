@@ -65,7 +65,7 @@ export default class Main extends Component {
       champions_arr = champion_patch_combine(champions_arr, thisSet.champions);
       items_arr = item_patch_combine(items_arr, patchData.items);
       traits_arr = trait_patch_combine(traits_arr, thisSet.traits);
-
+      console.log(items_arr);
       if (this.props.location.search) {
         if (this.props.location.state) {
           getDataFromId("teams", this.props.location.state.teamID).then(data => {
@@ -199,7 +199,7 @@ export default class Main extends Component {
     for (let i of this.state.team) {
       let items = [];
       for (let item of i.items) {
-        items.push(item.id);
+        items.push(item);
       }
 
       team.push({ champion: { championId: i.champion.championId, traits: i.champion.traits }, tier: i.tier, items: items, hexSlot: i.hexSlot });
@@ -268,14 +268,14 @@ export default class Main extends Component {
       for (let teamMember of Object.values(this.state.team)) {
         if (teamMember.hexSlot === id) {
 
-          if (teamMember.items.includes(this.state.draggedItem) && this.state.draggedItem.isUnique) {
+          if (teamMember.items.includes(this.state.draggedItem.id) && this.state.draggedItem.isUnique) {
             this.setState({error: true, errorSeverity: "warning", errorMessage: "Error: Unique item, only one per champion."});
             setTimeout(() => {
               this.setState({error: false});
             }, 3000);
           }
 
-          else if (teamMember.items.includes(this.state.items['99']) || teamMember.items.includes(this.state.items['2099'])) {
+          else if (teamMember.items.includes(99) || teamMember.items.includes(2099)) {
             this.setState({error: true, errorSeverity: "warning", errorMessage: "Error: No item slots remaining."});
             setTimeout(() => {
               this.setState({error: false});
@@ -293,7 +293,7 @@ export default class Main extends Component {
             (this.state.draggedItem.isUnique && (this.state.draggedItem.id.toString().includes('8')))) {
               let traitFromItem = this.state.draggedItem.name.substring(0, this.state.draggedItem.name.indexOf('Emblem')-1);
               let trait = 'Set5_' + traitFromItem.replace(' ', '');
-              if (teamMember.items.includes(this.state.draggedItem)) {
+              if (teamMember.items.includes(this.state.draggedItem.id)) {
                 this.setState({error: true, errorSeverity: "warning", errorMessage: "Error: Unique item, only one per champion."});
                 setTimeout(() => {
                   this.setState({error: false});
@@ -308,7 +308,7 @@ export default class Main extends Component {
               else {
                 if (teamMember.items.length < 3) {
                   team[team.findIndex(t => t === teamMember)].champion.traits.push(trait);
-                  team[team.findIndex(t => t === teamMember)].items.push(this.state.draggedItem);
+                  team[team.findIndex(t => t === teamMember)].items.push(this.state.draggedItem.id);
                   this.findTraitsFromEmblem(team[team.findIndex(t => t === teamMember)], trait);
                 }
                 else {
@@ -322,7 +322,7 @@ export default class Main extends Component {
           }
 
           else if (teamMember.items.length < 3) {
-            team[team.findIndex(t => t === teamMember)].items.push(this.state.draggedItem);
+            team[team.findIndex(t => t === teamMember)].items.push(this.state.draggedItem.id);
           }
           else {
             this.setState({error: true, errorSeverity: "warning", errorMessage: "Error: No item slots remaining."});
@@ -358,7 +358,7 @@ export default class Main extends Component {
           <h1 className='title'>Builder</h1>
           {this.state.loading && <CircularProgress size={24}/>}
           {this.state.error && <Alert severity={this.state.errorSeverity}>{this.state.errorMessage}</Alert>}
-          {this.state.openDialog && <CopyDialog team={this.state.team} traits={this.state.traits} name={this.state.teamName} open={this.state.openDialog} onClose={this.closeDialog}/>}
+          {this.state.openDialog && <CopyDialog team={this.state.team} traits={this.state.traits} items={this.state.items} name={this.state.teamName} open={this.state.openDialog} onClose={this.closeDialog}/>}
           { !this.state.loading &&
             <div>
               

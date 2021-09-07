@@ -25,7 +25,7 @@ function App() {
         <Route path="/matchhistory" component={MatchHistory} />
         <Route path="/profile" component={Profile} />
         <Route path="/sampledata" component={SampleData} />
-        <Route path="/teams" component={Teams} />
+        <Route path="/savedteams" component={Teams} />
       </div>
     </Router>
 

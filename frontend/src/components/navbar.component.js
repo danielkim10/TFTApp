@@ -33,7 +33,7 @@ const Navigation = (props) => {
                 <NavLink href="/matchhistory">Match History</NavLink>
               </NavItem>
               <NavItem>
-                <NavLink href="/teams">Teams</NavLink>
+                <NavLink href="/savedteams">Teams</NavLink>
               </NavItem>
               {/*<NavItem>
                 <NavLink href="/guides">Guides</NavLink>

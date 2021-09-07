@@ -65,11 +65,12 @@ class HexagonGrid extends Component {
                 background-size: 85px 85px;
             }`;
 
-            for (let i = 0; i < t.items.length; i++) {
-                let image = this.props.items[t.items[i]].patch_data.icon.substring(0, this.props.items[t.items[i]].patch_data.icon.indexOf('dds')).toLowerCase();
+            for (let j = 0; j < t.items.length; j++) {
+                console.log(t.items);
+                let image = this.props.items[t.items[j]].patch_data.icon.substring(0, this.props.items[t.items[j]].patch_data.icon.indexOf('dds')).toLowerCase();
                 itemsEquipped.push(
-                    <div id={`h${t.hexSlot}-${i}`} key={t.hexSlot + 'i' + i} className='items-equipped'>
-                        <img src={assets_url(image)} id={`i${t.hexSlot}-${i}`} className='item-size' alt={this.props.items[t.items[i]].name}/>
+                    <div id={`h${t.hexSlot}-${j}`} key={t.hexSlot + 'i' + j} className='items-equipped'>
+                        <img src={assets_url(image)} id={`i${t.hexSlot}-${j}`} className='item-size' alt={this.props.items[t.items[j]].name}/>
                     </div>
                 );
 
@@ -101,7 +102,7 @@ class HexagonGrid extends Component {
                 }
 
                 let styleElem3 = document.head.appendChild(document.createElement("style"));
-                styleElem3.innerHTML = `#h${t.hexSlot}-${i} {
+                styleElem3.innerHTML = `#h${t.hexSlot}-${j} {
                     position: absolute; 
                     display: inline-block; 
                     margin-left: ${leftMargin}px; 
@@ -109,8 +110,8 @@ class HexagonGrid extends Component {
                 }`;
 
                 let styleElem4 = document.head.appendChild(document.createElement("style"));
-                let margin = 20*i;
-                styleElem4.innerHTML = `#i${t.hexSlot}-${i} {
+                let margin = 20*j;
+                styleElem4.innerHTML = `#i${t.hexSlot}-${j} {
                     width: 20px;
                     height: 20px;
                     margin-left: ${margin}px;
