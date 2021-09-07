@@ -5,7 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./server.js"
+    "build": "cd .. && npm run build",
+        "install-client": "cd .. && npm install",
+        "heroku-postbuild": "npm run install-client && npm run build",
+        "server": "cd backend && nodemon server",
+        "develop": "concurrently --kill-others-on-fail \"npm run server\" \"npm run start --prefix client\"",
+        "start": "concurrently --kill-others-on-fail \"npm run server\" \"npm run start --prefix client\""
   },
   "keywords": [],
   "author": "",

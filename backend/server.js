@@ -24,6 +24,15 @@ const ratelimitRouter = require('./routes/ratelimit');
 app.use('/teams', teamsRouter);
 app.use('/ratelimit', ratelimitRouter);
 
+const path = require("path");
+
+// Step 1:
+app.use(express.static(path.resolve(__dirname, "../build")));
+// Step 2:
+app.get("*", function (request, response) {
+  response.sendFile(path.resolve(__dirname, "../build", "index.html"));
+});
+
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);
 });
