@@ -1,10 +1,22 @@
-Use 'nodemon server' in TFTApp/tft-app/backend to start the server and connect to the DB. This app can be run without the backend but teams and match history will not work.
+Production: View the app at http://mytft.herokuapp.com
 
-Use 'npm start' in TFTApp/tft-app to start the frontend.
+Dev:
+
+Use 'node server.js' in TFTApp/tft-app to start the server and connect to the DB. This app can be run without the backend but teams and match history will not work.
+
+Use 'npm start' in TFTApp/tft-app/frontend to start the frontend.
 
 There are three keys for this app. The first one, ATLAS_URI, is required for teams. The second one, REACT_APP_RIOT_KEY, is required to access player data. The third one, REACT_APP_CORS_PREFIX, is required to bypass CORS restrictions for the above key.
 
-Deployment is a work in process.
+There are other keys like REACT_APP_SITE and REACT_APP_SERVER, which should correspond to http://localhost:3000 and http://localhost:5000
+
+Here are some screenshots in case the app fails to run or a new patch is released and the app isn't adapted to it yet.
+
+![Alt text](/screenshots/ss1.PNG?raw=true "Main Screen")
+
+![Alt text](/screenshots/ss2.PNG?raw=true "Player Profile Screen")
+
+![Alt text](/screenshots/ss3.PNG?raw=true "Teams Screen")
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
