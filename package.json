@@ -24,11 +24,13 @@
     "reactstrap": "^8.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "cd ./backend && node server.js",
+    "heroku-postbuild": "cd .. && npm install && npm run build",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "proxy": "http://localhost:5000/",
   "eslintConfig": {
     "extends": "react-app"
   },
