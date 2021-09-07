@@ -45,7 +45,7 @@ class ChampionTooltip extends Component {
               <MonetizationOnIcon className='coin-color'/>{this.props.champion.cost}
             </div>
           </div>
-          <div className='champion-traits'>
+          <div className='champion-traits-tooltip'>
             {championTraitsSmall}
           </div>
         </div>

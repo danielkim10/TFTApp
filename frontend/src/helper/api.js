@@ -1,40 +1,40 @@
 import axios from 'axios';
 
 export function getData(db) {
-  return axios.get(`${process.env.REACT_APP_SERVER}` + db + '/')
+  return axios.get(`http://mytft.herokuapp.com/` + db + '/')
     .then(res => res.data);
 }
 export function getDataFromId(db, id) {
-  return axios.get(`${process.env.REACT_APP_SERVER}` + db + '/' + id)
+  return axios.get(`http://mytft.herokuapp.com/` + db + '/' + id)
     .then(res => res.data);
 }
 
 export function getSetData(db, set) {
-  return axios.get(`${process.env.REACT_APP_SERVER}` + db + '/set/' + set)
+  return axios.get(`http://mytft.herokuapp.com/` + db + '/set/' + set)
     .then(res => res.data);
 }
 
 export function getDataFromDate(db, date) {
-  return axios.get(`${process.env.REACT_APP_SERVER}` + db+ '/get/' + date)
+  return axios.get(`http://mytft.herokuapp.com/` + db+ '/get/' + date)
     .then(res => res.data);
 }
 
 export function postData(db, postObject) {
-  return axios.post(`${process.env.REACT_APP_SERVER}` + db + '/add', postObject)
+  return axios.post(`http://mytft.herokuapp.com/` + db + '/add', postObject)
     .then(res => res.data);
 }
 export function updateData(db, id, updateObject) {
-  return axios.post(`${process.env.REACT_APP_SERVER}` + db + '/update/' + id, updateObject)
+  return axios.post(`http://mytft.herokuapp.com/` + db + '/update/' + id, updateObject)
     .then(res => res.data);
 }
 
 export function deleteOldRateLimits(db) {
-  return axios.post(`${process.env.REACT_APP_SERVER}` + db + '/delete')
+  return axios.post(`http://mytft.herokuapp.com/` + db + '/delete')
     .then(res => res.data);
 }
 
 export function deleteTeams(db, deleteObject) {
-  return axios.post(`${process.env.REACT_APP_SERVER}` + db + '/delete', deleteObject)
+  return axios.post(`http://mytft.herokuapp.com/` + db + '/delete', deleteObject)
     .then(res => res.data);
 }
 

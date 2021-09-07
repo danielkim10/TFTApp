@@ -1,4 +1,4 @@
-.content-grid {
+.content-grid-champions {
   display: grid;
   grid-template-columns: 1fr 2fr;
 }

@@ -10,7 +10,7 @@
     color: yellow;
 }
 
-.champion-traits {
+.champion-traits-tooltip {
     grid-area: traits;
 }
 

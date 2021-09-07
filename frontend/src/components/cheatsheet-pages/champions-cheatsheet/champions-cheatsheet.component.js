@@ -173,7 +173,7 @@ class ChampionsCheatSheet extends Component {
             {this.state.error && <Alert severity={this.state.errorSeverity}>{this.state.errorMessage}</Alert>}
             {this.state.loading && <CircularProgress size={24}/>}
             { !this.state.loading &&
-            <div className="content-grid">
+            <div className="content-grid-champions">
               <div className="content-margins">
                 <TextField id="search" onChange={this.handleSearch} placeholder="Champion Name" variant="outlined" className="search-field"/>
                 <div>{champions}</div>

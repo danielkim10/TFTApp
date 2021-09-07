@@ -78,7 +78,7 @@ class TraitsCheatSheet extends Component {
         <div>
             <h1 className='title'>Traits Cheatsheet</h1>
             {this.state.error && <Alert severity={this.state.errorSeverity}>{this.state.errorMessage}</Alert>}
-            <div className='content-grid'>
+            <div className='content-grid-traits'>
               {this.state.loading && <CircularProgress className='circular-progress'/>}
               { !this.state.loading && 
                   <div>{originCards}</div>
