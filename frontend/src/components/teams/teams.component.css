@@ -1,0 +1,69 @@
+.champion-row{
+  position: relative;
+  display: inline-block;
+  margin: 4px;
+}
+
+.item-row {
+  position: relative;
+  display: inline-block;
+  min-width: '45px';
+}
+
+.trait-row {
+  position: relative;
+  display: inline-block;
+  margin: 4px;
+}
+
+.portrait-small {
+  width: 45px;
+  height: 45px;
+}
+
+.item-small {
+  width: 15px;
+  height: 15px;
+}
+
+.team-header {
+  background-color: royalblue;
+  padding: 15px;
+}
+
+.team-name {
+  font-size: 16px;
+  font-weight: 500px;
+}
+
+.team-date {
+  font-size: 12px;
+}
+
+.teams-grid {
+  display: grid;
+  grid-template-columns: 700px 400px 40px;
+  background-color: #18399a;
+  place-items: left;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.text-color {
+  color: white;
+}
+
+.subtitle {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.visibility {
+  margin: 15px;
+  cursor: pointer;
+}
+
+.copy {
+  margin: 15px;
+  cursor: pointer;
+}

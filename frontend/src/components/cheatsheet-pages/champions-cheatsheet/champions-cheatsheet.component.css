@@ -1,0 +1,134 @@
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  margin: 15px;
+}
+
+.champion-header-1 {
+  background-color: var(--cost1-color);
+}
+
+.champion-body-1 {
+  background-color: #999999;
+}
+
+.champion-header-2 {
+  background-color: var(--cost2-color);
+}
+
+.champion-body-2{
+  background-color: #00b300;
+}
+
+.champion-header-3 {
+  background-color: var(--cost3-color);
+}
+
+.champion-body-3 {
+  background-color: #3333ff;
+}
+
+.champion-header-4 {
+  background-color: var(--cost4-color);
+}
+
+.champion-body-4 {
+  background-color: #cc00cc;
+}
+
+.champion-header-5 {
+  background-color: var(--cost5-color);
+  color: black;
+}
+
+.champion-header-5 .champion-traits .trait-icon-small {
+  filter: invert(100%);
+}
+
+.champion-body-5{
+  background-color: #ffb833;
+  color: black;
+}
+
+.traits-align {
+  display: inline-block;
+  margin: 15px;
+}
+
+.trait-icon-small {
+  margin: 5px;
+  width: 20px;
+  height: 20px;
+}
+
+.row1 {
+  grid-area: row1;
+  margin-top: 15px;
+  margin-left: 15px;
+  font-weight: 500;
+}
+
+.row2 {
+  grid-area: row2;
+  margin-left: 15px;
+}
+
+.portrait {
+  grid-area: portrait;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.champion-traits {
+  grid-area: champion-traits;
+}
+
+.ability-desc {
+  margin: 15px;
+  white-space: pre-wrap;
+}
+
+.ability-variables {
+  padding-bottom: 15px;
+  margin: 15px;
+}
+
+.wrapper {
+  display: grid;
+  grid-template-columns: 60px 1.5fr 8.5fr;
+  grid-template-areas:
+    "portrait row1 champion-traits"
+    "portrait row2 champion-traits";
+  margin-left: 15px;
+  margin-right: 15px;
+  margin-bottom: 15px;
+}
+
+.wrapper-ability {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  grid-template-areas:
+    "portrait row1"
+    "portrait row2";
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+.search-field {
+  width: 95%;
+  background-color: white;
+}
+
+.content-margins {
+  margin: 30px;
+}
+
+.champion-traits-cards {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}

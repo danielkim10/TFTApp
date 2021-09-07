@@ -1,0 +1,86 @@
+.name-tooltip {
+    font-size: 16px;
+    color: yellow;
+    grid-area: name;
+}
+
+.cost-tooltip {
+    font-size: 12px;
+    grid-area: cost;
+    color: yellow;
+}
+
+.champion-traits {
+    grid-area: traits;
+}
+
+.font {
+    font-size: 11px;
+}
+
+.tooltip-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 40px;
+    grid-template-areas:
+        "name cost"
+        "traits traits";
+    margin: 5px;
+}
+
+.ability-wrapper {
+    display: grid;
+    grid-template-columns: 33px 1fr;
+    grid-template-areas:
+        "portrait ability"
+        "portrait mana";
+    margin: 5px;
+}
+
+.portrait-tooltip {
+    grid-area: portrait;
+}
+
+.ability-tooltip {
+    grid-area: ability;
+    margin-left: 5px;
+}
+
+.ability-desc-tooltip {
+    white-space: pre-wrap;
+    margin: 5px;
+}
+
+.ability-variables-tooltip {
+    margin: 5px;
+}
+
+.mana-tooltip {
+    grid-area: mana;
+    margin-left: 5px;
+}
+
+.traits-align {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.ability-image-size {
+    width: 33px;
+    height: 33px;
+}
+
+.trait-image-size {
+    width: 18px;
+    height: 18px;
+    margin-right: 5px;
+}
+
+.test-whitespace {
+    white-space: pre-wrap;
+}
+
+.coin-color {
+    color: yellow;
+    width: 18px;
+    height: 18px;
+}

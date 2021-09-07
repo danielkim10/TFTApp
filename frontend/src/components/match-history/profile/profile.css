@@ -1,0 +1,69 @@
+.page-grid-wide {
+    display: grid;
+    grid-template-columns: 1fr 6fr 1fr;
+}
+
+.summoner-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 100px 1fr 1fr;
+    background-color: #18399a;
+    padding: 15px;
+}
+
+.section {
+    width: 100%;
+    margin: 15px;
+}
+
+.ranked-card-grid {
+    margin-left: -15px;
+    margin-right: -15px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.ranked-card {
+    background-color: #18399a;
+    margin-left: 15px;
+    margin-right: 15px;
+    padding: 15px;
+}
+
+.ranked-face {
+    width: 15%;
+    height: 15%;
+}
+
+.ranked-crown {
+    width: 15%;
+    height: 15%;
+    margin-left: -94px;
+    margin-top: 0px;
+}
+
+.summoner-name {
+    font-size: 60px;
+    margin-left: 15px;
+}
+
+.profile-icon {
+    width: 100px;
+    height: 100px;
+}
+
+.level {
+    position: absolute;
+    margin-top: 1px;
+    background-color: black;
+    font-weight: 500;
+}
+
+.no-match {
+    background-color: royalblue;
+    padding: 15px;
+}
+
+.match {
+    margin: 15px;
+}

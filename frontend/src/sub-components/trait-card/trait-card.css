@@ -1,0 +1,31 @@
+.trait-style {
+    background-color: #18399a;
+}
+
+.trait-card-icon {
+    width: 32px;
+    height: 32px;
+    margin: 15px;
+}
+
+.trait-header {
+    display: grid;
+    grid-template-columns: 47px 1fr;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    background-color: royalblue;
+}
+
+.trait-title {
+    font-size: 24px;
+    font-weight: 400;
+    margin: 15px;
+}
+
+.card-row {
+    margin: 15px;
+}
+
+.list {
+    display: inline-block;
+}

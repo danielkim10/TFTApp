@@ -1,0 +1,128 @@
+.self-grid {
+    display: grid;
+    grid-template-columns: 150px 75px 400px 550px 300px;
+}
+
+.player-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr
+}
+
+.players-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.player-row {
+    position: relative;
+    display: inline-block;
+}
+
+.champion-row {
+    position: relative;
+    display: inline-block;
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+.item-row {
+    position: relative;
+    display: inline-block;
+    min-width: '45px';
+}
+
+.trait-layering-mb {
+    position: relative;
+    display: inline-block;
+    align-items: center;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+.star {
+    font-size: small !important;
+}
+
+.t1 {
+    color: gray;
+}
+
+.t2 {
+    color: green;
+}
+
+.t3 {
+    color: blue;
+}
+
+.t4 {
+    color: purple;
+}
+
+.t5 {
+    color: orange;
+}
+
+.align {
+    margin-top: 30px;
+}
+
+.row-border {
+    border-top-style: solid;
+    border-bottom-style: solid;
+}
+
+.background-header-red {
+    background-color: #cc0000 !important;
+}
+
+.background-body-red {
+    background-color: #ff3333 !important;
+}
+
+.background-header-blue {
+    background-color: #18399a !important;
+}
+
+.background-body-blue {
+    background-color: #4f74e3 !important;
+}
+
+.text {
+    color: white;
+}
+
+.black-circle {
+    background-color: black;
+    border-color: black;
+    position: absolute;
+    border-radius: 50%;
+    border-style: solid;
+    width: 20px;
+    height: 20px;
+    margin-top: -15px;
+    margin-left: 30px;
+}
+
+.level-align {
+    position: absolute;
+    margin-top: -17px;
+    margin-left: 36px;
+    font-weight: 500;
+    color: yellow;
+}
+
+.save-mb {
+    margin: 15px;
+    cursor: pointer;
+}
+
+.copy-mb {
+    margin: 15px;
+    cursor: pointer;
+}
+
+.small-font {
+    font-size: 14px;
+    margin-left: 5px;
+}

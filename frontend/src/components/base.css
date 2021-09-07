@@ -1,0 +1,95 @@
+:root {
+    --main-color: white;
+    --border-color: black;
+    --cost1-color: gray;
+    --cost2-color: green;
+    --cost3-color: blue;
+    --cost4-color: purple;
+    --cost5-color: orange;
+    --default-text-shadow: -1px 0 var(--border-color), 0 1px var(--border-color), 1px 0 var(--border-color), 0 -1px var(--border-color);
+}
+
+.page-grid {
+    display: grid;
+    grid-template-columns: 1fr 4fr 1fr;
+    place-items: center;
+}
+
+.item-name {
+    position: absolute;
+    color: var(--main-color);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-shadow: var(--default-text-shadow);
+    font-size: 11px;
+    text-align: center;
+}
+
+.champion-name {
+    position: absolute;
+    color: var(--main-color);
+    top: 75%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-shadow: var(--default-text-shadow);
+    font-size: 11px;
+    text-align: center;
+}
+
+.cost {
+    position: absolute;
+    color: var(--main-color);
+    top: 0%;
+    text-shadow: var(--default-text-shadow);
+    font-size: 11px;
+}
+
+.portrait-spacing {
+    position: relative;
+    display: inline-block;
+    margin: 4px;
+    cursor: pointer;
+}
+
+.portrait-border {
+    width: 60px;
+    height: 60px;
+}   
+.cost1 {
+    box-shadow: -2px -2px var(--cost1-color), -2px 2px var(--cost1-color), 2px -2px var(--cost1-color), 2px 2px var(--cost1-color); 
+}
+.cost2 {
+    box-shadow: -2px -2px var(--cost2-color), -2px 2px var(--cost2-color), 2px -2px var(--cost2-color), 2px 2px var(--cost2-color);
+}
+.cost3 {
+    box-shadow: -2px -2px var(--cost3-color), -2px 2px var(--cost3-color), 2px -2px var(--cost3-color), 2px 2px var(--cost3-color);
+}
+.cost4 {
+    box-shadow: -2px -2px var(--cost4-color), -2px 2px var(--cost4-color), 2px -2px var(--cost4-color), 2px 2px var(--cost4-color);
+}
+.cost5 {
+    box-shadow: -2px -2px var(--cost5-color), -2px 2px var(--cost5-color), 2px -2px var(--cost5-color), 2px 2px var(--cost5-color);
+}
+.item {
+    box-shadow: -2px -2px var(--cost1-color), -2px 2px var(--cost1-color), 2px -2px var(--cost1-color), 2px 2px var(--cost1-color);
+}
+.ability {
+    box-shadow: -2px -2px var(--border-color), -2px 2px var(--border-color), 2px -2px var(--border-color), 2px 2px var(--border-color);
+}
+.title {
+    color: var(--main-color);
+    font-size: 24;
+    font-weight: 400;
+}
+
+.circular-progress {
+    color: var(--main-color);
+    size: 24px;
+}
+
+.button-text {
+    color: var(--main-color);
+    font-size: 16px;
+    font-weight: 400;
+}
