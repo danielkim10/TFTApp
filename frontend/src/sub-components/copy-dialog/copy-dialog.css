@@ -1,14 +1,12 @@
 .dialog-size {
     width: 530px;
-    height: 170px;
+    height: 240px;
     padding: 15px;
 }
 
 .textfield-size {
-    /* vertical-align: middle; */
-    /* align-items: center; */
     left: 10px;
-    width: 80%;
+    width: 85%;
 }
 
 .dialog-content {

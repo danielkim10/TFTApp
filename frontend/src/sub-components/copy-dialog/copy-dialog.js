@@ -1,5 +1,10 @@
 import React, { Component } from 'react';
+import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
 import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
 import FileCopy from '@material-ui/icons/FileCopy';
@@ -46,12 +51,14 @@ class CopyDialog extends Component {
         return (
             <Dialog onClose={this.handleClose} open={this.state.open}>
                 <div className='dialog-size'>
-                    <h3>Copy this string to share with others</h3>
+                    <DialogTitle>Copy this string to share with others</DialogTitle>
                     <div className='dialog-content'>
-                        <TextField className='textfield-size' defaultValue={this.state.team} InputProps={{readOnly: true}} variant="outlined"/>
-                        <IconButton color="primary" className="copy-button" aria-label="copy to clipboard" component="span" onClick={() => {navigator.clipboard.writeText(this.state.team)}}>
-                            <FileCopy/>
-                        </IconButton>
+                        <DialogContent>
+                            <TextField className='textfield-size' defaultValue={this.state.team} InputProps={{readOnly: true}} variant="outlined"/>
+                            <IconButton color="primary" className="copy-button" aria-label="copy to clipboard" component="span" onClick={() => {navigator.clipboard.writeText(this.state.team)}}>
+                                <FileCopy/>
+                            </IconButton>
+                        </DialogContent>
                     </div>
                 </div>
             </Dialog>
