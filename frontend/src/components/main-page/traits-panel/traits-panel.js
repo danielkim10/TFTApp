@@ -15,7 +15,6 @@ class TraitsPanel extends Component {
   createTraits = () => {
     let traitsUnsorted = [];
     let traitsSorted = [];
-
     for (let trait of Object.values(this.props.traits)) {
       let sets = trait.sets.length;
       if (trait.count !== 0) {

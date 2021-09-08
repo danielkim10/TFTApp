@@ -45,6 +45,7 @@ export default class Main extends Component {
     }
 
     this.findTraits = this.findTraits.bind(this);
+    this.removeFromTeam = this.removeFromTeam.bind(this);
     this.clearTeam = this.clearTeam.bind(this);
     this.handleChanges = this.handleChanges.bind(this);
     this.handleSave = this.handleSave.bind(this);
@@ -100,6 +101,10 @@ export default class Main extends Component {
 
   removeFromTeam = (data) => {
     let team = this.state.team;
+    if (this.state.draggedChampion.hexSlot === undefined) {
+      return;
+    }
+
     team.splice(team.findIndex(c => c.hexSlot === this.state.draggedChampion.hexSlot), 1);
     let traits = this.removeTraits(team, this.state.draggedChampion.champion);
     this.setState({ team: team, traits: traits });

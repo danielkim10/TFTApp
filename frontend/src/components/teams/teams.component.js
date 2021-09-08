@@ -98,18 +98,24 @@ class Teams extends Component {
     });
   }
 
-  render() {
+  render = () => {
     require('./teams.component.css');
     require('../base.css');
     let teams = [];
+    let teamcounter = 0;
     for (let i of this.state.teams) {
       let teamMembers = [];
+      teamcounter++;
+      let counter = 0;
       for (let j of i.team) {
+        counter++;
         let items = [];
+        let itemcounter = 0;
         for (let item of j.items) {
+          itemcounter++;
           let image = this.state.items[item].patch_data.icon.substring(0, this.state.items[item].patch_data.icon.indexOf('dds')).toLowerCase();
           items.push(
-            <Tooltip placement='top' title={<ItemTooltip item={this.state.items[item]}/>} key={item+image} arrow>
+            <Tooltip placement='top' title={<ItemTooltip item={this.state.items[item]}/>} key={itemcounter} arrow>
               <div className='item-row'>
                 <img src={assets_url(image)} alt={image} className='item-small' onError={this.imageError}/>
               </div>
@@ -118,7 +124,7 @@ class Teams extends Component {
         }
 
         if (!items.length) {
-          items.push(<div className='item-row'></div>)
+          items.push(<div key={counter} className='item-row'></div>)
         }
 
         let trait_data = [];
@@ -129,7 +135,7 @@ class Teams extends Component {
         }
 
         teamMembers.push(
-          <div className='champion-row'>
+          <div key={counter} className='champion-row'>
             <div>
               <Tooltip placement='top' title={<ChampionTooltip champion={this.state.champions[j.champion.championId]} traits={trait_data} imageError={this.imageError}/>} arrow>
                 <div>
@@ -146,11 +152,13 @@ class Teams extends Component {
 
       
       let traits = [];
+      let traitcounter = 0;
       for (let j of i.traits) {
+        traitcounter++;
         if (j.tier > 0) {
           let image = this.state.traits[j.key].patch_data.icon.substring(0, this.state.traits[j.key].patch_data.icon.indexOf('dds')).toLowerCase();
           traits.push(
-            <div className='trait-row'>
+            <div key={traitcounter} className='trait-row'>
               <Tooltip placement='top' title={<TraitTooltip trait={this.state.traits[j.key]} count={j.count} smallTooltip={true}/>} arrow>
                 <div key={j.key} className='trait-layering'>
                   <TraitEmblem traitStyle={j.color} image={image} name={this.state.traits[j.key].name} iconClassName='trait' background='background-team' imageError={this.imageError}/>
@@ -162,7 +170,7 @@ class Teams extends Component {
       }
 
       teams.push(
-        <div>
+        <div key={teamcounter}>
           <div className='team-header'>
             <div className='team-name-teams'>
               {i.name}

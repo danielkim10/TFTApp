@@ -13,7 +13,7 @@ class SampleData extends Component {
             champions: {},
             traits: {},
             items: {},
-            profileIconId: "",
+            profileIconId: 1,
             summonerName: "",
             summonerLevel: 0,
             puuid: "",
@@ -96,7 +96,7 @@ class SampleData extends Component {
 
 
             rankedCards.push(
-                <div className='ranked-card'>
+                <div className='ranked-card' key={0}>
                     <div>Ranked</div>
                     <div>{rankedData[rankedIndex].tier} {rankedData[rankedIndex].rank} / {rankedData[rankedIndex].leaguePoints} LP</div>
                     <div>
@@ -110,7 +110,7 @@ class SampleData extends Component {
 
         else {
             rankedCards.push(
-                <div className='ranked-card'>
+                <div className='ranked-card' key={1}>
                     <div>Ranked</div>
                     <div>Unranked</div>
                 </div>
@@ -119,7 +119,7 @@ class SampleData extends Component {
         rankedIndex = rankedData.findIndex(r => r.queueType === 'RANKED_TFT_TURBO');
         if (rankedIndex > -1) {
             rankedCards.push(
-                <div className='ranked-card'>
+                <div className='ranked-card' key={2}>
                     <div>Hyper Roll</div>
                     <div>{rankedData[rankedIndex].ratedTier} / {rankedData[rankedIndex].ratedRating} Rating</div>
                     <div>{rankedData[rankedIndex].wins} Wins / {rankedData[rankedIndex].losses} Losses</div>
@@ -128,7 +128,7 @@ class SampleData extends Component {
         }
         else {
             rankedCards.push(
-                <div className='ranked-card'>
+                <div className='ranked-card' key={3}>
                     <div>Hyper Roll</div>
                     <div>Unranked</div>
                 </div>
