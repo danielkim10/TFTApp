@@ -1,71 +1,66 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import TraitCard from '../../../sub-components/trait-card/trait-card';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Alert from '@material-ui/lab/Alert';
 import { patch_data_url } from '../../../helper/urls';
-import { SET_NUMBER, champions, traits, champion_patch_combine, trait_patch_combine } from '../../../helper/variables';
+import { SET_NUMBER, champions_fetch, traits_fetch, champion_patch_combine, trait_patch_combine } from '../../../helper/variables';
 
-class TraitsCheatSheet extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      traits: {},
-      champions: {},
-      loading: true,
-      error: false,
-      errorSeverity: "",
-      errorMessage: "",
-    };
-    this.championRedirect = this.championRedirect.bind(this);
-  }
+import './traits-cheatsheet.component.css';
+import '../../base.css';
 
-  componentDidMount = async() => {
-    this.setState({loading: true});
-    let champions_arr = champions();
-    let traits_arr = traits();
+const TraitsCheatSheet = (props) => {
+  const [traits, setTraits] = useState({});
+  const [champions, setChampions] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [errorSeverity, setErrorSeverity] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-    try {
-      let patchData = await fetch(patch_data_url()).then(res => res.json());
-      let thisSet = patchData.setData[SET_NUMBER];
-
-      champions_arr = champion_patch_combine(champions_arr, thisSet.champions);
-      traits_arr = trait_patch_combine(traits_arr, thisSet.traits);
-      this.setState({champions: champions_arr, traits: traits_arr, loading: false});
-    } catch (err) {
-      console.error(`Error retrieving patch data: ${err}`);
+  useEffect(() => {
+    setLoading(true);
+    
+    const fetchData = async () => {
+      let champions_arr = champions_fetch();
+      let traits_arr = traits_fetch();
+      try {
+        let patchData = await fetch(patch_data_url()).then(res => res.json());
+        let thisSet = patchData.setData[SET_NUMBER];
+  
+        champions_arr = champion_patch_combine(champions_arr, thisSet.champions);
+        traits_arr = trait_patch_combine(traits_arr, thisSet.traits);
+        setChampions(champions_arr);
+        setTraits(traits_arr);
+        setLoading(false);
+      } catch (err) {
+        setLoading(false);
+        setError(true);
+        setErrorSeverity("error");
+        setErrorMessage(`Error retrieving patch data: ${err}. Try refreshing the page.`);
+      }
     }
+
+    fetchData();
+  }, []);
+
+  const createTrait = (data) => {
+    return <TraitCard champions={champions} trait={data} imageError={imageError}/>
   }
 
-  createTrait = (data) => {
-    return <TraitCard champions={this.state.champions} trait={data} imageError={this.imageError}/>
+  const imageError = () => {
+    setError(true);
+    setErrorSeverity("warning");
+    setErrorMessage("Warning: Some images failed to load. Refreshing the page may solve the problem.");
   }
 
-  championRedirect = (key) => {
-    let path = '/cheatsheet/champions';
-    this.props.history.push({pathname: path, data: key});
-  }
-
-  imageError = () => {
-    this.setState({
-      error: true, 
-      errorSeverity: "warning", 
-      errorMessage: "Warning: Some images failed to load. Refreshing the page may solve the problem."
-    });
-  }
-
-  render = () => {
-    require('./traits-cheatsheet.component.css');
-    require('../../base.css');
-
-    let originCards = [];
+  let originCards = [];
     let classCards = [];
 
-    for (let trait of Object.values(this.state.traits)) {
+    for (let trait of Object.values(traits)) {
       if (trait.type === 'origin') {
-        originCards.push(<div key={trait.key}>{this.createTrait(trait)}</div>);
+        originCards.push(<div key={trait.key}>{createTrait(trait)}</div>);
       }
       else {
-        classCards.push(<div key={trait.key}>{this.createTrait(trait)}</div>);
+        classCards.push(<div key={trait.key}>{createTrait(trait)}</div>);
       }
     }
 
@@ -74,14 +69,14 @@ class TraitsCheatSheet extends Component {
         <div></div>
         <div>
             <h1 className='title'>Traits Cheatsheet</h1>
-            {this.state.error && <Alert severity={this.state.errorSeverity}>{this.state.errorMessage}</Alert>}
+            {error && <Alert severity={errorSeverity}>{errorMessage}</Alert>}
             <div className='content-grid-traits'>
-              {this.state.loading && <CircularProgress className='circular-progress'/>}
-              { !this.state.loading && 
+              {loading && <CircularProgress className='circular-progress'/>}
+              { !loading && 
                   <div>{originCards}</div>
               }
               <div></div>
-              { !this.state.loading && 
+              { !loading && 
                 <div>{classCards}</div>
               }
           </div>
@@ -89,7 +84,6 @@ class TraitsCheatSheet extends Component {
         <div></div>
       </div>
     );
-  }
 }
 
 export default TraitsCheatSheet;

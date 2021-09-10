@@ -1,16 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { item_desc_parse } from '../../helper/string-parsing';
 
-class ItemTooltip extends Component {
-  constructor(props) {
-    super(props);
+import './item-tooltips.css';
+import '../../components/base.css';
 
-    this.state = {
-
-    }
-  }
-
-  renderTooltipContent = () => {
+const ItemTooltip = (props) => {
+  const renderTooltipContent = () => {
     let basicStats = {
       'AD': 'Attack Damage', 
       'AS': '% Attack Speed', 
@@ -25,10 +20,10 @@ class ItemTooltip extends Component {
 
     let itemStats = [];
 
-    if (this.props.item.isRadiant) {
-      for (let effect of Object.values(this.props.item.patch_data.effects)) {
+    if (props.item.isRadiant) {
+      for (let effect of Object.values(props.item.patch_data.effects)) {
         if (basicStats[effect] !== undefined) {
-          itemStats.push(<div className='tooltip-row' key={effect+this.props.item.id}>+{this.props.item.patch_data.effects[effect]} {basicStats[effect]}</div>);
+          itemStats.push(<div className='tooltip-row' key={effect+props.item.id}>+{props.item.patch_data.effects[effect]} {basicStats[effect]}</div>);
         }
       }
 
@@ -36,17 +31,17 @@ class ItemTooltip extends Component {
 
       return (
         <div className='tooltip-wrapper-item font'>
-          <div className='tooltip-title tooltip-row'>{this.props.item.name}</div>
-          <div className='tooltip-row'>{item_desc_parse(this.props.item)}</div>
+          <div className='tooltip-title tooltip-row'>{props.item.name}</div>
+          <div className='tooltip-row'>{item_desc_parse(props.item)}</div>
           {itemStats}
         </div>
       );
     }
 
-    else if (this.props.item.isElusive) {
-      for (let effect of Object.values(this.props.item.patch_data.effects)) {
+    else if (props.item.isElusive) {
+      for (let effect of Object.values(props.item.patch_data.effects)) {
         if (basicStats[effect] !== undefined) {
-          itemStats.push(<div className='tooltip-row' key={effect+this.props.item.id}>+{this.props.item.patch_data.effects[effect]} {basicStats[effect]}</div>)
+          itemStats.push(<div className='tooltip-row' key={effect+props.item.id}>+{props.item.patch_data.effects[effect]} {basicStats[effect]}</div>)
         }
       }
 
@@ -54,33 +49,33 @@ class ItemTooltip extends Component {
     
       return (
         <div className='tooltip-wrapper-item font'>
-          <div className='tooltip-title tooltip-row'>{this.props.item.name}</div>
-          <div className='tooltip-row'>{item_desc_parse(this.props.item)}</div>
+          <div className='tooltip-title tooltip-row'>{props.item.name}</div>
+          <div className='tooltip-row'>{item_desc_parse(props.item)}</div>
           {itemStats}
         </div>
       );
     }
 
-    else if (this.props.item.id < 10) {
+    else if (props.item.id < 10) {
       return (
         <div className='tooltip-wrapper-item font'>
-          <div className='tooltip-title tooltip-row'>{this.props.item.name}</div>
-          <div className='tooltip-row'>{item_desc_parse(this.props.item)}</div>
+          <div className='tooltip-title tooltip-row'>{props.item.name}</div>
+          <div className='tooltip-row'>{item_desc_parse(props.item)}</div>
         </div>
       );
     }
 
-    else if (this.props.item.id >= 10) {
-      for (let effect of Object.values(this.props.item.patch_data.effects)) {
+    else if (props.item.id >= 10) {
+      for (let effect of Object.values(props.item.patch_data.effects)) {
         if (basicStats[effect] !== undefined) {
-          itemStats.push(<div className='tootip-row' key={effect+this.props.item.id}>+{this.props.item.patch_data.effects[effect]} {basicStats[effect]}</div>);
+          itemStats.push(<div className='tootip-row' key={effect+props.item.id}>+{props.item.patch_data.effects[effect]} {basicStats[effect]}</div>);
         }
       }
 
       return (
         <div className='tooltip-wrapper-item font'>
-          <div className='tooltip-title tooltip-row'>{this.props.item.name}</div>
-          <div className='tooltip-row'>{item_desc_parse(this.props.item)}</div>
+          <div className='tooltip-title tooltip-row'>{props.item.name}</div>
+          <div className='tooltip-row'>{item_desc_parse(props.item)}</div>
           {itemStats}
           <div></div>
         </div>
@@ -88,13 +83,9 @@ class ItemTooltip extends Component {
     }
   }
 
-  render = () => {
-    require('./item-tooltips.css');
-    require('../../components/base.css');
-    return (
-      this.renderTooltipContent()
-    );
-  }
+  return (
+    renderTooltipContent()
+  );
 }
 
-export default ItemTooltip
+export default ItemTooltip;

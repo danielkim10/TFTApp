@@ -3,7 +3,7 @@ import { champion_icon_parse } from "./string-parsing";
 export const SET_NUMBER = 5;
 export const CHAMPION_ID_PREFIX = "TFT5_";
 
-export const champions = () => {
+export const champions_fetch = () => {
     let champions = require("../data/champions.json");
     let champions_arr = {};
     for (let champion of Object.values(champions)) {
@@ -14,7 +14,7 @@ export const champions = () => {
     return champions_arr;
 }
 
-export const items = () => {
+export const items_fetch = () => {
     let items = require("../data/items.json");
     let items_arr = {};
     for (let item of Object.values(items)) {
@@ -23,7 +23,7 @@ export const items = () => {
     return items_arr;
 }
 
-export const traits = () => {
+export const traits_fetch = () => {
     let traits = require("../data/traits.json");
     let traits_arr = {};
     for (let trait of Object.values(traits)) {
