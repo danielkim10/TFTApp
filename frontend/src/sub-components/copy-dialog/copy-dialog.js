@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -8,59 +8,51 @@ import FileCopy from '@material-ui/icons/FileCopy';
 
 import './copy-dialog.css';
 
-class CopyDialog extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            open: this.props.open,
-            team: "",
-        };
-    }
+const CopyDialog = (props) => {
+    const [open, setOpen] = useState(props.open);
+    const [team, setTeam] = useState("");
 
-    componentDidMount = () => {
-        let team = this.props.team;
+    useEffect(() => {
         let teamString = '';
 
-        if (this.props.name !== '') {
-            teamString += this.props.name + ': ';
+        if (props.name !== '') {
+            teamString += props.name + ': ';
         }
 
-        for (let champion in team) {
-            teamString += team[champion].champion.name;
+        for (let champion in props.team) {
+            teamString += props.team[champion].champion.name;
             teamString += ' [';
-            for (let item in team[champion].items) {
-                teamString += this.props.items[team[champion].items[item]].name
-                if (item !== team[champion].items.length - 1) {
+            for (let item in props.team[champion].items) {
+                teamString += props.items[props.team[champion].items[item]].name
+                if (item !== props.team[champion].items.length - 1) {
                     teamString += ', ';
                 }
             }
             teamString += '], ';
         }
-        this.setState({team: teamString});
+        setTeam(teamString);
+    }, [props]);
+
+    const handleClose = () => {
+        setOpen(false);
+        props.onClose();
     }
 
-    handleClose = () => {
-        this.setState({open: false});
-        this.props.onClose();
-    }
-
-    render = () => {
-        return (
-            <Dialog onClose={this.handleClose} open={this.state.open}>
-                <div className='dialog-size'>
-                    <DialogTitle>Copy this string to share with others</DialogTitle>
-                    <div className='dialog-content'>
-                        <DialogContent>
-                            <TextField className='textfield-size' defaultValue={this.state.team} InputProps={{readOnly: true}} variant="outlined"/>
-                            <IconButton color="primary" className="copy-button" aria-label="copy to clipboard" component="span" onClick={() => {navigator.clipboard.writeText(this.state.team)}}>
-                                <FileCopy/>
-                            </IconButton>
-                        </DialogContent>
-                    </div>
+    return (
+        <Dialog onClose={handleClose} open={open}>
+            <div className='dialog-size'>
+                <DialogTitle>Copy this string to share with others</DialogTitle>
+                <div className='dialog-content'>
+                    <DialogContent>
+                        <TextField className='textfield-size' defaultValue={team} InputProps={{readOnly: true}} variant="outlined"/>
+                        <IconButton color="primary" className="copy-button" aria-label="copy to clipboard" component="span" onClick={() => {navigator.clipboard.writeText(team)}}>
+                            <FileCopy/>
+                        </IconButton>
+                    </DialogContent>
                 </div>
-            </Dialog>
-        );
-    }
+            </div>
+        </Dialog>
+    );
 }
 
 export default CopyDialog;

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { sortTierDescending, sortPlacementAscending, sortTierMatchDescending, sortTraitMatch } from '../../../helper/sorting'; 
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
@@ -14,23 +14,12 @@ import TraitTooltip from '../../../sub-components/trait-tooltips/trait-tooltips'
 import ItemTooltip from '../../../sub-components/item-tooltips/item-tooltips';
 import TraitEmblem from '../../../sub-components/trait-emblem/trait-emblem';
 
-class MatchBasic extends Component {
-  constructor(props) {
-    super(props);
+import './match-basic.component.css';
+import '../../base.css';
 
-    this.state = {
-      gamedata: this.props.gamedata,
-      champions: this.props.champions,
-      traits: this.props.traits,
-      items: this.props.items,
-    }
-  }
-
-  componentDidMount = () => {
-  }
-
-  gameDataParse = () => {
-    let players = this.props.gamedata.info.participants;
+const MatchBasic = (props) => {
+  const gameDataParse = () => {
+    let players = props.gamedata.info.participants;
     let playersSorted =  [];
     let playerData = [];
     let myPlayer = [];
@@ -40,12 +29,12 @@ class MatchBasic extends Component {
     let color = 'blue';
 
     for (let player in playersSorted) {
-      let data = this.playerDataParse(playersSorted[player], player)
-      if (playersSorted[player].puuid === this.props.puuid) {
+      let data = playerDataParse(playersSorted[player], player)
+      if (playersSorted[player].puuid === props.puuid) {
         if (playersSorted[player].placement > 4) {
           color = 'red';
         }
-        myPlayer = this.selfDataParse(playersSorted[player], player);
+        myPlayer = selfDataParse(playersSorted[player], player);
       }
 
       playerData.push(data);
@@ -79,20 +68,20 @@ class MatchBasic extends Component {
     );
   }
 
-  traitsSort = (traits) => {
+  const traitsSort = (traits) => {
     let traitsRow = [];
     traits = traits.sort(sortTraitMatch);
     for (let trait of traits) {
-      if (this.props.traits[trait.name] !== undefined) {
+      if (props.traits[trait.name] !== undefined) {
         if (trait.style > 0) {
-          let image = this.props.traits[trait.name].patch_data.icon.substring(0, this.props.traits[trait.name].patch_data.icon.indexOf('dds')).toLowerCase();
-          let traitStyle = this.props.traits[trait.name].sets[trait.tier_current-1].style;
+          let image = props.traits[trait.name].patch_data.icon.substring(0, props.traits[trait.name].patch_data.icon.indexOf('dds')).toLowerCase();
+          let traitStyle = props.traits[trait.name].sets[trait.tier_current-1].style;
 
           traitsRow.push(
-            <Tooltip placement='top' title={<TraitTooltip trait={this.props.traits[trait.name]} count={trait.num_units} smallTooltip={true}/>} key={this.props.traits[trait.name].name} arrow>
+            <Tooltip placement='top' title={<TraitTooltip trait={props.traits[trait.name]} count={trait.num_units} smallTooltip={true}/>} key={props.traits[trait.name].name} arrow>
             <div className='trait-layering-mb'>
 
-              <TraitEmblem traitStyle={traitStyle} image={image} name={this.props.traits[trait.name].name} iconClassName='trait' background='background' imageError={this.props.imageError}/>
+              <TraitEmblem traitStyle={traitStyle} image={image} name={props.traits[trait.name].name} iconClassName='trait' background='background' imageError={props.imageError}/>
             </div>
             </Tooltip>
           );
@@ -103,7 +92,7 @@ class MatchBasic extends Component {
     return traitsRow;
   }
 
-  championsItemsSort = (championsSorted) => {
+  const championsItemsSort = (championsSorted) => {
     let championsItemsRowSorted = [];
     for (let [i1, champion] of championsSorted.entries()) {
       let stars = [];
@@ -135,11 +124,11 @@ class MatchBasic extends Component {
       }
       for (let [i2, item] of champion.items.entries()) {
         if (item !== 10006) {
-          let image = this.props.items[item].patch_data.icon.substring(0, this.props.items[item].patch_data.icon.indexOf('dds')).toLowerCase();
+          let image = props.items[item].patch_data.icon.substring(0, props.items[item].patch_data.icon.indexOf('dds')).toLowerCase();
           items.push(
-            <Tooltip placement='top' title={<ItemTooltip item={this.props.items[item]}/>} key={i2} arrow>
+            <Tooltip placement='top' title={<ItemTooltip item={props.items[item]}/>} key={i2} arrow>
               <div className='item-row' key={i2}>
-              <img src={assets_url(image)} alt={image} width={15} height={15} onError={this.props.imageError}/>
+              <img src={assets_url(image)} alt={image} width={15} height={15} onError={props.imageError}/>
               </div>
             </Tooltip>
           );
@@ -151,8 +140,8 @@ class MatchBasic extends Component {
 
       let trait_data = [];
       
-      for (let i in this.props.champions[champion.character_id].traits) {
-        trait_data.push(this.props.traits[this.props.champions[champion.character_id].traits[i]]);
+      for (let i in props.champions[champion.character_id].traits) {
+        trait_data.push(props.traits[props.champions[champion.character_id].traits[i]]);
       }
 
       championsItemsRowSorted.push(
@@ -161,8 +150,8 @@ class MatchBasic extends Component {
             {stars}
           </div>
           <div>
-            <Tooltip placement='top' title={<ChampionTooltip champion={this.props.champions[champion.character_id]} traits={trait_data} imageError={this.props.imageError}/>} arrow>
-              <img src={this.props.champions[champion.character_id].patch_data.icon} alt={champion.name} className={`cost${this.props.champions[champion.character_id].cost}`} width={45} height={45} onError={this.props.imageError}/>
+            <Tooltip placement='top' title={<ChampionTooltip champion={props.champions[champion.character_id]} traits={trait_data} imageError={props.imageError}/>} arrow>
+              <img src={props.champions[champion.character_id].patch_data.icon} alt={champion.name} className={`cost${props.champions[champion.character_id].cost}`} width={45} height={45} onError={props.imageError}/>
             </Tooltip>
           </div>
           <div>
@@ -174,7 +163,7 @@ class MatchBasic extends Component {
     return championsItemsRowSorted;
   }
 
-  playerPlacement = (rank) => {
+  const playerPlacement = (rank) => {
     let placement = '';
     switch (rank) {
       case 1:
@@ -201,13 +190,13 @@ class MatchBasic extends Component {
     );
   }
 
-  timeConvert = (time) => {
+  const timeConvert = (time) => {
     let t = new Date(1970, 0, 1);
     t.setUTCSeconds(time/1000);
     return t;
   }
 
-  selfDataParse = (player, index) => {
+  const selfDataParse = (player, index) => {
     let traits = player.traits;
     let traitsSorted = [];
     traitsSorted = traits.sort(sortTierMatchDescending);
@@ -217,20 +206,20 @@ class MatchBasic extends Component {
     championsSorted = champions.sort(sortTierDescending);
 
     let playerStuff = [];
-    for (let i = 0; i < this.props.gamedata.info.participants.length; i++) {
+    for (let i = 0; i < props.gamedata.info.participants.length; i++) {
       playerStuff.push(
         <div key={i} className='player-row'>
-          <div><img src={this.props.gamedata.info.participants[i].companion.image_source} alt={this.props.gamedata.info.participants[i].companion.species} width={25} height={25} onError={this.props.imageError}/><span className='small-font'>{this.props.gamedata.info.participants[i].name}</span></div>
-          <div><img src={this.props.gamedata.info.participants[i+1].companion.image_source} alt={this.props.gamedata.info.participants[i+1].companion.species} width={25} height={25} onError={this.props.imageError}/><span className='small-font'>{this.props.gamedata.info.participants[i+1].name}</span></div>
+          <div><img src={props.gamedata.info.participants[i].companion.image_source} alt={props.gamedata.info.participants[i].companion.species} width={25} height={25} onError={props.imageError}/><span className='small-font'>{props.gamedata.info.participants[i].name}</span></div>
+          <div><img src={props.gamedata.info.participants[i+1].companion.image_source} alt={props.gamedata.info.participants[i+1].companion.species} width={25} height={25} onError={props.imageError}/><span className='small-font'>{props.gamedata.info.participants[i+1].name}</span></div>
         </div>
       )
       i++
     }
 
-    let gamelength = `${Math.floor(this.props.gamedata.info.game_length/60)}:`;
+    let gamelength = `${Math.floor(props.gamedata.info.game_length/60)}:`;
     let selflength = `${Math.floor(player.time_eliminated/60)}:`;
     let selfsec = Math.floor(player.time_eliminated%60);
-    let sec = Math.floor(this.props.gamedata.info.game_length%60);
+    let sec = Math.floor(props.gamedata.info.game_length%60);
     if (sec < 10) {
       gamelength += '0';
     }
@@ -241,7 +230,7 @@ class MatchBasic extends Component {
     }
     selflength += selfsec;
 
-    let time = this.timeConvert(this.props.gamedata.info.game_datetime);
+    let time = timeConvert(props.gamedata.info.game_datetime);
     let timeString = '';
 
     let months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -249,10 +238,10 @@ class MatchBasic extends Component {
     timeString = `${months[(new Date(time)).getUTCMonth()]} ${(new Date(time)).getUTCDate()} ${(new Date(time)).getUTCFullYear()}`
 
     let queue = 'Normal';
-    if (this.props.gamedata.info.queue_id === 1100) {
+    if (props.gamedata.info.queue_id === 1100) {
       queue = 'Ranked';
     }
-    else if (this.props.gamedata.info.queue_id === 1130) {
+    else if (props.gamedata.info.queue_id === 1130) {
       queue = 'Turbo';
     }
     
@@ -260,7 +249,7 @@ class MatchBasic extends Component {
       <div className='self-grid text'>
         <div>
           <div>
-            {this.playerPlacement(player.placement)}
+            {playerPlacement(player.placement)}
           </div>
           <div>
             {queue}
@@ -273,15 +262,15 @@ class MatchBasic extends Component {
           </div>
         </div>
         <div className='align'>
-          <img src={player.companion.image_source} alt={player.companion.species} width={50} height={50} onError={this.props.imageError}/>
+          <img src={player.companion.image_source} alt={player.companion.species} width={50} height={50} onError={props.imageError}/>
           <div className='black-circle'></div>
           <div className='level-align'>{player.level}</div>
         </div>
         <div className='align'>
-          {this.traitsSort(traitsSorted)}
+          {traitsSort(traitsSorted)}
         </div>
         <div>
-          {this.championsItemsSort(championsSorted)}
+          {championsItemsSort(championsSorted)}
         </div>
         <div className='players-grid'>
           {playerStuff}
@@ -290,7 +279,7 @@ class MatchBasic extends Component {
     );
   }
 
-  playerDataParse = (player, index) => {
+  const playerDataParse = (player, index) => {
     let traits = player.traits;
     let traitsSorted = [];
     traitsSorted = traits.sort(sortTierMatchDescending);
@@ -305,9 +294,9 @@ class MatchBasic extends Component {
 
     return (
       <tr key={index}>
-        <td>{this.playerPlacement(player.placement)}</td>
+        <td>{playerPlacement(player.placement)}</td>
         <td>
-          <img src={player.companion.image_source} alt={player.companion.species} width={50} height={50} onError={this.props.imageError}/>
+          <img src={player.companion.image_source} alt={player.companion.species} width={50} height={50} onError={props.imageError}/>
           <div className='black-circle'></div>
           <div className='level-align'>{player.level}</div>
           {player.name}
@@ -319,34 +308,28 @@ class MatchBasic extends Component {
           {Math.floor(player.time_eliminated/60)}:{Math.floor(player.time_eliminated%60)}
         </td>
         <td>
-          {this.traitsSort(traitsSorted)}
+          {traitsSort(traitsSorted)}
         </td>
         <td>
-          {this.championsItemsSort(championsSorted)}
+          {championsItemsSort(championsSorted)}
         </td>
         <td>
           {player.gold_left}
         </td>
         <td>
           <div title="Save" className='save-mb'>
-            <SaveIcon onClick={(e) => this.props.save(e, player, traitsSorted, championsSorted)}/>
+            <SaveIcon onClick={(e) => props.save(e, player, traitsSorted, championsSorted)}/>
           </div>
         </td>
       </tr>
     );
   }
 
-  render = () => {
-    require('./match-basic.component.css');
-    require('../../base.css');
-
-    return(
-      <div>
-        {this.gameDataParse()}
-      </div>
-
-    );
-  }
+  return(
+    <div>
+      {gameDataParse()}
+    </div>
+  );
 }
 
 export default MatchBasic;

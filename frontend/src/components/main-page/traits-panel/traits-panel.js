@@ -1,21 +1,17 @@
-import React, { Component } from 'react';
+import React from 'react';
 import TraitTooltip from '../../../sub-components/trait-tooltips/trait-tooltips';
 import Tooltip from '@material-ui/core/Tooltip';
 import TraitEmblem from '../../../sub-components/trait-emblem/trait-emblem';
 import { sortTrait } from '../../../helper/sorting';
 
-class TraitsPanel extends Component {
-  constructor(props) {
-    super(props);
+import './traits-panel.css';
+import '../../base.css';
 
-    this.state = {
-    }
-  }
-
-  createTraits = () => {
+const TraitsPanel = (props) => {
+  const createTraits = () => {
     let traitsUnsorted = [];
     let traitsSorted = [];
-    for (let trait of Object.values(this.props.traits)) {
+    for (let trait of Object.values(props.traits)) {
       let sets = trait.sets.length;
       if (trait.count !== 0) {
         for (let j = sets-1; j >= 0; j--) {
@@ -86,9 +82,9 @@ class TraitsPanel extends Component {
       }
 
       traitsSorted.push(
-        <Tooltip placement='top' title={<TraitTooltip trait={traitsUnsorted[i]} team={this.props.team} champions={this.props.champions} key={traitsUnsorted[i].key} advancedTooltip={true} imageError={this.props.imageError}/>} arrow>
+        <Tooltip placement='top' title={<TraitTooltip trait={traitsUnsorted[i]} team={props.team} champions={props.champions} key={traitsUnsorted[i].key} advancedTooltip={true} imageError={props.imageError}/>} arrow>
           <div key={traitsUnsorted[i].key} id={traitsUnsorted[i].key} className='trait-layering'>
-            <TraitEmblem traitStyle={traitBg} image={image} name={traitsUnsorted[i].name} imageError={this.props.imageError} background='background-tp' iconClassName={iconClassName}/>
+            <TraitEmblem traitStyle={traitBg} image={image} name={traitsUnsorted[i].name} imageError={props.imageError} background='background-tp' iconClassName={iconClassName}/>
             <p className='trait-text'>{traitsUnsorted[i].name + ": " + traitsUnsorted[i].count + " / " + max}</p>
           </div>
         </Tooltip>
@@ -97,13 +93,9 @@ class TraitsPanel extends Component {
     return traitsSorted;
   }
 
-  render = () => {
-    require('./traits-panel.css');
-    require('../../base.css');
-    return(
-        this.createTraits()
-    );
-  }
+  return(
+    createTraits()
+  );
 }
 
 export default TraitsPanel;
